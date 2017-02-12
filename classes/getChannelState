@@ -1,0 +1,725 @@
+./DB_Admin_Group_Permissions.php:5:	//TODO make them private and add (magic) setters and getters, setter would include perm-check
+./DB_Admin_Group_Permissions.php:20:		$this->startStop = $startStop;
+./DB_Admin_Group_Permissions.php:21:		$this->editConf = $editConf;
+./DB_Admin_Group_Permissions.php:22:		$this->genSuUsPW = $genSuUsPW;
+./DB_Admin_Group_Permissions.php:23:		$this->viewRegistrations = $viewRegistrations;
+./DB_Admin_Group_Permissions.php:24:		$this->editRegistrations = $editRegistrations;
+./DB_Admin_Group_Permissions.php:25:		$this->moderate = $moderate;
+./DB_Admin_Group_Permissions.php:26:		$this->kick = $kick;
+./DB_Admin_Group_Permissions.php:27:		$this->ban = $ban;
+./DB_Admin_Group_Permissions.php:28:		$this->channels = $channels;
+./DB_Admin_Group_Permissions.php:29:		$this->acls = $acls;
+./DB_Admin_Group_Permissions.php:30:		$this->addAdmins = $admins;
+./HelperFunctions.php:61:		if (isset($tree->children)) {
+./HelperFunctions.php:62:			echo $indent.$tree->c->name.'<br/>';
+./HelperFunctions.php:63:			foreach ($tree->children AS $child) {
+./HelperFunctions.php:74:		echo $indent.$tree->c->name.'<br/>';
+./HelperFunctions.php:75:		if (count($tree->children)>0) {
+./HelperFunctions.php:76:			foreach ($tree->children AS $child) {
+./HelperFunctions.php:80:		if (count($tree->players)>0) {
+./HelperFunctions.php:81:			foreach ($tree->players AS $player) {
+./HelperFunctions.php:82:				echo $indent.$player->name.'<br/>';
+./HelperFunctions.php:92:		$mailpattern = '/^([a-z0-9._\-])*\@'
+./HelperFunctions.php:93:			.  '([a-z0-9])(([a-z0-9_\-])*([a-z0-9]))+'
+./HelperFunctions.php:94:			.'(\.([a-z0-9_\-])*([a-z0-9])+)+$/i';
+./HelperFunctions.php:118:	 * javascript-alert some text
+./HelperFunctions.php:140:		$byte = count($array)-1;
+./HelperFunctions.php:144:			$byte--;
+./HelperFunctions.php:221:		return 'U+' . substr('0000' . strtoupper($hex), min(-4, -1 * strlen($hex)));
+./HelperFunctions.php:236:		$ENCODING = 'UTF-8';
+./HelperFunctions.php:269:					return self::codepointDec($bbb) - self::codepointDec($aaa);
+./DBManager.php:18:			$dbType = SettingsManager::getInstance()->getDBType();
+./DBManager.php:63:		$datapath = SettingsManager::getInstance()->getMainDir() . '/data/';
+./DBManager.php:64:		$this->filepath_admins					= $datapath . self::$filename_admins;
+./DBManager.php:65:		$this->filepath_awaiting				= $datapath . 'awaiting.dat';
+./DBManager.php:66:		$this->filepath_log_register			= $datapath . 'log_register.log';
+./DBManager.php:67:		$this->filepath_adminGroups				= $datapath . self::$filename_adminGroups;
+./DBManager.php:68:		$this->filepath_adminGroupPermissions	= $datapath . self::$filename_adminGroupPermissions;
+./DBManager.php:69:		$this->filepath_adminGroupAssoc			= $datapath . self::$filename_adminGroupAssoc;
+./DBManager.php:70:		$this->filepath_adminGroupServerAssoc	= $datapath . self::$filename_adminGroupServerAssoc;
+./DBManager.php:74:			!is_writable(SettingsManager::getInstance()->getMainDir() . '/data')
+./DBManager.php:75:			|| !is_writable(SettingsManager::getInstance()->getMainDir() . '/data/admins.dat')
+./DBManager.php:89:		$fd = fopen(SettingsManager::getInstance()->getMainDir().'/data/'.$field, 'a') OR die('could not open DB file');
+./DBManager.php:106:		$fd = fopen(SettingsManager::getInstance()->getMainDir().'/data/awaiting.dat', 'a') OR die('could not open DB file');
+./DBManager.php:111:		} while ( $this->getAwaitingAccount($key)!=null );
+./DBManager.php:122:		$this->sendActivationMail($email, $name, $sid, $key);
+./DBManager.php:137:				SettingsManager::getInstance()->getSiteTitle(),
+./DBManager.php:139:				SettingsManager::getInstance()->getServerName($sid),
+./DBManager.php:143:			'Content-Type: text/plain; charset="UTF-8"'			// +header
+./DBManager.php:153:		$acc = $this->getAwaitingAccount($key);
+./DBManager.php:156:				ServerInterface::getInstance()->addUser($acc['sid'], $acc['name'], $acc['pw'], $acc['email']);
+./DBManager.php:157:				$this->removeAwaitingAccount($key);
+./DBManager.php:172:		$fd = fopen(SettingsManager::getInstance()->getMainDir().'/data/awaiting.dat', 'r') OR die('could not open DB file');
+./DBManager.php:200:		$filename = SettingsManager::getInstance()->getMainDir().'/data/awaiting.dat';
+./DBManager.php:215:		return filesize($this->filepath_admins) > 0;
+./DBManager.php:226:		if ($this->getAdminByName($username) == null) {
+./DBManager.php:227:			$fd = fopen(SettingsManager::getInstance()->getMainDir().'/data/'.self::$filename_admins, 'a');
+./DBManager.php:228:			fwrite($fd, sprintf("%s;%s;%s;%d\n", $this->getNextAdminID(), $username, sha1($password), ($isGlobalAdmin == 'true' ? 1 : 0)));
+./DBManager.php:241:		if ($this->getAdminGroupByName($name)===null) {
+./DBManager.php:242:			$fd = fopen(SettingsManager::getInstance()->getMainDir().'/data/'.self::$filename_adminGroups, 'a');
+./DBManager.php:243:			fwrite($fd, sprintf("%d;%s\n", $this->getNextAdminGroupID(), $name));
+./DBManager.php:257:		$groups = $this->getAdminGroupsByAdminID($aid);
+./DBManager.php:266:		$fh = fopen($this->filepath_adminGroupAssoc, 'a');
+./DBManager.php:278:		$this->removeAdminFromGroup($aid, null);
+./DBManager.php:280:		$data = file($this->filepath_admins);
+./DBManager.php:281:		$fd = fopen($this->filepath_admins, 'w');
+./DBManager.php:299:		$this->removeAdmin($aid);
+./DBManager.php:309:		$fh = fopen($this->filepath_admins, 'r') OR MessageManager::addError('could not open '.self::$filename_admins.' file');
+./DBManager.php:312:			$admins[] = $this->createAdminFromString($line);
+./DBManager.php:319:	 * Get admin object by (account-)name.
+./DBManager.php:325:		if (file_exists($this->filepath_admins)) {
+./DBManager.php:326:			$fd = fopen($this->filepath_admins, 'r') OR MessageManager::addError('could not open '.self::$filename_admins.' file');
+./DBManager.php:328:				$admin = $this->createAdminFromString($line);
+./DBManager.php:345:		$fh = fopen($this->filepath_admins, 'r');
+./DBManager.php:349:			$admin = $this->createAdminFromString($line);
+./DBManager.php:363:		$admins = $this->getAdmins();
+./DBManager.php:376:	 * @param $password plain or sha1-hashed password
+./DBManager.php:380:		$admin = $this->getAdminByName($username);
+./DBManager.php:386:		if (!$this->doesAdminExist()) {
+./DBManager.php:387:			$this->addAdmin($username, $password, true);
+./DBManager.php:395:	 * Create an admin object from a db-line
+./DBManager.php:404:		$lastindex = count($array)-1;
+./DBManager.php:425:		$adminGroups = $this->getAdminGroupHeads();
+./DBManager.php:442:		$this->removeAdminFromGroup(null, $gid);
+./DBManager.php:443:		$this->removeAdminGroupPermissions($gid);
+./DBManager.php:445:		$data = file($this->filepath_adminGroups);
+./DBManager.php:446:		$fd = fopen($this->filepath_adminGroups, 'w');
+./DBManager.php:450:			$g = $this->createAdminGroupFromString($data[$line]);
+./DBManager.php:469:		$data = file($this->filepath_adminGroupAssoc);
+./DBManager.php:470:		$fh = fopen($this->filepath_adminGroupAssoc, 'w');
+./DBManager.php:474:			$assoc = $this->createAdminGroupAssocFromString($data[$line]);
+./DBManager.php:494:	 * Create an adminGroup object/array from a db-file line.
+./DBManager.php:503:		$lastindex = count($array)-1;
+./DBManager.php:518:		$fh = fopen($this->filepath_adminGroups, 'r');
+./DBManager.php:521:			$groups[] = $this->createAdminGroupFromString($line);
+./DBManager.php:534:		$fh = fopen($this->filepath_adminGroups, 'r');
+./DBManager.php:537:			$group = $this->createAdminGroupFromString($line);
+./DBManager.php:554:		$fh = fopen($this->filepath_adminGroups, 'r');
+./DBManager.php:556:			$group = $this->createAdminGroupFromString($line);
+./DBManager.php:573:		$fh = fopen($this->filepath_adminGroupAssoc, 'r');
+./DBManager.php:576:			$assoc = $this->createAdminGroupAssocFromString($line);
+./DBManager.php:578:				$groups[] = $this->getAdminGroup($assoc['adminGroupID']);
+./DBManager.php:588:		$fh = fopen($this->filepath_adminGroups, 'r');
+./DBManager.php:592:			$groups[] = $this->createAdminGroupHeadFromString($line);
+./DBManager.php:601:		$group = $this->createAdminGroupHeadFromString($line);
+./DBManager.php:602:		$group = $this->createAdminGroupFromAdminGroupHead($group);
+./DBManager.php:611:		$lastindex = count($array)-1;
+./DBManager.php:622:		$perms = $this->getAdminGroupPermissions($group['id']);
+./DBManager.php:624:		$group['adminOnServers'] = $this->getAdminGroupServers($group['id']);
+./DBManager.php:633:	 * create an array of permissions from a database-line/-row
+./DBManager.php:642:		$lastindex = count($array)-1;
+./DBManager.php:670:		$fh = fopen($this->filepath_adminGroupPermissions, 'r');
+./DBManager.php:675:			$tmpPerms = $this->createAdminGroupPermissionsFromString($line);
+./DBManager.php:702:			return $this->getAdminGroupPermissions($gid, null);
+./DBManager.php:724:		$this->removeAdminGroupPermissions($perms['groupID']);
+./DBManager.php:726:		$fh = fopen($this->filepath_adminGroupPermissions, 'a');
+./DBManager.php:745:		$data = file($this->filepath_adminGroupPermissions);
+./DBManager.php:746:		$fd = fopen($this->filepath_adminGroupPermissions, 'w');
+./DBManager.php:750:			$perms = $this->createAdminGroupPermissionsFromString($data[$line]);
+./DBManager.php:766:		$groups = $this->getAdminGroupsByAdminID($adminId);
+./DBManager.php:769:			$tmpPerms = $this->getAdminGroupPermissions($group['id'], $serverID);
+./DBManager.php:787:		$old=$this->getAdminGroupPermissions($gid);
+./DBManager.php:795:		$this->removeAdminGroupPermissions($gid);
+./DBManager.php:796:		$this->addAdminGroupPermissions($gid, $old);
+./DBManager.php:805:		$old=$this->getAdminGroupPermissions($gid);
+./DBManager.php:814:		$this->removeAdminGroupPermissions($gid);
+./DBManager.php:815:		$this->addAdminGroupPermissions($gid, $old);
+./DBManager.php:826:		$groupServers = $this->getAdminGroupServers($adminGroupID);
+./DBManager.php:832:		$fh = fopen($this->filepath_adminGroupServerAssoc, 'a');
+./DBManager.php:842:		$lines = file($this->filepath_adminGroupServerAssoc);
+./DBManager.php:843:		$fh = fopen($this->filepath_adminGroupServerAssoc, 'w');
+./DBManager.php:860:		$fh = fopen($this->filepath_adminGroupServerAssoc, 'r');
+./DBManager.php:878:		$groups = $this->getAdminGroupsByAdminID($adminId);
+./DBManager.php:881:			$srvs = $this->getAdminGroupServers($group['id']);
+./TranslationManager.php:42:		$txt = self::getInstance()->getText($textname);
+./TranslationManager.php:60:		$this->defaultLanguage = SettingsManager::getInstance()->getDefaultLanguage();
+./TranslationManager.php:63:			$this->language = $_GET['lang'];
+./TranslationManager.php:64:		} elseif (($ses_lang = SessionManager::getInstance()->getLanguage())!=null) {
+./TranslationManager.php:65:			$this->language = $ses_lang;
+./TranslationManager.php:67:			$this->language = $this->defaultLanguage;
+./TranslationManager.php:72:		eval(self::parseLanguageFile($this->language));
+./TranslationManager.php:75:		eval(self::parseLanguageFile($this->language, HelperFunctions::getActiveSection()));
+./TranslationManager.php:78:		eval(self::parseLanguageFile($this->language, HelperFunctions::getActiveSection(), HelperFunctions::getActivePage()));
+./TranslationManager.php:80:		$this->text = $txt;
+./TranslationManager.php:89:		return $this->language;
+./TranslationManager.php:97:		return $this->defaultLanguage;
+./TranslationManager.php:107:		if (!isset($this->text[$textname])) {
+./TranslationManager.php:111:		return $this->text[$textname];
+./TranslationManager.php:113:		//return htmlspecialchars($this->text[$textname]);
+./TranslationManager.php:126:		$filename = SettingsManager::getInstance()->getMainDir().'/languages/'.$language;
+./TranslationManager.php:127:		$fallback = SettingsManager::getInstance()->getMainDir().'/languages/'.SettingsManager::getInstance()->getDefaultLanguage();
+./MessageManager.php:18:		if (SettingsManager::getInstance()->isDebugMode()) echo '<div class="error">[Debug: Error was added] '.$text.'</div>';
+./MessageManager.php:23:		if (SettingsManager::getInstance()->isDebugMode()) echo '<div class="warning">[Debug: Warning was added]'.$text.'</div>';
+./PermissionManager.php:41:		if (SessionManager::getInstance()->isAdmin()) {
+./PermissionManager.php:42:			$aid = SessionManager::getInstance()->getAdminID();
+./PermissionManager.php:43:			$admin = DBManager::getInstance()->getAdmin($aid);
+./PermissionManager.php:44:			$this->isGlobalAdmin = $admin['isGlobalAdmin'];
+./PermissionManager.php:45:			$this->adminGroups = DBManager::getInstance()->getAdminGroupsByAdminID($aid);
+./PermissionManager.php:46:			$this->servers = DBManager::getInstance()->getAdminGroupServersByAdminId($aid);
+./PermissionManager.php:48:			$this->perms = array();
+./PermissionManager.php:49:			foreach ($this->adminGroups as $group) {
+./PermissionManager.php:53:							if (!isset($this->perms[$serverId])) {
+./PermissionManager.php:54:								$this->perms[$serverId] = array();
+./PermissionManager.php:56:							$this->perms[$serverId][$perm] = $value;
+./PermissionManager.php:62:			$this->isGlobalAdmin = false;
+./PermissionManager.php:63:			$this->perms = DBManager::$defaultAdminGroupPerms;
+./PermissionManager.php:64:			$this->servers = array();
+./PermissionManager.php:75:		return $this->isGlobalAdmin;
+./PermissionManager.php:85:		return $this->isGlobalAdmin || in_array($serverId, $this->servers);
+./PermissionManager.php:95:		return $this->isGlobalAdmin || ($this->perms[$sid]['startStop'] && in_array($sid, $this->servers));
+./PermissionManager.php:105:		return $this->isGlobalAdmin || ($this->perms[$sid]['editConf'] && in_array($sid, $this->servers));
+./PermissionManager.php:115:		return $this->isGlobalAdmin || ($this->perms[$sid]['genSuUsPW'] && in_array($sid, $this->servers));
+./PermissionManager.php:125:		return $this->isGlobalAdmin || ($this->perms[$sid]['viewRegistrations'] && in_array($sid, $this->servers));
+./PermissionManager.php:135:		return $this->isGlobalAdmin || ($this->perms[$sid]['editRegistrations'] && in_array($sid, $this->servers));
+./PermissionManager.php:144:		return $this->isGlobalAdmin || ($this->perms[$sid]['moderate'] && in_array($sid, $this->servers));
+./PermissionManager.php:154:		return $this->isGlobalAdmin || ($this->perms[$sid]['kick'] && in_array($sid, $this->servers));
+./PermissionManager.php:164:		return $this->isGlobalAdmin || ($this->perms[$sid]['ban'] && in_array($sid, $this->servers));
+./PermissionManager.php:172:		return $this->isGlobalAdmin || ($this->perms[$sid]['channels'] && in_array($sid, $this->servers));
+./PermissionManager.php:180:		return $this->isGlobalAdmin || ($this->perms[$sid]['acls'] && in_array($sid, $this->servers));
+./PermissionManager.php:188:		return $this->isGlobalAdmin || (($sid!=null && isset($this->perms[$sid]['admins']))?$this->perms[$sid]['admins']:false);
+./ServerInterface.php:17:	if (!stream_resolve_include_path(SettingsManager::getInstance()->getIceGeneratedMurmurPHPFileName())) {
+./ServerInterface.php:18:		MessageManager::addError(TranslationManager::getText('error_iceMurmurPHPFileNotFound') . ' Current setting: ' . SettingsManager::getInstance()->getIceGeneratedMurmurPHPFileName());
+./ServerInterface.php:24:	require_once SettingsManager::getInstance()->getIceGeneratedMurmurPHPFileName();
+./ServerInterface.php:39:			$dbType = SettingsManager::getInstance()->getDbInterfaceType();
+./ServerInterface.php:63:			$this->contextVars = SettingsManager::getInstance()->getDbInterface_iceSecrets();
+./ServerInterface.php:66:				$this->initIce33();
+./ServerInterface.php:68:				$this->initIce34();
+./ServerInterface.php:71:			$this->connect();
+./ServerInterface.php:87:			$conn = $ICE->stringToProxy(SettingsManager::getInstance()->getDbInterface_address());
+./ServerInterface.php:88:			$this->meta = $conn->ice_checkedCast("::Murmur::Meta");
+./ServerInterface.php:90:			if (!empty($this->contextVars)) {
+./ServerInterface.php:91:				$this->meta = $this->meta->ice_context($this->contextVars);
+./ServerInterface.php:93:			$this->meta = $this->meta->ice_timeout(10000);
+./ServerInterface.php:105:		$initData->properties = Ice_createProperties();
+./ServerInterface.php:106:		$initData->properties->setProperty('Ice.ImplicitContext', 'Shared');
+./ServerInterface.php:107:		$initData->properties->setProperty('Ice.Default.EncodingVersion', '1.0');
+./ServerInterface.php:111:		 * $ICE->getImplicitContext();
+./ServerInterface.php:112:		 * foreach ($this->contextVars as $key=>$value) {
+./ServerInterface.php:113:		 * 	 $ICE->getImplicitContext()->put($key, $value);
+./ServerInterface.php:116:		 * $ICE->getImplicitContext()->put('secret', 'ts');
+./ServerInterface.php:117:		 * $ICE->getImplicitContext()->put('icesecret', 'ts');
+./ServerInterface.php:120:			$this->meta = Murmur_MetaPrxHelper::checkedCast($ICE->stringToProxy(SettingsManager::getInstance()->getDbInterface_address()));
+./ServerInterface.php:121:			$this->meta = $this->meta->ice_context($this->contextVars);
+./ServerInterface.php:130:		// to check the connection get the version (e.g. was a needed (context-)password not provided?)
+./ServerInterface.php:132:			$this->version = $this->getVersion();
+./ServerInterface.php:134:			switch ($exc->unknown) {
+./ServerInterface.php:138:					die('The Ice end requires a password, but you did not specify one or not the correct one.' . get_class($exc) . ' Stacktrage: <pre>' . $exc->getTraceAsString() . '</pre>' );
+./ServerInterface.php:143:					MessageManager::addError('Unknown exception was thrown. Please report to the developer. Class: ' . get_class($exc) . isset($exc->unknown)?' ->unknown: '.$exc->unknown:'' . ' Stacktrage: <pre>' . $exc->getTraceAsString() . '</pre>');
+./ServerInterface.php:148:			MessageManager::addError('Unknown exception was thrown. Please report to the developer. Class: ' . get_class($exc) . ' Stacktrage: <pre>' . $exc->getTraceAsString() . '</pre>');
+./ServerInterface.php:159:		if ($this->meta != null && $this->version == null) {
+./ServerInterface.php:160:			$this->meta->getVersion($major, $minor, $patch, $text);
+./ServerInterface.php:161:			$this->version = $major . '.' . $minor . '.' . $patch . ' ' . $text;
+./ServerInterface.php:163:		return $this->version;
+./ServerInterface.php:170:		return $this->meta != null ? $this->meta->getDefaultConf() : array();
+./ServerInterface.php:178:		if ($this->meta == null)
+./ServerInterface.php:183:		$servers = $this->meta->getAllServers();
+./ServerInterface.php:186:			if (HelperFunctions::getActiveSection()!='admin' || PermissionManager::getInstance()->isAdminOfServer($server->id())) {
+./ServerInterface.php:188:				if (!empty($this->contextVars)) {
+./ServerInterface.php:189:					$server = $server->ice_context($this->contextVars);
+./ServerInterface.php:202:		if ($this->meta == null)
+./ServerInterface.php:207:		$servers = $this->meta->getBootedServers();
+./ServerInterface.php:210:			if (HelperFunctions::getActiveSection()!='admin' || PermissionManager::getInstance()->isAdminOfServer($server->id())) {
+./ServerInterface.php:212:				if (!empty($this->contextVars)) {
+./ServerInterface.php:213:					$server = $server->ice_context($this->contextVars);
+./ServerInterface.php:227:		if ($this->meta == null)
+./ServerInterface.php:232:		$server = $this->meta->getServer(intval($srvid));
+./ServerInterface.php:233:		if ($server != null && !empty($this->contextVars)) {
+./ServerInterface.php:234:			$server = $server->ice_context($this->contextVars);
+./ServerInterface.php:244:		if ($this->meta == null)
+./ServerInterface.php:249:		return $this->meta->ice_context($this->contextVars)->newServer()->id();
+./ServerInterface.php:263:		return $this->getServer($sid)->isRunning();
+./ServerInterface.php:271:		$this->getServer($sid)->start();
+./ServerInterface.php:279:		$this->getServer($sid)->stop();
+./ServerInterface.php:287:		if ($this->isRunning($sid)) {
+./ServerInterface.php:288:			$this->stopServer($sid);
+./ServerInterface.php:290:		$this->getServer($sid)->delete();
+./ServerInterface.php:301:		return $this->getServer($sid)->getConf($key);
+./ServerInterface.php:310:		$conf = $this->getDefaultConfig();
+./ServerInterface.php:311:		$confS = $this->getServer($sid)->getAllConf();
+./ServerInterface.php:327:		$this->getServer($sid)->setConf($key, $newValue);
+./ServerInterface.php:336:		$this->getServer($sid)->setSuperuserPassword($newPw);
+./ServerInterface.php:347:		return $this->getServer($sid)->getLog($first, $last);
+./ServerInterface.php:359:		return $this->getServer($serverId)->getRegisteredUsers($filter);
+./ServerInterface.php:371:		$server=$this->getServer($serverId);
+./ServerInterface.php:375:		return MurmurRegistration::fromIceObject($server->getRegistration($userId), $serverId, $userId);
+./ServerInterface.php:384:		//return $this->getServer($serverId)->getUsers();
+./ServerInterface.php:386:		$userMap = $this->getServer($serverId)->getUsers();
+./ServerInterface.php:400:		return MurmurUser::fromIceObject($this->getServer($serverId)->getState($sessionId));
+./ServerInterface.php:409:		MurmurUser::fromIceObject($this->getServer($serverId)->setState($user->toIceObject()));
+./ServerInterface.php:420:		$regs = $this->getServerRegistrations($srvid);
+./ServerInterface.php:422:			$user = $this->getServerRegistration($srvid, $uid);
+./ServerInterface.php:423:			if ($user->getEmail() == $email) {
+./ServerInterface.php:431:		return $this->getServerRegistration($srvid, $uid)->getName();
+./ServerInterface.php:435:		return $this->getServerRegistration($srvid, $uid)->getEmail();
+./ServerInterface.php:439:		return $this->getServerRegistration($srvid,$uid)->getPassword();
+./ServerInterface.php:443:		return $this->getServer($srvid)->getTexture(intval($uid));
+./ServerInterface.php:449:			$tmpServer = ServerInterface::getInstance()->getServer(intval($srvid));
+./ServerInterface.php:456:			$tmpUid = $tmpServer->registerUser($reg->toArray());
+./ServerInterface.php:458:			echo TranslationManager::getInstance()->getText('doregister_success').'<br/>';
+./ServerInterface.php:460:			echo 'Invalid server. Please check your server selection.<br/><a onclick="history.go(-1); return false;" href="?page=register">go back</a><br/>If the problem persists, please contact a server admin or webmaster.<br/>';
+./ServerInterface.php:464:			echo 'The username you specified is probably already in use or invalid. Please try another one.<br/><a onclick="history.go(-1); return false;" href="?page=register">go back</a>';
+./ServerInterface.php:466:			echo $exc->unknown.'<br/>';
+./ServerInterface.php:476:		ServerInterface::getInstance()->getServer(intval($srvid))->unregisterUser(intval($uid));
+./ServerInterface.php:481:		ServerInterface::getInstance()->getServer(intval($srvid))->removeChannel(intval($uid));
+./ServerInterface.php:486:		//ServerInterface::getInstance()->getServer(intval($srvid))->addChannel($name,0);
+./ServerInterface.php:487:		$this->getServer($sid)->addChannel($name,0);
+./ServerInterface.php:496:		//$server =ServerInterface::getInstance()->getServer($sid);
+./ServerInterface.php:497:		//$server = ServerInterface::getInstance()->getServer($sid);
+./ServerInterface.php:498:		//$server =MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($sid));
+./ServerInterface.php:500:		$channel=ServerInterface::getInstance()->getServer(intval($sid))->getChannelState($cid);
+./ServerInterface.php:501:		$channel->name=$name;
+./ServerInterface.php:503:		ServerInterface::getInstance()->getServer(intval($sid))->setChannelState($channel);
+./ServerInterface.php:506:	//var_dump(MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($sid)));
+./ServerInterface.php:512:		$channel=ServerInterface::getInstance()->getServer(intval($sid))->getChannelState($cid);
+./ServerInterface.php:513:		//$channel->name=$name;
+./ServerInterface.php:516:		//ServerInterface::getInstance()->getServer(intval($sid))->setChannelState($channel);
+./ServerInterface.php:521:		$this->getServer($reg->getServerId())->updateRegistration($reg->getUserId(), $reg->toArray());
+./ServerInterface.php:525:		$reg = $this->getServerRegistration($srvid, $userId);
+./ServerInterface.php:526:		$reg->setName($newName);
+./ServerInterface.php:527:		$this->getServer($srvid)->updateRegistration($userId, $reg->toArray());
+./ServerInterface.php:531:		$srv = $this->getServer($srvid);
+./ServerInterface.php:532:		$reg = $this->getServerRegistration($srvid, $userId);
+./ServerInterface.php:533:		$reg->setEmail($newEmail);
+./ServerInterface.php:534:		$srv->updateRegistration($userId, $reg->toArray());
+./ServerInterface.php:538:		$srv = $this->getServer($srvId);
+./ServerInterface.php:539:		$reg = $this->getServerRegistration($srvId, $userId);
+./ServerInterface.php:540:		$reg->setHash($newHash);
+./ServerInterface.php:541:		$srv->updateRegistration($userId, $reg->toArray());
+./ServerInterface.php:545:		$srv = $this->getServer($srvId);
+./ServerInterface.php:546:		$reg = $this->getServerRegistration($srvId, $userId);
+./ServerInterface.php:547:		$reg->setPassword($newPw);
+./ServerInterface.php:548:		$srv->updateRegistration($userId, $reg->toArray());
+./ServerInterface.php:552:		$srv = $this->getServer($srvId);
+./ServerInterface.php:553:		$reg = $this->getServerRegistration($srvId, $userId);
+./ServerInterface.php:554:		$reg->setComment($newC);
+./ServerInterface.php:555:		$srv->updateRegistration($userId, $reg->toArray());
+./ServerInterface.php:561:				// conversation string -> byte array (PHP5)
+./ServerInterface.php:564:			$this->getServer($srvid)->setTexture($uid, $newTexture);
+./ServerInterface.php:573:		$srv = $this->getServer(intval($srvid));
+./ServerInterface.php:574:		$user = $srv->getState(intval($sessid));
+./ServerInterface.php:575:		$user->mute = true;
+./ServerInterface.php:576:		$srv->setState($user);
+./ServerInterface.php:580:		$srv = $this->getServer(intval($srvid));
+./ServerInterface.php:581:		$user = $srv->getState(intval($sessid));
+./ServerInterface.php:582:		$user->deaf = false;
+./ServerInterface.php:583:		$user->mute = false;
+./ServerInterface.php:584:		$srv->setState($user);
+./ServerInterface.php:588:		$srv = $this->getServer(intval($srvid));
+./ServerInterface.php:589:		$user = $srv->getState(intval($sessid));
+./ServerInterface.php:590:		$user->deaf = true;
+./ServerInterface.php:591:		$srv->setState($user);
+./ServerInterface.php:595:		$srv = $this->getServer(intval($srvid));
+./ServerInterface.php:596:		$user = $srv->getState(intval($sessid));
+./ServerInterface.php:597:		$user->deaf = false;
+./ServerInterface.php:598:		$srv->setState($user);
+./ServerInterface.php:602:		$srv = $this->getServer(intval($srvid));
+./ServerInterface.php:603:		if (!empty($this->contextVars)) {
+./ServerInterface.php:604:			$srv = $srv->ice_context($this->contextVars);
+./ServerInterface.php:606:		MurmurServer::fromIceObject($srv)->kickUser(intval($sessid), $reason);
+./ServerInterface.php:614:		$srv = $this->getServer(intval($serverId));
+./ServerInterface.php:615:		$bans = $srv->getBans();
+./ServerInterface.php:617:		$ban->address = $ip;
+./ServerInterface.php:618:		$ban->bits = $bits;
+./ServerInterface.php:620:		$srv->setBans($bans);
+./ServerInterface.php:624:		$srv = $this->getServer(intval($serverId));
+./ServerInterface.php:625:		$bans = $srv->getBans();
+./ServerInterface.php:629:			if ($ban->address != $ip || $ban->bits != $bits || $ban->name != $username || $ban->hash != $hash
+./ServerInterface.php:630:					|| $ban->reason != $reason || $ban->start != $start || $ban->duration != $duration) {
+./ServerInterface.php:634:		$srv->setBans($newBans);
+./ServerInterface.php:638:		return $this->getServer(intval($serverId))->getBans();
+./ServerInterface.php:642:		$bans=$this->getServerBans($srvid);
+./ServerInterface.php:644:			$ban->address=HelperFunctions::int2ipAddress($ban->address);
+./ServerInterface.php:651:		return $this->getServer(intval($serverid))->verifyPassword($uname,$pw);
+./TemplateManager.php:12:		$filepath = SettingsManager::getInstance()->getThemeDir().'/'.$name.'.template.php';
+./TemplateManager.php:22:		$filepath = SettingsManager::getInstance()->getThemeDir().'/'.$name.'.template.php';
+./Admin.php:15:		$this->id = intval($id);
+./Admin.php:16:		$this->name = $name;
+./Admin.php:17:		$this->pw = $pw;
+./Admin.php:18:		$this->isGlobalAdmin = (bool)$isGlobalAdmin;
+./Admin.php:23:		return $this->id;
+./Admin.php:28:		return $this->name;
+./Admin.php:33:		return $this->pw;
+./SettingsManager.php:47:		$this->isDebugMode = $debug;
+./SettingsManager.php:48:		$this->mainDir = MUMPHPI_MAINDIR;
+./SettingsManager.php:49:		$this->mainUrl = MUMPHPI_MAINDIR;
+./SettingsManager.php:50:		$this->dbInterface_type = $dbInterface_type;
+./SettingsManager.php:51:		$this->dbInterface_address = $dbInterface_address;
+./SettingsManager.php:52:		$this->dbInterface_icesecrets = $dbInterface_icesecrets;
+./SettingsManager.php:53:		$this->iceGeneratedMurmurPHPFileName = isset($iceGeneratedMurmurPHPFileName)?$iceGeneratedMurmurPHPFileName:'Murmur_1.2.2.php';
+./SettingsManager.php:54:		$this->theme = $theme;
+./SettingsManager.php:55:		$this->defaultLanguage = $defaultLanguage;
+./SettingsManager.php:56:		$this->useCaptcha = $useCaptcha;
+./SettingsManager.php:57:		$this->dbType = $dbType;
+./SettingsManager.php:58:		$this->showAdminLink = $showAdminLink;
+./SettingsManager.php:59:		$this->allowChannelViewerWebservice = isset($allowChannelViewerWebservice)?$allowChannelViewerWebservice:true;
+./SettingsManager.php:60:		$this->viewerUseSVGImages = isset($viewerUseSVGImages)?$viewerUseSVGImages:false;
+./SettingsManager.php:62:		$this->site = array();
+./SettingsManager.php:63:		$this->site['title'] = $site_title;
+./SettingsManager.php:64:		$this->site['description'] = $site_description;
+./SettingsManager.php:65:		$this->site['keywords'] = $site_keywords;
+./SettingsManager.php:67:		$this->servers = $servers;
+./SettingsManager.php:69:		$this->serverAddresses = $viewer_serverAddresses;
+./SettingsManager.php:71:		foreach ($this->servers AS $server) {
+./SettingsManager.php:96:		$settings = substr($settings, 5, strlen($settings)-7);
+./SettingsManager.php:120:		return $this->mainDir;
+./SettingsManager.php:124:		return $this->mainUrl;
+./SettingsManager.php:131:		return $this->theme;
+./SettingsManager.php:139:		return 'themes/' . HelperFunctions::getActiveSection() . '/'.$this->theme;
+./SettingsManager.php:147:		return $this->mainDir.'/'.$this->getThemePath();
+./SettingsManager.php:151:		return $this->mainUrl.'/'.$this->getThemePath();
+./SettingsManager.php:159:		return $this->defaultLanguage;
+./SettingsManager.php:164:			if (strtolower($this->dbInterface_type) === 'ice') {
+./SettingsManager.php:166:				preg_match('/-h ([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})/', $this->dbInterface_address, $matches);
+./SettingsManager.php:171:			if (isset($this->serverAddresses[$serverId])) {
+./SettingsManager.php:172:				return $this->serverAddresses[$serverId];
+./SettingsManager.php:180:		return $this->dbInterface_type;
+./SettingsManager.php:184:		return $this->dbInterface_address;
+./SettingsManager.php:188:		return $this->dbInterface_icesecrets;
+./SettingsManager.php:191:		return $this->iceGeneratedMurmurPHPFileName;
+./SettingsManager.php:195:		return $this->useCaptcha;
+./SettingsManager.php:199:		return $this->showAdminLink;
+./SettingsManager.php:203:		return $this->allowChannelViewerWebservice;
+./SettingsManager.php:207:		return $this->dbType;
+./SettingsManager.php:211:		return $this->site['title'];
+./SettingsManager.php:215:		return $this->site['description'];
+./SettingsManager.php:219:		$this->site['keywords'];
+./SettingsManager.php:223:		return $this->numberOfServers;
+./SettingsManager.php:227:		return $this->servers;
+./SettingsManager.php:231:		if (!isset($this->servers[$serverid])) {
+./SettingsManager.php:234:		return $this->servers[$serverid]['name'];
+./SettingsManager.php:239:		return (isset($this->servers[$serverid])?$this->servers[$serverid]['forcemail']:null);
+./SettingsManager.php:243:		return (isset($this->servers[$serverid])?$this->servers[$serverid]['authbymail']:null);
+./SettingsManager.php:247:		return $this->isDebugMode;
+./SettingsManager.php:251:		return $this->viewerUseSVGImages;
+./SettingsManager.php:262:		if (isset($this->servers[$serverid])) {
+./SettingsManager.php:263:			return $this->servers[$serverid];
+./SettingsManager.php:269:		if (isset($this->servers[$serverid])) {
+./SettingsManager.php:279:				// expected string-beginnings in settings file
+./SettingsManager.php:322:		if (isset($this->servers[$serverId])) {
+./SettingsManager.php:333:				// expected string-beginnings in settings file
+./SessionManager.php:80:		if (DBManager::getInstance()->checkAdminLogin($_POST['username'], $_POST['password'])) {
+./SessionManager.php:82:			$admin = DBManager::getInstance()->getAdminByName($name);
+./PHPStats.php:14:		return (microtime(true) - self::$scriptExecutionTimeStart);
+./zcxMurmur.php:4:// Copyright (c) 2003-2013 ZeroC, Inc. All rights reserved.
+./zcxMurmur.php:13:// <auto-generated>
+./zcxMurmur.php:19:// </auto-generated>
+./zcxMurmur.php:35:            $this->session = $session;
+./zcxMurmur.php:36:            $this->userid = $userid;
+./zcxMurmur.php:37:            $this->mute = $mute;
+./zcxMurmur.php:38:            $this->deaf = $deaf;
+./zcxMurmur.php:39:            $this->suppress = $suppress;
+./zcxMurmur.php:40:            $this->prioritySpeaker = $prioritySpeaker;
+./zcxMurmur.php:41:            $this->selfMute = $selfMute;
+./zcxMurmur.php:42:            $this->selfDeaf = $selfDeaf;
+./zcxMurmur.php:43:            $this->recording = $recording;
+./zcxMurmur.php:44:            $this->online = $online;
+./zcxMurmur.php:45:            $this->channel = $channel;
+./zcxMurmur.php:46:            $this->name = $name;
+./zcxMurmur.php:47:            $this->onlinesecs = $onlinesecs;
+./zcxMurmur.php:48:            $this->bytespersec = $bytespersec;
+./zcxMurmur.php:49:            $this->version = $version;
+./zcxMurmur.php:50:            $this->release = $release;
+./zcxMurmur.php:51:            $this->os = $os;
+./zcxMurmur.php:52:            $this->osversion = $osversion;
+./zcxMurmur.php:53:            $this->identity = $identity;
+./zcxMurmur.php:54:            $this->context = $context;
+./zcxMurmur.php:55:            $this->comment = $comment;
+./zcxMurmur.php:56:            $this->address = $address;
+./zcxMurmur.php:57:            $this->tcponly = $tcponly;
+./zcxMurmur.php:58:            $this->idlesecs = $idlesecs;
+./zcxMurmur.php:59:            $this->udpPing = $udpPing;
+./zcxMurmur.php:60:            $this->tcpPing = $tcpPing;
+./zcxMurmur.php:137:            $this->id = $id;
+./zcxMurmur.php:138:            $this->name = $name;
+./zcxMurmur.php:139:            $this->temporary = $temporary;
+./zcxMurmur.php:140:            $this->members = $members;
+./zcxMurmur.php:228:            $this->timestamp = $timestamp;
+./zcxMurmur.php:229:            $this->txt = $txt;
+./zcxMurmur.php:587:            return $proxy->ice_checkedCast('::Murmur::ServerCallback', $facetOrCtx, $ctx);
+./zcxMurmur.php:592:            return $proxy->ice_uncheckedCast('::Murmur::ServerCallback', $facet);
+./zcxMurmur.php:596:    $Murmur__t_ServerCallback = IcePHP_defineClass('::Murmur::ServerCallback', 'Murmur_ServerCallback', -1, true, false, $Ice__t_Object, null, null);
+./zcxMurmur.php:634:            return $proxy->ice_checkedCast('::Murmur::ServerContextCallback', $facetOrCtx, $ctx);
+./zcxMurmur.php:639:            return $proxy->ice_uncheckedCast('::Murmur::ServerContextCallback', $facet);
+./zcxMurmur.php:643:    $Murmur__t_ServerContextCallback = IcePHP_defineClass('::Murmur::ServerContextCallback', 'Murmur_ServerContextCallback', -1, true, false, $Ice__t_Object, null, null);
+./zcxMurmur.php:665:            return $proxy->ice_checkedCast('::Murmur::ServerAuthenticator', $facetOrCtx, $ctx);
+./zcxMurmur.php:670:            return $proxy->ice_uncheckedCast('::Murmur::ServerAuthenticator', $facet);
+./zcxMurmur.php:674:    $Murmur__t_ServerAuthenticator = IcePHP_defineClass('::Murmur::ServerAuthenticator', 'Murmur_ServerAuthenticator', -1, true, false, $Ice__t_Object, null, null);
+./zcxMurmur.php:700:            return $proxy->ice_checkedCast('::Murmur::ServerUpdatingAuthenticator', $facetOrCtx, $ctx);
+./zcxMurmur.php:705:            return $proxy->ice_uncheckedCast('::Murmur::ServerUpdatingAuthenticator', $facet);
+./zcxMurmur.php:709:    $Murmur__t_ServerUpdatingAuthenticator = IcePHP_defineClass('::Murmur::ServerUpdatingAuthenticator', 'Murmur_ServerUpdatingAuthenticator', -1, true, false, $Ice__t_Object, array($Murmur__t_ServerAuthenticator), null);
+./zcxMurmur.php:770:            return $proxy->ice_checkedCast('::Murmur::Server', $facetOrCtx, $ctx);
+./zcxMurmur.php:775:            return $proxy->ice_uncheckedCast('::Murmur::Server', $facet);
+./zcxMurmur.php:779:    $Murmur__t_Server = IcePHP_defineClass('::Murmur::Server', 'Murmur_Server', -1, true, false, $Ice__t_Object, null, null);
+./zcxMurmur.php:837:            return $proxy->ice_checkedCast('::Murmur::MetaCallback', $facetOrCtx, $ctx);
+./zcxMurmur.php:842:            return $proxy->ice_uncheckedCast('::Murmur::MetaCallback', $facet);
+./zcxMurmur.php:846:    $Murmur__t_MetaCallback = IcePHP_defineClass('::Murmur::MetaCallback', 'Murmur_MetaCallback', -1, true, false, $Ice__t_Object, null, null);
+./zcxMurmur.php:880:            return $proxy->ice_checkedCast('::Murmur::Meta', $facetOrCtx, $ctx);
+./zcxMurmur.php:885:            return $proxy->ice_uncheckedCast('::Murmur::Meta', $facet);
+./zcxMurmur.php:889:    $Murmur__t_Meta = IcePHP_defineClass('::Murmur::Meta', 'Murmur_Meta', -1, true, false, $Ice__t_Object, null, null);
+./ServerViewer.php:10:			$server = ServerInterface::getInstance()->getServer($serverId);
+./ServerViewer.php:13:				$tree = $server->getChannels();
+./ServerViewer.php:14:				return '<div class="server">' . $tree->toHtml() . '</div>';
+./MurmurClasses.php:20:		$this->iceObj = $iceObj;
+./MurmurClasses.php:28:		return $this->iceObj->isRunning();
+./MurmurClasses.php:32:		return $this->iceObj->start();
+./MurmurClasses.php:36:		return $this->iceObj->stop();
+./MurmurClasses.php:40:		return $this->iceObj->delete();
+./MurmurClasses.php:44:		return $this->iceObj->id();
+./MurmurClasses.php:48:		return $this->iceObj->addCallback($callback);
+./MurmurClasses.php:52:		return $this->iceObj->removeCallback($callback);
+./MurmurClasses.php:56:		return $this->iceObj->setAuthenticator($auth);
+./MurmurClasses.php:61:		return $this->iceObj->getAllConf();
+./MurmurClasses.php:65:		return $this->iceObj->getConf($key);
+./MurmurClasses.php:69:		return $this->iceObj->setConf($key, $value);
+./MurmurClasses.php:74:		return $this->iceObj->setSuperuserPassword($newPw);
+./MurmurClasses.php:84:		return $this->iceObj->getLog($startRowFromEnd, $endRow);
+./MurmurClasses.php:89:		return $this->iceObj->getUsers();
+./MurmurClasses.php:97:		$userMap = $this->iceObj->getUsers();
+./MurmurClasses.php:103:		return $this->iceObj->getChannels();
+./MurmurClasses.php:111:		return MurmurTree::fromIceObject($this->iceObj->getTree(), $this);
+./MurmurClasses.php:115:		return $this->iceObj->getBans();
+./MurmurClasses.php:119:		return $this->iceObj->setBans();
+./MurmurClasses.php:123:		return $this->iceObj->kickUser($sessionId, $reason);
+./MurmurClasses.php:127:		return $this->iceObj->getState();
+./MurmurClasses.php:131:		return $this->iceObj->setState();
+./MurmurClasses.php:135:		return $this->iceObj->sendMessage();
+./MurmurClasses.php:139:		return $this->iceObj->hasPermission();
+./MurmurClasses.php:143:		return $this->iceObj->addContextCallback();
+./MurmurClasses.php:147:		return $this->iceObj->removeContextCallback();
+./MurmurClasses.php:156:		return $this->getChannel($channelId);
+./MurmurClasses.php:165:			return MurmurChannel::fromIceObject($this->iceObj->getChannelState(intval($channelId)), $this);
+./MurmurClasses.php:172:		return $this->iceObj->setChannelState();
+./MurmurClasses.php:176:		return $this->iceObj->removeChannel();
+./MurmurClasses.php:180:		return $this->iceObj->addChannel();
+./MurmurClasses.php:184:		return $this->iceObj->sendMessageChannel();
+./MurmurClasses.php:188:		return $this->iceObj->getACL();
+./MurmurClasses.php:192:		return $this->iceObj->setACL();
+./MurmurClasses.php:196:		return $this->iceObj->addUserToGroup();
+./MurmurClasses.php:200:		return $this->iceObj->removeUserFromGroup();
+./MurmurClasses.php:204:		return $this->iceObj->redirectWhisperGroup();
+./MurmurClasses.php:208:		return $this->iceObj->getUserNames();
+./MurmurClasses.php:212:	 * @return array(string name, int userId) list of name->userId mappings
+./MurmurClasses.php:216:		return $this->iceObj->getUserIds();
+./MurmurClasses.php:224:		return $this->iceObj->registerUser();
+./MurmurClasses.php:232:		return $this->iceObj->unregisterUser();
+./MurmurClasses.php:241:		return $this->iceObj->updateRegistration();
+./MurmurClasses.php:249:		$reg = MurmurRegistration::fromIceObject(empty($registrationId)?$this->iceObj->getRegistration():$this->iceObj->getRegistration(intval($registrationId)));
+./MurmurClasses.php:258:		return $this->iceObj->getRegisteredUsers($filter);
+./MurmurClasses.php:263:	 * @return int userId || -1: failed authentification || -2: unknown username
+./MurmurClasses.php:267:		return $this->iceObj->verifyPassword($name, $password);
+./MurmurClasses.php:275:		return $this->iceObj->getTexture(intval($userId));
+./MurmurClasses.php:284:		$this->iceObj->setTexture(intval($userId), $byteSequence);
+./MurmurClasses.php:287:	//TODO clean this, also using parent chans would suck - make it JS instead…
+./MurmurClasses.php:290:		$info = SettingsManager::getInstance()->getServerInformation($this->getId());
+./MurmurClasses.php:294:		$port = $this->getConf('port');
+./MurmurClasses.php:324:		$this->serverId=$serverId;
+./MurmurClasses.php:325:		$this->userId=$userId;
+./MurmurClasses.php:326:		$this->name=$name;
+./MurmurClasses.php:327:		$this->email=$email;
+./MurmurClasses.php:328:		$this->comment=$comment;
+./MurmurClasses.php:329:		$this->hash=$hash;
+./MurmurClasses.php:330:		$this->password=$password;
+./MurmurClasses.php:353:		if (null!==$this->name)
+./MurmurClasses.php:354:			$array[self::USERNAME] = $this->name;
+./MurmurClasses.php:355:		if (null!==$this->email)
+./MurmurClasses.php:356:			$array[self::USEREMAIL] = $this->email;
+./MurmurClasses.php:357:		if (null!==$this->comment)
+./MurmurClasses.php:358:			$array[self::USERCOMMENT] = $this->comment;
+./MurmurClasses.php:359:		if (null!==$this->hash)
+./MurmurClasses.php:360:			$array[self::USERHASH] = $this->hash;
+./MurmurClasses.php:361:		if (null!==$this->password)
+./MurmurClasses.php:362:			$array[self::USERPASSWORD] = $this->password;
+./MurmurClasses.php:367:			self::USERNAME=>$this->name,
+./MurmurClasses.php:368:			self::USEREMAIL=>$this->email,
+./MurmurClasses.php:369:			self::USERCOMMENT=>$this->comment,
+./MurmurClasses.php:370:			self::USERHASH=>$this->hash,
+./MurmurClasses.php:371:			self::USERPASSWORD=>$this->password,
+./MurmurClasses.php:378:		return $this->serverId;
+./MurmurClasses.php:382:		return $this->userId;
+./MurmurClasses.php:386:		return $this->name;
+./MurmurClasses.php:390:		return $this->email;
+./MurmurClasses.php:394:		return $this->comment;
+./MurmurClasses.php:398:		return $this->hash;
+./MurmurClasses.php:402:		return $this->password;
+./MurmurClasses.php:408:		$this->name = $name;
+./MurmurClasses.php:412:		$this->email=$email;
+./MurmurClasses.php:416:		$this->comment=$comment;
+./MurmurClasses.php:420:		$this->hash=$hash;
+./MurmurClasses.php:424:		$this->password=$password;
+./MurmurClasses.php:442:	 * -1 if anonymous
+./MurmurClasses.php:546:		$this->sessionId=$sessionId;
+./MurmurClasses.php:547:		$this->registrationId=$registrationId;
+./MurmurClasses.php:548:		$this->isMuted=$isMuted;
+./MurmurClasses.php:549:		$this->isDeafened=$isDeafened;
+./MurmurClasses.php:550:		$this->isSuppressed=$isSuppressed;
+./MurmurClasses.php:551:		$this->isSelfMuted=$isSelfMuted;
+./MurmurClasses.php:552:		$this->isSelfDeafened=$isSelfDeafened;
+./MurmurClasses.php:553:		$this->channelId=$channelId;
+./MurmurClasses.php:554:		$this->name=$name;
+./MurmurClasses.php:555:		$this->onlineSeconds=$onlineSeconds;
+./MurmurClasses.php:556:		$this->bytesPerSecond=$bytesPerSecond;
+./MurmurClasses.php:557:		$this->clientVersion=$clientVersion;
+./MurmurClasses.php:558:		$this->clientRelease=$clientRelease;
+./MurmurClasses.php:559:		$this->clientOs=$clientOs;
+./MurmurClasses.php:560:		$this->clientOsVersion=$clientOsVersion;
+./MurmurClasses.php:561:		$this->pluginIdentity=$pluginIdentity;
+./MurmurClasses.php:562:		$this->pluginContext=$pluginContext;
+./MurmurClasses.php:563:		$this->comment=$comment;
+./MurmurClasses.php:564:		$this->address=$address;
+./MurmurClasses.php:565:		$this->isTcpOnly=$isTcpOnly;
+./MurmurClasses.php:566:		$this->idleSeconds=$idleSeconds;
+./MurmurClasses.php:567:		$this->isPrioritySpeaker = $isPrioritySpeaker;
+./MurmurClasses.php:577:										$iceUser->session,
+./MurmurClasses.php:578:										$iceUser->userid,
+./MurmurClasses.php:579:										$iceUser->mute,
+./MurmurClasses.php:580:										$iceUser->deaf,
+./MurmurClasses.php:581:										$iceUser->suppress,
+./MurmurClasses.php:582:										$iceUser->selfMute,
+./MurmurClasses.php:583:										$iceUser->selfDeaf,
+./MurmurClasses.php:584:										$iceUser->channel,
+./MurmurClasses.php:585:										$iceUser->name,
+./MurmurClasses.php:586:										$iceUser->onlinesecs,
+./MurmurClasses.php:587:										$iceUser->bytespersec,
+./MurmurClasses.php:588:										$iceUser->version,
+./MurmurClasses.php:589:										$iceUser->release,
+./MurmurClasses.php:590:										$iceUser->os,
+./MurmurClasses.php:591:										$iceUser->osversion,
+./MurmurClasses.php:592:										$iceUser->identity,
+./MurmurClasses.php:593:										$iceUser->context,
+./MurmurClasses.php:594:										$iceUser->comment,
+./MurmurClasses.php:595:										MurmurNetAddress::fromIceObject($iceUser->address),
+./MurmurClasses.php:596:										$iceUser->tcponly,
+./MurmurClasses.php:597:										$iceUser->idlesecs,
+./MurmurClasses.php:598:										isset($iceUser->prioritySpeaker)?$iceUser->prioritySpeaker:null
+./MurmurClasses.php:604:		return $this->toString();
+./MurmurClasses.php:608:		return $this->getName();
+./MurmurClasses.php:612:		return '<div class="username">' . $this->getName() . '</div>';
+./MurmurClasses.php:623:		if (isset($this->$name)) {
+./MurmurClasses.php:624:			return $this->$name;
+./MurmurClasses.php:637:			return $this->$varName;
+./MurmurClasses.php:645:		return $this->sessionId;
+./MurmurClasses.php:648:		return $this->sessionId;
+./MurmurClasses.php:654:		return $this->address;
+./MurmurClasses.php:657:		return $this->name;
+./MurmurClasses.php:661:		return $this->isMuted;
+./MurmurClasses.php:664:		return $this->isDeafened;
+./MurmurClasses.php:667:		return $this->isSuppressed;
+./MurmurClasses.php:670:		return $this->isSelfMuted;
+./MurmurClasses.php:673:		return $this->isSelfDeafened;
+./MurmurClasses.php:677:		return $this->registrationId;
+./MurmurClasses.php:680:		return $this->onlineSeconds;
+./MurmurClasses.php:683:		return $this->bytesPerSecond;
+./MurmurClasses.php:686:		return $this->clientVersion;
+./MurmurClasses.php:689:		return '' . (($this->clientVersion & 0xffff0000) >> 16) . '.' . (($this->clientVersion & 0xff00) >> 8)  . '.' . ($this->clientVersion & 0xff);
+./MurmurClasses.php:692:		return $this->clientRelease;
+./MurmurClasses.php:695:		return $this->clientOs;
+./MurmurClasses.php:698:		return $this->clientOsVersion;
+./MurmurClasses.php:701:		return $this->pluginIdentity;
+./MurmurClasses.php:704:		return $this->pluginContext;
+./MurmurClasses.php:708:		return $this->comment;
+./MurmurClasses.php:711:		return $this->isTcpOnly;
+./MurmurClasses.php:714:		return $this->idleSeconds;
+./MurmurClasses.php:717:		return $this->isPrioritySpeaker;
+./MurmurClasses.php:735:		// $byte: byte number (0-15); $value: int
+./MurmurClasses.php:743:		$this->address = $address;
+./MurmurClasses.php:744:		$this->IPv4Range = array(
+./MurmurClasses.php:763:		$expected = $this->IPv4Range;
+./MurmurClasses.php:765:			if ($expected[$byte] !== $this->address[$byte]) {
+./MurmurClasses.php:773:		return !$this->isIPv4();
+./MurmurClasses.php:779:		foreach ($this->address AS $byte=>$value) {
+./MurmurClasses.php:793:		return $this->__toString();
+./MurmurClasses.php:797:		if (!$this->isIPv4())
+./MurmurClasses.php:800:		for ($byteNr=count($this->IPv4Range); $byteNr<count($this->address); $byteNr++) {
+./MurmurClasses.php:801:			$str .= '.' . $this->address[$byteNr];
+./MurmurClasses.php:817:		$channel = MurmurChannel::fromIceObject($iceObject->c, $server);
+./MurmurClasses.php:820:		foreach ($iceObject->children as $child) {
+./MurmurClasses.php:825:		foreach ($iceObject->users as $user) {
+./MurmurClasses.php:847:		$this->channel = $channel;
+./MurmurClasses.php:851:		$this->children = $children;
+./MurmurClasses.php:855:		$this->users = $users;
+./MurmurClasses.php:861:		$html .=   '<div class="channelname">' . $this->channel->getName() . '</div>';
+./MurmurClasses.php:862:		if (!empty($this->children)) {
+./MurmurClasses.php:864:			foreach ($this->children as $child) {
+./MurmurClasses.php:865:				$html .=   '<li>' . $child->toHtml() . '</li>';
+./MurmurClasses.php:869:		if (!empty($this->users)) {
+./MurmurClasses.php:871:			foreach ($this->users as $user) {
+./MurmurClasses.php:872:				$html .=   '<li>'. $user->toHtml() . '</li>';
+./MurmurClasses.php:883:		$str = (string)$this->channel . "\n";
+./MurmurClasses.php:884:		foreach ($this->children as $child) {
+./MurmurClasses.php:887:		foreach ($this->users as $user) {
+./MurmurClasses.php:894:		return $this->toString();
+./MurmurClasses.php:902:		return $this->channel;
+./MurmurClasses.php:909:		return $this->children;
+./MurmurClasses.php:917:		return $this->users;
+./MurmurClasses.php:929:		return new self($iceObject->id, $iceObject->name, $iceObject->temporary, $server);
+./MurmurClasses.php:952:	 * @param int $parent id of the parent channel, or -1 on root
+./MurmurClasses.php:961:		$this->id = $id;
+./MurmurClasses.php:962:		$this->name = $name;
+./MurmurClasses.php:963:		$this->isTemporary = $isTemporary;
+./MurmurClasses.php:964:		$this->server = $server;
+./MurmurClasses.php:969:		return $this->toString();
+./MurmurClasses.php:973:		return $this->getName();
+./MurmurClasses.php:981:		return $this->id;
+./MurmurClasses.php:988:		return $this->name;
+./MurmurClasses.php:992:		return $this->isTemporary;
+./MurmurClasses.php:1002:		return $this->server->getJoinUrl() . '/' . $this->getName();
+./MurmurClasses.php:1014:		return new MurmurBan($iceObject->address, $iceObject->bits, $iceObject->name, $iceObject->hash, $iceObject->reason, $iceObject->start, $iceObject->duration);
+./MurmurClasses.php:1019:	  $this->address = $address;
+./MurmurClasses.php:1020:	  $this->bits = $bits;
+./MurmurClasses.php:1021:	  $this->name = $username;
+./MurmurClasses.php:1022:	  $this->hash = $hash;
+./MurmurClasses.php:1023:	  $this->reason = $reason;
+./MurmurClasses.php:1024:	  $this->start = $start;
+./MurmurClasses.php:1025:	  $this->duration = $duration;
+./MurmurClasses.php:1038:  	return json_encode(array('address'=>$this->address, 'bits'=>$this->bits, 'name'=>$this->name, 'hash'=>$this->hash, 'reason'=>$this->reason, 'start'=>$this->start, 'duration'=>$this->duration));
+./Captcha.php:6:		$mainDir = SettingsManager::getInstance()->getMainDir();
+./Captcha.php:12:		$op[1] = '-';
+./Captcha.php:20:		imagettftext($img, 12, rand(-30,30), 2, 20, imagecolorexact($img,rand(150,255),rand(150,255),rand(150,255)), $mainDir.'/resources/arial.ttf', $cap_r1);
+./Captcha.php:21:		imagettftext($img, 12, rand(-15,15), 20, 20, imagecolorexact($img,rand(150,255),rand(150,255),rand(150,255)), $mainDir.'/resources/arial.ttf', $cap_op);
+./Captcha.php:22:		imagettftext($img, 12, rand(-35,35), 30, 20, imagecolorexact($img,rand(150,255),rand(150,255),rand(150,255)), $mainDir.'/resources/arial.ttf', $cap_r2);
+./Captcha.php:25:		echo '<img src="'.SettingsManager::getInstance()->getMainUrl().'/tmp/'.$filename.'" alt=""/>';
+./Captcha.php:42:		$files = glob(SettingsManager::getInstance()->getMainDir().'/tmp/*');
+./Captcha.php:44:			if (filectime($filename) < time()-300) {
+./ChannelViewerProtocolProducer.php:11:		$serverIce = ServerInterface::getInstance()->getServer($serverId);
+./ChannelViewerProtocolProducer.php:15:		$server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
+./ChannelViewerProtocolProducer.php:16:		$serverConnectAddress = SettingsManager::getInstance()->getServerAddress($server->getId());
+./ChannelViewerProtocolProducer.php:19:		$tree = $server->getChannels();
+./ChannelViewerProtocolProducer.php:21:			'id' => $server->getId(),
+./ChannelViewerProtocolProducer.php:22:			'name' => SettingsManager::getInstance()->getServerName($server->getId()),
+./ChannelViewerProtocolProducer.php:23:			'root' => $this->treeToJsonArray($tree, $connecturlTemplate, $path),
+./ChannelViewerProtocolProducer.php:33:		$res = $a->getRootChannel()->getPosition() - $b->getRootChannel()->getPosition();
+./ChannelViewerProtocolProducer.php:34:		return $res !== 0 ? $res : HelperFunctions::naturalOrderCompare($a->getRootChannel()->getName(), $b->getRootChannel()->getName());
+./ChannelViewerProtocolProducer.php:37:		return HelperFunctions::naturalOrderCompare($a->getName(), $b->getName());
+./ChannelViewerProtocolProducer.php:43:		$chan = $tree->getRootChannel();
+./ChannelViewerProtocolProducer.php:44:		if ($connecturlTemplate != null && $chan->getParentChannelId() != -1)
+./ChannelViewerProtocolProducer.php:46:			$path .= '/' . rawurlencode($chan->getName());
+./ChannelViewerProtocolProducer.php:52:		$subChannels = $tree->getSubChannels();
+./ChannelViewerProtocolProducer.php:56:				$prior[] = $this->treeToJsonArray($subChannel, $connecturlTemplate, $path);
+./ChannelViewerProtocolProducer.php:62:		$array['id'] = $chan->getId();
+./ChannelViewerProtocolProducer.php:63:		$array['temporary'] = $chan->isTemporary();
+./ChannelViewerProtocolProducer.php:64:		$array['name'] = $chan->getName();
+./ChannelViewerProtocolProducer.php:71:		$array['users'] = $this->usersToJsonArray($tree->getUsers(), $chan->getId());
+./ChannelViewerProtocolProducer.php:80:				'name' => $user->getName(),
+./ChannelViewerProtocolProducer.php:81:				'deaf' => $user->isDeafened(),
+./ChannelViewerProtocolProducer.php:82:				'mute' => $user->isMuted(),
+./ChannelViewerProtocolProducer.php:83:				'selfDeaf' => $user->isSelfDeafened(),
+./ChannelViewerProtocolProducer.php:84:				'selfMute' => $user->isSelfMuted(),
+./ChannelViewerProtocolProducer.php:85:				'session' => $user->getSessionId(),
+./ChannelViewerProtocolProducer.php:86:				'suppress' => $user->isSuppressed(),
+./ChannelViewerProtocolProducer.php:87:				'userid' => $user->getRegistrationId(),
+./ChannelViewerProtocolProducer.php:89:				'comment' => $user->getComment(),
+./ChannelViewerProtocolProducer.php:90:				'idlesecs' => $user->getIdleSeconds(),
+./ChannelViewerProtocolProducer.php:91:				'onlinesecs' => $user->getOnlineSeconds(),
+./ChannelViewerProtocolProducer.php:92:				'version' => $user->getClientVersion(),
+./ChannelViewerProtocolProducer.php:93:				'release' => $user->getClientRelease(),
+./ChannelViewerProtocolProducer.php:94:				'os' => $user->getClientOs(),
+./ChannelViewerProtocolProducer.php:95:				'osversion' => $user->getClientOsVersion(),
+./ChannelViewerProtocolProducer.php:96:				'prioritySpeaker' => $user->isPrioritySpeaker(),
+./ChannelViewerProtocolProducer.php:97:				'bytespersec' => $user->getBytesPerSecond(),
+./ChannelViewerProtocolProducer.php:98:				'tcponly' => $user->isTcpOnly(),
+./ChannelViewerProtocolProducer.php:99:				'context' => $user->getPluginContext(),
+./ChannelViewerProtocolProducer.php:100:				'identity' => $user->getPluginIdentity(),
+./Logger.php:15:		if ($level==self::LEVEL_DEBUG && !SettingsManager::getInstance()->isDebugMode())
+./Logger.php:17:		DBManager::getInstance()->append('log.log', date('Y.m.d H:i:s').' – '.$level.': '.$message);
+./Logger.php:37:		DBManager::getInstance()->append('log_register.log', time().';'.$_SERVER['REMOTE_ADDR'].';'.$_SERVER['HTTP_REFERER'].';uname:'.$uname.';pw:'.$pw);
+./Logger.php:41:		DBManager::getInstance()->append('log_register.log', time().';'.$_SERVER['REMOTE_ADDR'].';'.$_SERVER['HTTP_REFERER'].';uname:'.$uname);
