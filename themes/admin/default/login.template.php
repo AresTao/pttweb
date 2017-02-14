@@ -7,9 +7,17 @@
 		if (isset($_GET['action']) && $_GET['action'] == 'dologin') {
 			// parse and handle login form data
 			try {
-				SessionManager::getInstance()->loginAsAdmin($_POST['username'], $_POST['password']);
+				if ($_POST['type'] == 1)
+				{
+					SessionManager::getInstance()->loginAsAdmin($_POST['username'], $_POST['password']);
+				} else
+				{
+
+				}
 				$isLoggedIn = true;
-				echo '<script type="text/javascript">location.replace("?page=user&sid=1")</script>';
+				//echo '<script type="text/javascript">location.replace("?page=user&sid=1")</script>';
+				echo '<script type="text/javascript">location.replace("?page=proxy&sid=1")</script>';
+				
 				echo 'Login successfull.<br/>
 					Go on to the <a href="?page=meta">Meta Page</a>.';
 			} catch(Exception $exc) {
@@ -35,7 +43,11 @@
    <ul>  
     <li class="inpLi"><b>用户名：</b><input name="username" type="text" class="inpLogin" id="mpi_login_username" ></li>
     <li class="inpLi"><b>密码：</b><input name="password" type="password" class="inpLogin" id="mpi_login_password" ></li>
-
+    <li class="inpLi"><b>账号类型：</b><select name="type">
+      <option value ="1" selected="selected">管理员</option>
+      <option value ="2">代理商</option>
+      <option value="3">企业</option>
+      </select></li>
         <li class="sub"><input type="submit" name="submit" class="btn" value="login"></li> 
 
    </ul>
