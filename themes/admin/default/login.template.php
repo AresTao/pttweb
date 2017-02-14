@@ -16,7 +16,7 @@
 				}
 				$isLoggedIn = true;
 				//echo '<script type="text/javascript">location.replace("?page=user&sid=1")</script>';
-				echo '<script type="text/javascript">location.replace("?page=proxy&sid=1")</script>';
+				echo '<script type="text/javascript">location.replace("?page=operator&sid=1")</script>';
 				
 				echo 'Login successfull.<br/>
 					Go on to the <a href="?page=meta">Meta Page</a>.';

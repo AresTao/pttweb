@@ -39,6 +39,7 @@ class SettingsManager {
 	private $servers;
 	private $serverAddresses;
 	private $viewerUseSVGImages;
+	private $mysqlConfig;
 
 	function __construct()
 	{
@@ -65,6 +66,7 @@ class SettingsManager {
 		$this->site['keywords'] = $site_keywords;
 
 		$this->servers = $servers;
+                $this->mysqlConfig = $mysqlConfig;
 
 		$this->serverAddresses = $viewer_serverAddresses;
 
@@ -251,6 +253,9 @@ class SettingsManager {
 		return $this->viewerUseSVGImages;
 	}
 
+	function getMysqlConfig() {
+		return $this->mysqlConfig;
+	}
 
 	/**
 	 * Get the Server Information saved about it in the interface DB.

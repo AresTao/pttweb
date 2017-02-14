@@ -6,7 +6,7 @@
 
 // Debug? - This should be turned off for production sites.
 // It is meant to find issues in MumPI, like/or lost error messages etc.
-$debug = false;
+$debug = true;
 
 // allow freely calling data for a web serverviewer? http://mumble.sourceforge.net/Channel_Viewer_Protocol
 // it can be called via URL pointed to the main dir (where this settings file is located) + ?view=json&serverId=1
@@ -36,6 +36,17 @@ $dbInterface_icesecrets = array(
 		//   This means if you want write access (to be able to fully use the admin interface) you can only use one value for both Murmur-secrets (this was tested on snapshot 02071e).
 		'secret' => '',
 );
+$mysqlConfig = array(
+        'APP_DEBUG' => true,
+        'DB_TYPE' => 'mysql',
+        'DB_HOST' => 'localhost',
+        'DB_NAME' => 'test',
+        'DB_USER' => 'root',
+        'DB_PWD' => 'wuzhantao',
+        'DB_PORT' => '3306',
+        'DB_DSN' => '',
+        'DB_CHARSET' => 'utf8'
+        );
 // This setting only becomes active for php-zeroc-ice versions at or above 3.4. Before 3.4 IcePHPs ice.slice setting was used.
 // PHP file generated from murmur.ice file with slice2php (see FAQ). Has to be in MumPIs classes subdir.
 // This should specify a file that exists and matches your murmur server version as close as possible.
@@ -97,4 +108,5 @@ $servers[2]['allowlogin'] = true;
 $servers[2]['allowregistration'] = false;
 $servers[2]['forcemail']  = true;
 $servers[2]['authbymail'] = true;
+
 
