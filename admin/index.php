@@ -18,10 +18,20 @@ define('MUMPHPI_SECTION', 'admin');
 	require_once(MUMPHPI_MAINDIR.'/classes/TemplateManager.php');
 	require_once(MUMPHPI_MAINDIR.'/classes/MessageManager.php');
 	require_once(MUMPHPI_MAINDIR.'/classes/PermissionManager.php');
+	require_once(MUMPHPI_MAINDIR.'/classes/MysqlInterface.php');
 
 	if (SettingsManager::getInstance()->isDebugMode()) {
 		error_reporting(E_ALL);
 	}
+
+    //MysqlInterface::addOperator(0, 1,"test", "test","test","test","test");
+    //MysqlInterface::updateOperator(3,1, "t", "tt","tttt","tttttt","tetttt");
+    //MysqlInterface::getOperators();
+    //MysqlInterface::getOperatorById(5);
+    //MysqlInterface::deleteOperatorById(1);
+    //MysqlInterface::addOperationLog(1, "insert into ...");
+    //MysqlInterface::getOperationLogByOperatorId(1);
+
 
 	// Check for running Ice with Murmur
 	try {
@@ -77,7 +87,3 @@ define('MUMPHPI_SECTION', 'admin');
 	?>
 </body>
 </html>
-
-
-
-

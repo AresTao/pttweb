@@ -1,8 +1,9 @@
 <?php
-include(dirname(__FILE__).'Mysql.php');
+include(dirname(__FILE__).'/Mysql.php');
 require_once(MUMPHPI_MAINDIR . '/classes/SettingsManager.php');
 require_once(MUMPHPI_MAINDIR . '/classes/MessageManager.php');
 require_once(MUMPHPI_MAINDIR . '/classes/TranslationManager.php');
+
 class MysqlManager{
     //数据表名
     protected $tablename = '';
@@ -23,8 +24,7 @@ class MysqlManager{
         $this->debug = true;
     	$this->tablename = $tablename;
         $this->options['table'] = $tablename;
-        if($this->debug)
-            echo __LINE__.' :__construct():'.$this->tablename."<p>";
+        
         $this->init();
          
     }

@@ -37,14 +37,15 @@ $dbInterface_icesecrets = array(
 		'secret' => '',
 );
 $mysqlConfig = array(
-        'APP_DEBUG' => true,
+        'APP_DEBUG' => false,
         'DB_TYPE' => 'mysql',
-        'DB_HOST' => 'localhost',
-        'DB_NAME' => 'test',
-        'DB_USER' => 'root',
-        'DB_PWD' => 'wuzhantao',
+        'DB_HOST' => '120.77.254.227',
+        'DB_NAME' => 'pttweb',
+        'DB_USER' => 'pttweb',
+        'DB_PWD' => 'pttweb',
         'DB_PORT' => '3306',
         'DB_DSN' => '',
+        'DB_PARAMS' => '',
         'DB_CHARSET' => 'utf8'
         );
 // This setting only becomes active for php-zeroc-ice versions at or above 3.4. Before 3.4 IcePHPs ice.slice setting was used.

@@ -88,18 +88,19 @@ class Db {
             $db_config = $this->parseDSN($db_config);
         }elseif(is_array($db_config)) { // 数组配置
              $db_config = array(
-                  'dbms'        => $db_config['db_type'],
-                  'username'  => $db_config['db_user'],
-                  'password'   => $db_config['db_pwd'],
-                  'hostname'  => $db_config['db_host'],
-                  'hostport'    => $db_config['db_port'],
-                  'database'   => $db_config['db_name'],
-                  'dsn'         => $db_config['db_dsn'],
-                  'params'   => $db_config['db_params'],
+                  'dbms'        => $db_config['DB_TYPE'],
+                  'username'  => $db_config['DB_USER'],
+                  'password'   => $db_config['DB_PWD'],
+                  'hostname'  => $db_config['DB_HOST'],
+                  'hostport'    => $db_config['DB_PORT'],
+                  'database'   => $db_config['DB_NAME'],
+                  'dsn'         => $db_config['DB_DSN'],
+                  
+                  'charset'    => $db_config['DB_CHARSET']
              );
         }elseif(empty($db_config)) {
              // 如果配置为空
-             MessageManager::addError(tr('error_db_mysql_noconfig'))
+             MessageManager::addError(tr('error_db_mysql_noconfig'));
 
             
         }
@@ -452,7 +453,7 @@ class Db {
      +----------------------------------------------------------
      */
     public function escape_string($str) {
-        return mysql_escape_string($str);
+        return mysql_real_escape_string($str);
     }
 
    /**
