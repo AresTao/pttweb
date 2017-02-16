@@ -114,16 +114,17 @@ if($_POST['action']=='lists'){
    if(isset($_GET['action'])&&$_GET['action']=='show_operators'){
    ?>
 <div id="urHere">手机对讲系统管理中心<b>></b><strong>代理商列表</strong> </div>   <div class="mainBox" style="height:auto!important;height:550px;min-height:550px;">
-        <h3> <div style="width:10px;"></div>  <a href="./?page=user&sid=1&action=operator_add&cid=<?php echo $_GET['cid'] ?>" class="actionBtn add">添加代理商</a> 代理商列表</h3>
+        <h3> <div style="width:10px;"></div>  <a href="./?page=operator&sid=1&action=operator_add&cid=<?php echo $_GET['cid'] ?>" class="actionBtn add">添加代理商</a> 代理商列表</h3>
 
 <?php
-$srid =$_GET['sid'];
-$server=MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($srid));
-$chs =$server->getChannelState($_GET['cid']);
+$operators = MysqlInterface::getOperators();
+//$srid =$_GET['sid'];
+//$server=MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($srid));
+//$chs =$server->getChannelState($_GET['cid']);
 
 //$chs =MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($_GET['sid']))->getChannels($_GET['sid'],$_GET['cid']);
 
-$members =explode(",",$chs->getMembers());
+//$members =explode(",",$chs->getMembers());
 //var_dump($members);
 ?>
 
@@ -131,70 +132,43 @@ $members =explode(",",$chs->getMembers());
      <tr>
 
       <th width="20" align="center">用户号</th>
-      <th width="150">用户名</th>
-	  <th width="150">昵称</th>
-      
-
+      <th width="20">账号</th>
+      <th width="60">邮箱</th>
+      <th width="60">电话</th>
       <th width="80" align="center">操作</th>
      </tr>
 	 
 <?php
 
-foreach($members as $member){
-	$mr=intval($member);
-	
-		//var_dump($member);			
-						//FIXME Ice version check, enum-index available? otherwise, one has to edit his slice file – actually, this fixme should be a general check, in install or general warning-disableable
+foreach($operators as $member){
 			
-			$users = $server->getRegisteredUsers();
+	//		$users = $server->getRegisteredUsers();
 	//foreach ($users AS $userId=>$userName) {
-if(array_key_exists($mr,$users)){
-//	foreach ($users AS $userId=>$userName) {
-	$user = ServerInterface::getInstance()->getServerRegistration($srid,$mr);
-	if($user->getUserId()!==0){
+        //	foreach ($users AS $userId=>$userName) {
+	//$user = ServerInterface::getInstance()->getServerRegistration($srid,$mr);
+	//if($user->getUserId()!==0){
 ?>
 	 
-          <tr>
+      <tr>
     
-      <td align="center"><?php echo $user->getUserId();?></td>
-      <td><?php echo $user->getName();?></td>
-      <td align="center"><?php echo $user->getEmail();?></td>
+      <td align="center"><?php echo $member['id'];?></td>
+      <td><?php echo $member['name'];?></td>
+      <td align="center"><?php echo $member['email'];?></td>
+      <td align="center"><?php echo $member['phone'];?></td>
 	  
 
       <td align="center">
-             <a href="javascript:;" onclick="if(confirm('确定删除用户?')){jq_server_member_remove(<?php echo $user->getUserId() ?>,<?php echo intval($_GET['cid'])?>);}">删除</a>
+             <a href="./?page=operator&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> | <a href="javascript:;" onclick="if(confirm('确定删除用户?')){jq_operator_remove(<?php echo $member['id'] ?>);}">删除</a>
              </td>
      </tr>
 
 
 
 <?php
-	}
-//}
-	}else{
-		
-?>
-          <tr>
-    
-      <td align="center"><?php echo $mr;?></td>
-      <td></td>
-      <td align="center"></td>
-	  
-
-      <td align="center">
-             <a href="javascript:;" onclick="if(confirm('确定删除用户?')){jq_server_member_remove(<?php echo $mr ?>,<?php echo intval($_GET['cid'])?>);}">删除</a>
-             </td>
-     </tr>
-
-
-<?php
-
-		
-	}
-	//}
 }
+		
 ?>
-
+         
 
 
 
@@ -210,77 +184,7 @@ if(array_key_exists($mr,$users)){
     <div class="pager">总计  个记录，共 1 页，当前第 1 页 | <a href="article.php?page=1">第一页</a> 上一页 下一页 <a href="article.php?page=1">最末页</a></div>           </div>-->
 
    <!-- 当前位置 -->
-   <?php
-   }
-  if(isset($_GET['action'])&&$_GET['action']=='member_add'){
-	  
-	  		$server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($_GET['sid']));
-			
-			$chs =$server->getChannelState($_GET['cid']);
-			$members =$chs->getMembers();
-			$mbs = explode(",",$members);
-			
-			$users = $server->getRegisteredUsers();
-		
-   ?>
-<div id="urHere">管理中心<b>></b><strong>成员管理</strong> </div> 
-  <div id="manager" class="mainBox" style="height:auto!important;height:550px;min-height:550px;">
-    <h3><a href="?page=user&sid=1&action=show_members&cid=<?php echo $_GET['cid'];?>" class="actionBtn">返回列表</a>添加成员</h3>
-   <form action="" method="post">
-     <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
-      <tr>
-       <td width="100" align="right">用户名</td>
-	<td width="98%">
-	   <?php
-	   $i=0;
-	   foreach ($users as $key=>$user):
-	   
-	  /* echo $key;
-	   echo "<pre>";
-	   var_dump($mbs);*/
-  if($key==0 || in_array($key,$mbs))continue;
-	  
-	   if($i!==0 &&$i%5==0)echo "<br>";
-	   ?>
-	    
-        <label style="float:left;width:150px;" for="uname<?php echo $key;?>"><input type="checkbox" name="uid"  class="inpMain" id="uname<?php echo $key;?>"   value="<?php echo $key;?>"/><?php echo $user?></label>
-		
-		<?php
-		++$i;
-		endforeach;
-		?>
-		<input type="hidden" name="cid" value="<?php echo $_GET['cid'];?>">
-      </td>
-      </tr>
-
-      <tr>
-       <td></td>
-       <td>
-      
-        <input type="button" name="submit" class="btn" value="提交" onclick="jq_member_add(<?php echo $_GET['cid'];?>)" />
-       </td>
-      </tr>
-     </table>
-    </form>
-	<table>
-		<tr><td ></td><td><input type="checkbox" id="selectAll" ><label for="selectAll">全选/全不选</label></td></tr>
-	</table>
-		<div class="message"></div>
-		
-	<script>
-	$(function(){
-		
-		$("#selectAll").click(function(){    
-    if(this.checked){    
-        $(".tableBasic :checkbox").attr("checked", true);   
-    }else{    
-        $(".tableBasic :checkbox").attr("checked", false); 
-    }    
-});
-		
-	})
-	</script>
-                   </div>
+   
    <?php
    }
    if(!isset($_GET['action'])){
@@ -319,10 +223,10 @@ $(function(){
 })
 
 </script>
-<div id="urHere">手机对讲系统管理中心<b>></b><strong>用户列表</strong> </div>
+<div id="urHere">手机对讲系统管理中心<b>></b><strong>代理商列表</strong> </div>
    <div class="mainBox" style="height:auto!important;height:550px;min-height:550px;">
-        <h3><a href="" id="pldr" class="actionBtn add">批量导入</a> <div style="width:10px;"></div>  <a href="./?page=user&sid=1&action=add" class="actionBtn add">新建用户</a> 用户列表</h3>
-<form action="?page=user&action='lists'" method="post" enctype="multipart/form-data">	
+        <h3><a href="" id="pldr" class="actionBtn add">批量导入</a> <div style="width:10px;"></div>  <a href="./?page=operator&sid=1&action=add" class="actionBtn add">新建代理商</a> 代理商列表</h3>
+<form action="?page=operator&action='lists'" method="post" enctype="multipart/form-data">	
 	<input type="file" name="image" class="hidden" value=""  style="display:none"/>
 </form>
   <div class="filter">
@@ -357,17 +261,43 @@ $(function(){
 	  
 
 ?>
-<div id="urHere">管理中心<b>></b><strong>用户管理</strong> </div> 
+<div id="urHere">管理中心<b>></b><strong>代理商管理</strong> </div> 
   <div id="manager" class="mainBox" style="height:auto!important;height:550px;min-height:550px;">
-    <h3><a href="?page=user&sid=1" class="actionBtn">返回列表</a>新建用户</h3>
+    <h3><a href="?page=operator&sid=1&action=show_operators" class="actionBtn">返回列表</a>新建代理商</h3>
    <form action="" method="post">
      <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
       <tr>
-       <td width="100" align="right">用户名</td>
+       <td width="100" align="right">账号</td>
        <td>
-        <input type="text" name="uname" size="40" class="inpMain" id="uname"  value=""/><label class="inps" style="color:#ccc;">&nbsp;用户默认密码为123456</label>
+        <input type="text" name="uname" size="40" class="inpMain" id="uname"  value=""/>
        </td>
       </tr>
+      <tr>
+       <td width="100" align="right">账号密码</td>
+       <td>
+        <input type="text" name="passwd" size="40" class="inpMain" id="passwd"  value=""/>
+       </td>
+      </tr>
+       <tr>
+       <td width="100" align="right">确认密码</td>
+       <td>
+        <input type="text" name="confirmpasswd" size="40" class="inpMain" id="confirmpasswd"  value=""/>
+       </td>
+      </tr>
+
+      <tr>
+       <td width="100" align="right">邮箱</td>
+       <td>
+        <input type="text" name="email" size="40" class="inpMain" id="email"  value=""/>
+       </td>
+      </tr>
+      <tr>
+       <td width="100" align="right">电话</td>
+       <td>
+        <input type="text" name="phone" size="40" class="inpMain" id="phone"  value=""/>
+       </td>
+      </tr>
+
 <!---
       <tr>
        <td align="right">密码</td>
@@ -385,7 +315,7 @@ $(function(){
        <td></td>
        <td>
       
-        <input type="button" name="submit" class="btn" value="提交" onclick="jq_user_add()" />
+        <input type="button" name="submit" class="btn" value="提交" onclick="jq_operator_add()" />
        </td>
       </tr>
      </table>
@@ -398,27 +328,53 @@ $(function(){
 	}
  if(isset($_GET['action']) && $_GET['action']=='edit'){
 	
-	$uid =intval($_GET['uid']);
-	$sid=intval($_GET['sid']);
+	$id =intval($_GET['id']);
 	
-	$server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($sid));
-	$user = ServerInterface::getInstance()->getUserName($sid, $uid);
+	//$server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($sid));
+	$operator= MysqlInterface::getOperatorById($id);
 	//var_dump($user);
 		
 	  
 
 ?>
-<div id="urHere">管理中心<b>></b><strong>用户管理</strong> </div>   <div id="manager" class="mainBox" style="height:auto!important;height:550px;min-height:550px;">
-    <h3><a href="article.html" class="actionBtn">返回列表</a>添加用户</h3>
+<div id="urHere">管理中心<b>></b><strong>代理商管理</strong> </div> 
+  <div id="manager" class="mainBox" style="height:auto!important;height:550px;min-height:550px;">
+    <h3><a href="?page=operator&sid=1&action=show_operators" class="actionBtn">返回列表</a>编辑代理商</h3>
    <form action="" method="post">
      <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
       <tr>
-       <td width="100" align="right">用户名称</td>
+       <td width="100" align="right">账号</td>
        <td>
-        <input type="text" name="uname" size="40" class="inpMain" id="uname"  value="<?php echo $user;?>"/>
+        <input type="text" name="uname" size="40" class="inpMain" id="uname"  value='<?php echo $operator['name'];?>'/>
+       </td>
+      </tr>
+      <tr>
+       <td width="100" align="right">账号密码</td>
+       <td>
+        <input type="text" name="passwd" size="40" class="inpMain" id="passwd"  value='<?php echo $operator['passwd'];?>'/>
+       </td>
+      </tr>
+       <tr>
+       <td width="100" align="right">确认密码</td>
+       <td>
+        <input type="text" name="confirmpasswd" size="40" class="inpMain" id="confirmpasswd"  value=""/>
        </td>
       </tr>
 
+      <tr>
+       <td width="100" align="right">邮箱</td>
+       <td>
+        <input type="text" name="email" size="40" class="inpMain" id="email"  value='<?php echo $operator['email'];?>'/>
+       </td>
+      </tr>
+      <tr>
+       <td width="100" align="right">电话</td>
+       <td>
+        <input type="text" name="phone" size="40" class="inpMain" id="phone"  value='<?php echo $operator['phone'];?>'/>
+       </td>
+      </tr>
+
+<!---
       <tr>
        <td align="right">密码</td>
        <td>
@@ -430,19 +386,19 @@ $(function(){
        <td>
         <input type="password" name="password_confirm" size="40" class="inpMain" id="rpwd" />
        </td>
-      </tr>
+      </tr>-->
       <tr>
        <td></td>
        <td>
       
-        <input type="button" name="submit" class="btn" value="提交" onclick="jq_user_add()" />
+        <input type="button" name="submit" class="btn" value="提交" onclick="jq_operator_update()" />
        </td>
       </tr>
      </table>
     </form>
 		<div class="message"></div>
                    </div>
-				   
+	
 				   
 	<?php
 	}
@@ -570,20 +526,16 @@ $(function(){
 						}
 					);
 			}
-		function jq_user_add()
+		function jq_operator_add()
 			{
-				//uname =$("#uname").val();
-			//	upwd=$("#upwd").val();
-			//	rpwd=$("#rpwd").val();
 				param =$("input").serialize();
 			
 			/*	if(upwd!==rpwd){
 					alert('密码不一致');
 					
 				}*/
-				$.post("./?ajax=server_user_add&sid=1",param,
+				$.post("./?ajax=server_operator_add&sid=1",param,
 						function (data) {
-							
 							if(data.length>0){
 								
 								//location.href="./?page=user&sid=1";
@@ -597,30 +549,7 @@ $(function(){
 					);
 			}
 			
-			
-		function jq_member_add(cid)
-			{
-		mt4Ids=[];
-		$('input[name=uid]').each(function() {
-			if(this.checked) {
-			mt4Ids.push($(this).val());
-			}
-			});
-			 data = {
-				mt4Ids : JSON.stringify(mt4Ids)
-			};
-			
-			$.post('./?ajax=server_member_add&sid=1&cid='+cid, data, function(data){
-				if(data.state == 1){
-				
-					location.href = "?page=user&sid=1&action=show_members&cid="+cid;
-				}else{
-					alert("操作失败");
-				}
-			}, 'json');	
-
-			}	
-		
+	
 			function jq_server_showTree(sid)
 			{
 				$.post("./?ajax=show_tree",
