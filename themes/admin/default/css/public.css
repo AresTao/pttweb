@@ -586,6 +586,20 @@ select {
  font-weight: bold;
  margin:10px;
 }
+.mainBox h3 .hint_trigger:hover .hintimg{
+ display: block;
+}
+.mainBox h3 .hint_trigger .hintimg{
+ position: absolute; 
+ right: 10px; 
+ top: 130px; 
+ z-index: 10; 
+ display: none; 
+ width: 400px; 
+ height: 300px; 
+ background: url(../images/hint.jpg) 0 0 no-repeat;
+}
+.mainBox h3 .
 .mainBox h3 .add {
  background: #28B779 url(../images/action_btn.gif) no-repeat 20px 50%;
  padding-left: 40px;

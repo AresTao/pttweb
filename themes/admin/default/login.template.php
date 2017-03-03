@@ -1,5 +1,19 @@
 <?php
-	$isLoggedIn = SessionManager::getInstance()->isAdmin();
+	//$isLoggedIn = SessionManager::getInstance()->isAdmin();
+        $isLoggedIn = false;
+        /*if (SessionManager::getInstance()->isAdmin())
+        {
+                $isLoggedIn =true;
+                echo '<script type="text/javascript">location.replace("?page=operator&sid=1")</script>';
+        }else if (SessionManager::getInstance()->isOperator())
+        {
+                $isLoggedIn =true;
+                echo '<script type="text/javascript">location.replace("?page=operator&sid=1")</script>';
+        }else if (SessionManager::getInstance()->isEnterprise())
+        {
+                $isLoggedIn =true;
+                echo '<script type="text/javascript">location.replace("?page=user&sid=1")</script>';
+        }*/
 	if ($isLoggedIn) {
 		echo 'You are already logged in!';
 		echo 'Were you looking for <a href="./?page=logout">logout</a>?';
@@ -10,29 +24,50 @@
 				if ($_POST['type'] == 1)
 				{
 					SessionManager::getInstance()->loginAsAdmin($_POST['username'], $_POST['password']);
-				} else
-				{
-
-				}
-				$isLoggedIn = true;
-				//echo '<script type="text/javascript">location.replace("?page=user&sid=1")</script>';
-				echo '<script type="text/javascript">location.replace("?page=operator&sid=1")</script>';
+					$isLoggedIn = true;
+					//echo '<script type="text/javascript">location.replace("?page=user&sid=1")</script>';
+					echo '<script type="text/javascript">location.replace("?page=operator&sid=1")</script>';
+                                        //echo '<script type="text/javascript">location.replace("?page=enterprise&sid=1")</script>';
 				
-				echo 'Login successfull.<br/>
-					Go on to the <a href="?page=meta">Meta Page</a>.';
+
+				} else if ($_POST['type'] == 2)
+			        {	
+                                        SessionManager::getInstance()->loginAsOperator($_POST['username'], $_POST['password']); 
+                                        $isLoggedIn = true;
+                                        //echo '<script type="text/javascript">location.replace("?page=operator&sid=1")</script>';
+                                        echo '<script type="text/javascript">location.replace("?page=enterprise&sid=1")</script>';
+                                        //echo '<script type="text/javascript">location.replace("?page=enterprise&sid=1")</script>';
+
+				} else if ($_POST['type'] == 3)
+                                {
+                                        SessionManager::getInstance()->loginAsEnterprise($_POST['username'],$_POST['password']);
+                                        $isLoggedIn = true;
+                                        echo '<script type="text/javascript">window.location.replace("?page=monitor&sid=1")</script>';
+                                        //echo '<script type="text/javascript">window.location.replace("?page=user&sid=1")</script>';
+                                } else 
+                                {
+                                        throw new Exception('unsupport login type.');
+                                }
+				//$isLoggedIn = true;
+				//echo '<script type="text/javascript">location.replace("?page=user&sid=1")</script>';
+				//echo '<script type="text/javascript">location.replace("?page=operator&sid=1")</script>';
+				
+				//echo 'Login successfull.<br/>
+				//	Go on to the <a href="?page=meta">Meta Page</a>.';
 			} catch(Exception $exc) {
+                                
 				echo '<div class="infobox infobox_error">Login failed.</div>';
 			}
 		}
 		if (!$isLoggedIn) {
 			// display login form
-			if (!DBManager::getInstance()->doesAdminExist()) {
+			/*if (!DBManager::getInstance()->doesAdminExist()) {
 				echo '<div class="infobox infobox_info">';
 				echo 'No admin Account exists yet.<br/>';
 				echo 'To create an account, <b>just log in with your desired login-credentials</b>. The account will automatically created for you!<br/><br/>';
 				echo 'If you experience problems and the account is not created for you, please check that your webserver has write permissions to the data folder.';
 				echo '</div>';
-			}
+			}*/
 ?>
 
 <div id="login">
