@@ -124,11 +124,18 @@ if($_POST['action']=='lists'){
     <form action="" method="post">
      <label style='font-size:15px;padding: 5px 5px 5px 2px;'>搜索类型</label> 
      <select name="cat_id" id="catlist">
-                  <option value="1">账号</option>
-		  <option value="2">邮箱</option>
-		  <option value="3">电话</option>
+                  <option value="1">账单号</option>
+		  <option value="2">代理商编号</option>
+		  <option value="3">代理商姓名</option>
      </select>
      <input name="keyword" type="text" class="inpMain" value="" size="20" />
+     <label style='font-size:15px;padding: 5px 5px 5px 2px;'>账单状态</label> 
+     <select name="billstatus" id="billstatus">
+                  <option value="0" selected="selected">全部</option>
+		  <option value="1">生效</option>
+		  <option value="2">作废</option>
+     </select>
+
      <input name="submit" class="btnGray" type="submit" value="搜索" onclick="jq_bill_search();return false;" />
      <input name="submit" class="btnGray" type="submit" value="导出为CSV文件" onclick="jq_bill_file_output();return false;" />
     </form>
@@ -210,7 +217,7 @@ if($_POST['action']=='lists'){
 	$id =intval($_GET['id']);
 	
 	//$server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($sid));
-	$operator= MysqlInterface::getOperatorById($id);
+	$bill= MysqlInterface::getBillById($id);
 	//var_dump($user);
 		
 	  
@@ -221,40 +228,38 @@ if($_POST['action']=='lists'){
     <h3><a href="?page=bill&sid=1" class="actionBtn">返回列表</a>编辑账单</h3>
    <form action="" method="post">
      <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
-      <tr>
-       <td width="100" align="right">账号</td>
-       <td>
-        <input type="text" name="uname" size="40" class="inpMain" id="uname"  value='<?php echo $operator['name'];?>'/>
-        <input type="hidden" name="billId" size="40" class="inpMain" id="billId"  value='<?php echo $operator['id'];?>'/>
-       </td>
-      </tr>
-      <tr>
-       <td width="100" align="right">账号密码</td>
-       <td>
-        <input type="text" name="passwd" size="40" class="inpMain" id="passwd"  value='<?php echo $operator['passwd'];?>'/>
-       </td>
-      </tr>
        <tr>
-       <td width="100" align="right">确认密码</td>
+       <td width="100" align="right">代理商</td>
        <td>
-        <input type="text" name="confirmpasswd" size="40" class="inpMain" id="confirmpasswd"  value=""/>
+        <select name="operatorId" id="operatorId">
+      <?php 
+           foreach($operators as $member){
+               if ($member['id'] == $bill['operatorId'])
+               {
+      ?>
+           <option value ='<?php echo $member['id'];?>' selected="selected"><?php echo $member['name'];?></option>
+      <?php
+               }
+               else {
+      ?>
+
+           <option value ='<?php echo $member['id'];?>'><?php echo $member['name'];?></option>
+      <?php    
+               }
+           }
+       ?>
+        </select>
+        <input type="hidden" name="billId" size="40" class="inpMain" id="billId"  value='<?php echo $bill['id'];?>'/>
+       </td>
+      </tr>
+      <tr>
+       <td width="100" align="right">总账号数</td>
+       <td>
+        <input type="text" name="number" size="40" class="inpMain" id="number"  value=""/>
        </td>
       </tr>
 
-      <tr>
-       <td width="100" align="right">邮箱</td>
-       <td>
-        <input type="text" name="email" size="40" class="inpMain" id="email"  value='<?php echo $operator['email'];?>'/>
-       </td>
-      </tr>
-      <tr>
-       <td width="100" align="right">电话</td>
-       <td>
-        <input type="text" name="phone" size="40" class="inpMain" id="phone"  value='<?php echo $operator['phone'];?>'/>
-       </td>
-      </tr>
-
-<!---
+      <!---
       <tr>
        <td align="right">密码</td>
        <td>
@@ -342,9 +347,10 @@ if($_POST['action']=='lists'){
 				
 				var kw =$("input[name=keyword]").val();
 				var type =$("#catlist").val();
+				var billstatus =$("#billstatus").val();
 				$.post(
 				"./?ajax=server_bill_search&sid=1",
-				{'type':type,'value':kw},
+				{'type':type,'value':kw, 'status':billstatus},
 				function(data){
 					
 					$("#list").find("table").remove();
