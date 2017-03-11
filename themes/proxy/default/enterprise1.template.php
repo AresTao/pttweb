@@ -11,7 +11,7 @@
            type: 'post',
            data: { sid: "1" },
 		   dataType: "json",
-           url: "./?ajax=server_getEnterprises&page=enterprise&najax=1",
+           url: "./?ajax=server_getEnterprises&page=enterprise1&najax=1&parentId=<?php echo SessionManager::getInstance()->getLoginId();?>",
            success: function (data) { 
 				num =data;
 				
@@ -54,7 +54,7 @@
                 function InitTable(pageIndex) {                                  
                     $.ajax({   
                         type: "POST",  
-                        url: './?ajax=server_getEnterprises&page=enterprise',      //提交到一般处理程序请求数据   
+                        url: './?ajax=server_getEnterprises&page=enterprise1&parentId=<?php echo SessionManager::getInstance()->getLoginId();?>',      //提交到一般处理程序请求数据   
                         data: "pageIndex=" + (pageIndex+1) + "&pageSize=" + pageSize+"&sid=1",          //提交两个参数：pageIndex(页面索引)，pageSize(显示条数)                   
                         success: function(data) {
                              //移除Id为Result的表格里的行，从第二行开始（这里根据页面布局不同页变）   
@@ -107,86 +107,16 @@ if($_POST['action']=='lists'){
 <!-- dcHead 结束 --> <div id="dcLeft"><div id="menu">
 
   <ul>
-  <li><a href="?page=operator&sid=1"><i class="article"></i><em>代理商管理</em></a></li>
+  <li><a href="?page=operator&sid=1"><i class="article"></i><em>二级代理商管理</em></a></li>
   <li><a href="?page=enterprise1&sid=1"><i class="article"></i><em>企业用户管理</em></a></li>
+  <li><a href="?page=record1&sid=1"><i class="article"></i><em>记录管理</em></a></li>
 
  </ul>
 
 </div></div>
  <div id="dcMain">
- <?php
-   if(isset($_GET['action'])&&$_GET['action']=='show_enterprises'){
-   ?>
-<div id="urHere">手机对讲系统管理中心<b>></b><strong>企业用户列表</strong> </div>   <div class="mainBox" style="height:auto!important;height:550px;min-height:550px;">
-        <h3> <div style="width:10px;"></div>  <a href="./?page=enterprise&sid=1&action=add&cid=<?php echo $_GET['cid'] ?>" class="actionBtn add">添加企业用户</a> 企业用户列表</h3>
-
-<?php
-$enterprises = MysqlInterface::getEnterprises();
-//$srid =$_GET['sid'];
-//$server=MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($srid));
-//$chs =$server->getChannelState($_GET['cid']);
-
-//$chs =MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($_GET['sid']))->getChannels($_GET['sid'],$_GET['cid']);
-
-//$members =explode(",",$chs->getMembers());
-//var_dump($members);
-?>
-
-    <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
-     <tr>
-
-      <th width="20" align="center">用户号</th>
-      <th width="20" align="center">账号</th>
-      <th width="60" align="center">邮箱</th>
-      <th width="60" align="center">电话</th>
-      <th width="60" align="center">备注</th>
-      <th width="80" align="center">操作</th>
-     </tr>
-	 
-<?php
-
-foreach($enterprises as $member){
-			
-	//		$users = $server->getRegisteredUsers();
-	//foreach ($users AS $userId=>$userName) {
-        //	foreach ($users AS $userId=>$userName) {
-	//$user = ServerInterface::getInstance()->getServerRegistration($srid,$mr);
-	//if($user->getUserId()!==0){
-?>
-	 
-      <tr>
-    
-      <td align="center"><?php echo $member['id'];?></td>
-      <td align="center"><?php echo $member['name'];?></td>
-      <td align="center"><?php echo $member['email'];?></td>
-      <td align="center"><?php echo $member['phone'];?></td>
-      <td align="center"><?php echo $member['comment'];?></td>
-	  
-
-      <td align="center">
-             <a href="./?page=enterprise&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> | <a href="javascript:;" onclick="if(confirm('确定删除用户?')){jq_enterprise_remove(<?php echo $member['id'] ?>);}">删除</a>
-             </td>
-     </tr>
-
-
-
-<?php
-}
-		
-?>
-
-         </table>
-
-
-
-    <div class="clear"></div>
-	<!--
-    <div class="pager">总计  个记录，共 1 页，当前第 1 页 | <a href="article.php?page=1">第一页</a> 上一页 下一页 <a href="article.php?page=1">最末页</a></div>           </div>-->
-
-   <!-- 当前位置 -->
-   
+  
    <?php
-   }
    if(!isset($_GET['action'])){
    ?>
 <script>
@@ -239,7 +169,7 @@ $(function(){
 </script>
 <div id="urHere">手机对讲系统管理中心<b>></b><strong>企业用户列表</strong> </div>
    <div class="mainBox" style="height:auto!important;height:550px;min-height:550px;">
-        <h3><a href="" id="pldr" class="actionBtn add hint_trigger" >批量导入<span class="hintimg"></span></a><div style="width:10px;"></div>  <a href="./?page=enterprise&sid=1&action=add" class="actionBtn add">新建企业用户</a> 企业用户列表</h3>
+        <h3><a href="" id="pldr" class="actionBtn add hint_trigger" >批量导入<span class="hintimg"></span></a><div style="width:10px;"></div>  <a href="./?page=enterprise1&sid=1&action=add" class="actionBtn add">新建企业用户</a> 企业用户列表</h3>
 	<input type="file" id="fileToUpload" name="fileToUpload" class="hidden" value=""  style="display:none"/>
 <form action="?page=enterprise&action='lists'" method="post" enctype="multipart/form-data">	
 	<input type="file" name="image" class="hidden" value=""  style="display:none"/>
@@ -249,8 +179,9 @@ $(function(){
      <label style='font-size:15px;padding: 5px 5px 5px 2px;'>搜索类型</label> 
      <select name="cat_id" id="catlist">
                   <option value="1">账号</option>
-		  <option value="2">邮箱</option>
-		  <option value="3">电话</option>
+                  <option value="2">联系人</option>
+		  <option value="3">邮箱</option>
+		  <option value="4">电话</option>
      </select>
      <input name="keyword" type="text" class="inpMain" value="" size="20" />
      <input name="submit" class="btnGray" type="submit" value="搜索" onclick="jq_enterprise_search();return false;" />
@@ -278,13 +209,13 @@ $(function(){
 ?>
 <div id="urHere">管理中心<b></b><strong>企业用户管理</strong> </div> 
   <div id="manager" class="mainBox" style="height:auto!important;height:550px;min-height:550px;">
-    <h3><a href="?page=enterprise&sid=1" class="actionBtn">返回列表</a>新建企业用户</h3>
+    <h3><a href="?page=enterprise1&sid=1" class="actionBtn">返回列表</a>新建企业用户</h3>
    <form action="" method="post">
      <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
       <tr>
        <td width="100" align="right">账号</td>
        <td>
-        <input type="text" name="uname" size="40" class="inpMain" id="uname"  value=""/>
+        <input type="text" name="account" size="40" class="inpMain" id="account"  value=""/>
        </td>
       </tr>
       <tr>
@@ -299,6 +230,13 @@ $(function(){
         <input type="text" name="confirmpasswd" size="40" class="inpMain" id="confirmpasswd"  value=""/>
        </td>
       </tr>
+       <tr>
+       <td width="100" align="right">联系人姓名</td>
+       <td>
+        <input type="text" name="name" size="40" class="inpMain" id="name"  value=""/>
+       </td>
+      </tr>
+      <tr>
 
       <tr>
        <td width="100" align="right">邮箱</td>
@@ -359,29 +297,28 @@ $(function(){
 ?>
 <div id="urHere">管理中心<b>></b><strong>企业用户管理</strong> </div> 
   <div id="manager" class="mainBox" style="height:auto!important;height:550px;min-height:550px;">
-    <h3><a href="?page=enterprise&sid=1" class="actionBtn">返回列表</a>编辑企业用户</h3>
+    <h3><a href="?page=enterprise1&sid=1" class="actionBtn">返回列表</a>编辑企业用户</h3>
    <form action="" method="post">
      <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
       <tr>
-       <td width="100" align="right">账号</td>
+       <td width="100" align="right">账户编号</td>
        <td>
-        <input type="text" name="uname" size="40" class="inpMain" id="uname"  value='<?php echo $enterprise['name'];?>'/>
-        <input type="hidden" name="enterpriseId" size="40" class="inpMain" id="enterpriseId"  value='<?php echo $enterprise['id'];?>'/>
+        <input type="text" name="enterpriseId" size="40" class="inpMain" id="enterpriseId" readonly="true" value='<?php echo $enterprise['id'];?>'/>
        </td>
       </tr>
       <tr>
-       <td width="100" align="right">账号密码</td>
+       <td width="100" align="right">账号</td>
        <td>
-        <input type="text" name="passwd" size="40" class="inpMain" id="passwd"  value='<?php echo $enterprise['passwd'];?>'/>
-       </td>
-      </tr>
-       <tr>
-       <td width="100" align="right">确认密码</td>
-       <td>
-        <input type="text" name="confirmpasswd" size="40" class="inpMain" id="confirmpasswd"  value=""/>
+        <input type="text" name="account" size="40" class="inpMain" id="account" readonly="true" value='<?php echo $enterprise['account'];?>'/>
        </td>
       </tr>
 
+      <tr>
+       <td width="100" align="right">联系人</td>
+       <td>
+        <input type="text" name="name" size="40" class="inpMain" id="name" value='<?php echo $enterprise['name'];?>'/>
+       </td>
+      </tr>
       <tr>
        <td width="100" align="right">邮箱</td>
        <td>
@@ -429,10 +366,68 @@ $(function(){
 	
 				   
 	<?php
-	}
-    }
+	}if(isset($_GET['action']) && $_GET['action']=='dispatcher'){
+            $id =intval($_GET['id']);
+            $enterprise =  MysqlInterface::getEnterpriseById($id);
 	?>
+<div id="urHere">管理中心<b>></b><strong>企业用户管理</strong> </div>
+  <div id="manager" class="mainBox" style="height:auto!important;height:550px;min-height:550px;">
+    <h3><a href="?page=enterprise1&sid=1" class="actionBtn">返回列表</a>分配</h3>
+   <form action="" method="post">
+     <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
+      <tr>
+       <td width="100" align="right">客户编号</td>
+       <td>
+        <input type="text" name="enterpriseId" size="40" class="inpMain" id="enterpriseId"  value="<?php echo $enterprise['id'];
+?>"/>
+        </td>
+      </tr>
+      <tr>
+       <td width="100" align="right">账号</td>
+       <td>
+        <input type="text" name="enterpriseAccount" size="40" class="inpMain" id="enterpriseAccount"  value="<?php echo $enterprise['account'];?>"/>
+        <input type="hidden" name="availableCards" size="40" class="inpMain" id="availableCards"  value="<?php echo $enterprise['availableCards'];?>"/>
+        </td>
+      </tr>
+      <tr>
+       <td width="100" align="right">联系人姓名</td>
+       <td>
+       <input type="text" name="enterpriseName" size="40" class="inpMain" id="enterpriseName"  value="<?php echo $enterprise['name'];?>"/>
+        </td>
+      </tr>
+<tr>
+       <td width="100" align="right">增加账号数</td>
+       <td>
+        <input type="text" name="cardNum" size="40" class="inpMain" id="cardNum"  value=""/>
+       </td>
+      </tr>
+      <!--<tr>
+       <td width="100" align="right">增加群组数</td>
+       <td>
+        <input type="text" name="groupNum" size="40" class="inpMain" id="groupNum"  value=""/>
+       </td>
+      </tr>-->
+       <tr>
+       <td width="100" align="right">金额</td>
+       <td>
+        <input type="text" name="cost" size="40" class="inpMain" id="cost"  value=""/>
+       </td>
+      </tr>
 
+      <tr>
+       <td></td>
+       <td>
+       <input type="button" name="submit" class="btn" value="提交" onclick="jq_dispatcher_enterprise_add()" />
+       </td>
+      </tr>
+     </table>
+    </form>
+                <div class="message"></div>
+                   </div>
+<?php
+        }
+    }
+        ?>
 	</div>
 
 
@@ -473,7 +468,7 @@ $(function(){
 							if(data.length>0){
 								
 								$(".message").show().html(data);
-                                                                window.location.href='./?page=enterprise&sid=1';
+                                                                window.location.href='./?page=enterprise1&sid=1';
 								
 							}else{
 								alert('添加失败');
@@ -489,7 +484,7 @@ $(function(){
 				var kw =$("input[name=keyword]").val();
 				var type =$("#catlist").val();
 				$.post(
-				"./?ajax=server_enterprise_search&sid=1",
+				"./?ajax=server_enterprise_search&sid=1&parentId="+<?php echo SessionManager::getInstance()->getLoginId();?>,
 				{'type':type,'value':kw},
 				function(data){
 					
@@ -531,11 +526,11 @@ $(function(){
                         function jq_enterprise_remove(id){
 				
 				$.post(
-				"./?ajax=server_enterprise_remove&id="+id,'',
+				"./?ajax=server_enterprise_remove&parentId="+<?php echo SessionManager::getInstance()->getLoginId();?>+"id="+id,'',
 				function(data){
                                          if (data.length > 0)
                                          {
-                                                  window.location.href='./?page=enterprise&sid=1';
+                                                  window.location.href='./?page=enterprise1&sid=1';
                                          }
                                          else{
                                                   alert("删除失败");
@@ -556,14 +551,14 @@ $(function(){
 					alert('密码不一致');
 					
 				}*/
-				$.post("./?ajax=server_enterprise_update&id="+id,param,
+				$.post("./?ajax=server_enterprise_update&parentId="+<?php echo SessionManager::getInstance()->getLoginId();?>+"id="+id,param,
 						function (data) {
 							if(data.length>0){
 								
 								//location.href="./?page=user&sid=1";
 								$(".message").show().html(data);
 								
-								window.location.href='./?page=enterprise&sid=1';
+								window.location.href='./?page=enterprise1&sid=1';
 							}else{
 								alert('添加失败');
 								//$(".message").show().html(data);
@@ -572,8 +567,27 @@ $(function(){
 					);
 			}
 			
+function jq_dispatcher_enterprise_add(){
+        param =$("input").serialize();
 
+        /*      if(upwd!==rpwd){
+                alert('密码不一致');
+
+                }*/
+        $.post("./?ajax=server_dispatcher_enterprise_add&sid=1&parentId=<?php echo SessionManager::getInstance()->getLoginId();?>",param,
+                        function (data) {
+                        if(data.length>0){
+
+                        //location.href="./?page=user&sid=1";
+                        $(".message").show().html(data);
+                        //window.location.href='./?page=operator&sid=1';
+
+                        }else{
+                        alert('添加失败');
+                        //$(".message").show().html(data);
+                        }
+                        }
+              );
+}
 		
-			//$('#jq_information').show().html($(parent).id());
-		/*]]>*/
 	</script>
