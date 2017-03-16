@@ -1686,5 +1686,530 @@ return false;
 			MessageManager::addError('You don’t have permission to do this.');
 		}
 	}
+        public static function server_operator_add(){
+                $sid =$_GET['sid'];
+                $account=$_POST['account'];
+                $passwd=$_POST['passwd'];
+                $name=$_POST['name'];
+                $comment=$_POST['comment'];
+                $email=$_POST['email'];
+                $phone=$_POST['phone'];
+                $previlege='r,w';
+                $type=1;
+                $res;
+                //if (!PermissionManager::getInstance()->serverCanEditAdmins())
+                //        return ;
+                try {
+                        
+                        if (!SessionManager::getInstance()->isAdmin())
+                                  throw new Exception("请用管理员登录.");
+                        $res = MysqlInterface::addOperator(1,$type,$account,$passwd,$name, $comment, $email,$phone,$previlege);
+
+                } catch(Exception $exc) {
+                        echo $exc->getMessage();
+                }
+                if ($res > 0)
+                    echo "succeed!";
+        }
+        public static function server_operator_update(){
+                $id =$_GET['id'];
+                $passwd=$_POST['passwd'];
+                if ($passwd == '')
+                     $passwd = null;
+                $name=$_POST['name'];
+                $comment=$_POST['comment'];
+                $email=$_POST['email'];
+                $phone=$_POST['phone'];
+                $res;
+                //if (!PermissionManager::getInstance()->serverCanEditAdmins())
+                //        return ;
+                try {
+			if (!SessionManager::getInstance()->isAdmin())
+				throw new Exception("请用管理员登录.");
+
+                        $res = MysqlInterface::updateOperator($id,null,$passwd,$name,$comment,$email,$phone,null);
+
+                } catch(Exception $exc) {
+
+                        echo $exc->getMessage();
+                }
+                if ($res > 0)
+                    echo "succeed!";
+        }
+        public static function server_operator_remove(){
+                $id =$_GET['id'];
+                $res;
+                //if (!PermissionManager::getInstance()->serverCanEditAdmins())
+                //        return ;
+                try {
+                        if (!SessionManager::getInstance()->isAdmin())
+				throw new Exception("请用管理员登录.");
+
+                        $res = MysqlInterface::deleteOperatorById($id);
+
+                } catch(Exception $exc) {
+
+                        echo $exc->getMessage();
+                }
+                if ($res > 0)
+                    echo "succeed!";
+        }
+	public static function server_getOperators()
+	{
+		//$serverId = intval($_POST['sid']);
+		//if (!PermissionManager::getInstance()->serverCanViewRegistrations($serverId)) {
+		//	echo tr('permission_denied');
+		//	MessageManager::echoAllMessages();
+		//	exit();
+		//}
+		
+	        if(!isset($_GET['najax'])){
+		       try {
+			       if (!SessionManager::getInstance()->isAdmin())
+				       throw new Exception("请用管理员登录.");
+
+
+			       $pageIndex =intval($_POST['pageIndex'])-1;
+			       $pageSize =intval($_POST['pageSize']);
+			       //echo $pageSize;die;
+			       $curpage = $pageIndex*$pageSize;
+			       //$server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
+			       //$users = $server->getRegisteredUsers();
+			       $users = MysqlInterface::getOperatorsByAdmin();
+
+			       //unset($users[0]);//不能使用array_shift()这样会重置数组索引
+			       //var_dump($users);
+			       //echo $curpage;
+			       $users =array_slice($users,$curpage,$pageSize,true);
+
+		
+?>
+    <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
+     <tr>
+
+      <th width="20" align="center">用户号</th>
+      <th width="20" align="center">账号</th>
+      <th width="20" align="center">姓名</th>
+      <th width="60" align="center">备注</th>
+      <th width="60" align="center">邮箱</th>
+      <th width="60" align="center">电话</th>
+      <th width="20" align="center">年卡数</th>
+      <th width="80" align="center">操作</th>
+     </tr>       
+<?php
+    foreach ($users AS $member) {
+						
+?>
+<tr>
+
+      <td align="center"><?php echo $member['id'];?></td>
+      <td align="center"><?php echo $member['account'];?></td>
+      <td align="center"><?php echo $member['name'];?></td>
+      <td align="center"><?php echo $member['comment'];?></td>
+      <td align="center"><?php echo $member['email'];?></td>
+      <td align="center"><?php echo $member['phone'];?></td>
+      <td align="center"><?php echo $member['availableCards'];?></td>
+
+
+      <td align="center">
+             <a href="./?page=operator&sid=1&action=dispatcher&id=<?php echo $member['id'] ?>" >分配</a> | <a href="./?page=operator&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> | <a href="javascript:;
+" onclick="if(confirm('确定删除用户?')){jq_operator_remove(<?php echo $member['id'] ?>);}">删除</a>
+             </td>
+     </tr>
+
+<?php
+}
+
+
+?>
+
+        </table>
+		<div class="clear"></div>
+<div class="pager"></div>	
+<?php
+		        } catch(Exception $exc) {
+			        echo $exc->getMessage();
+		        }
+	       }else{
+			//$server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
+			$users = MysqlInterface::getOperatorsByAdmin();	
+			//array_shift($users);
+			$i =count($users);
+			echo json_encode($i);
+	       } 		
+	}
+        public static function server_operator_search()
+        {
+                try{
+                        if (!SessionManager::getInstance()->isAdmin())
+				       throw new Exception("请用管理员登录.");
+
+
+			$value =addslashes($_POST['value']);
+			//echo $kw;
+			$type =intval($_POST['type']);
+			$users = MysqlInterface::searchOperatorsByAdmin($type, $value);
+			$total = count($users);
+?>
+     <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
+     <tr>
+      <th width="20" align="center">用户号</th>
+      <th width="20" align="center">账号</th>
+      <th width="20" align="center">姓名</th>
+      <th width="60" align="center">备注</th>
+      <th width="60" align="center">邮箱</th>
+      <th width="60" align="center">电话</th>
+      <th width="20" align="center">年卡数</th>
+      <th width="80" align="center">操作</th>
+
+     </tr>       
+<?php
+    foreach ($users AS $member) {
+						
+?>
+<tr>
+      <td align="center"><?php echo $member['id'];?></td>
+      <td align="center"><?php echo $member['account'];?></td>
+      <td align="center"><?php echo $member['name'];?></td>
+      <td align="center"><?php echo $member['comment'];?></td>
+      <td align="center"><?php echo $member['email'];?></td>
+      <td align="center"><?php echo $member['phone'];?></td>
+      <td align="center"><?php echo $member['availableCards'];?></td>
+
+      <td align="center">
+             <a href="./?page=operator&sid=1&action=dispatcher&id=<?php echo $member['id'] ?>" >分配</a> | <a href="./?page=operator&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> | <a href="javascript:;
+" onclick="if(confirm('确定删除用户?')){jq_operator_remove(<?php echo $member['id'] ?>);}">删除</a>
+             </td>
+     </tr>
+
+<?php
+}
+
+
+?>
+
+        </table>
+		<div class="clear"></div>
+<div class="page" style="text-align: right;padding-top: 20px;"><?php echo "总计".$total."个记录，共 1 页，当前第 1 页"?></div>	
+
+<?php               }catch(Exception $exc)
+                    {
+                               echo $exc->getMessage();
+                    }
+
+        }
+        
+
+        public static function server_record_add(){
+                $sid =$_GET['sid'];
+                $parentId =$_GET['uid'];
+                $operatorId=$_POST['operatorId'];
+                $allCards=$_POST['number'];
+                $res;
+                //if (!PermissionManager::getInstance()->serverCanEditAdmins())
+                //        return ;
+                try {
+                        
+                        $res = MysqlInterface::addBill($operatorId,0,$allCards);//enterpriseId is just set to 0
+
+                } catch(Exception $exc) {
+
+                }
+                if ($res > 0)
+                    echo "succeed!";
+        }
+        public static function server_bill_update(){
+                $id =$_GET['id'];
+                $operatorId=$_POST['operatorId'];
+                $allCards=$_POST['number'];
+                $res;
+                //if (!PermissionManager::getInstance()->serverCanEditAdmins())
+                //        return ;
+                try {
+                        
+                        $res = MysqlInterface::updateBillByAdmin($id, $operatorId, $allCards);
+
+                } catch(Exception $exc) {
+
+                }
+                if ($res > 0)
+                    echo "succeed!";
+        }
+        public static function server_bill_remove(){
+                $id =$_GET['id'];
+                $res;
+                //if (!PermissionManager::getInstance()->serverCanEditAdmins())
+                //        return ;
+                try {
+                        
+                        $res = MysqlInterface::deleteBillById($id);
+
+                } catch(Exception $exc) {
+
+                }
+                if ($res > 0)
+                    echo "succeed!";
+        }
+	public static function server_getRecords()
+	{
+		//$serverId = intval($_POST['sid']);
+		//if (!PermissionManager::getInstance()->serverCanViewRegistrations($serverId)) {
+		//	echo tr('permission_denied');
+		//	MessageManager::echoAllMessages();
+		//	exit();
+		//}
+	        if(!isset($_GET['najax'])){
+		       try {
+		       $pageIndex =intval($_POST['pageIndex'])-1;
+		       $pageSize =intval($_POST['pageSize']);
+		       //echo $pageSize;die;
+			$curpage = $pageIndex*$pageSize;
+			//$server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
+			//$users = $server->getRegisteredUsers();
+			$records = MysqlInterface::getRecordsByAdmin();
+			
+		//	unset($users[0]);//不能使用array_shift()这样会重置数组索引
+	        //		var_dump($users);
+			//echo $curpage;
+			$records =array_slice($records,$curpage,$pageSize,true);
+			
+		
+?>
+    <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
+     <tr>
+
+      <th width="20" align="center">记录号</th>
+      <th width="30" align="center">代理商编号</th>
+      <th width="30" align="center">代理商姓名</th>
+      <th width="30" align="center">年卡数</th>
+      <th width="30" align="center">金额</th>
+      <th width="60" align="center">操作时间</th>
+      <th width="80" align="center">操作</th>
+     </tr>       
+<?php
+    foreach ($records AS $record) {
+						
+?>
+<tr>
+
+      <td align="center"><?php echo $record['id'];?></td>
+      <td align="center"><?php echo $record['toId'];?></td>
+      <td align="center"><?php echo $record['name'];?></td>
+      <td align="center"><?php echo $record['cardNum'];?></td>
+      <td align="center"><?php echo $record['cost'];?></td>
+      <td align="center"><?php echo $record['createTime'];?></td>
+
+
+      <td align="center">
+             <a href="javascript:;" onclick="if(confirm('确定删除记录?')){jq_record_remove(<?php echo $record['id'] ?>);}">删除</a>
+             </td>
+     </tr>
+
+<?php
+}
+
+
+?>
+
+        </table>
+		<div class="clear"></div>
+<div class="pager"></div>	
+<?php
+		        } catch(Exception $exc) {
+			        echo '<div class="error">Server is not running</div>';
+		        }
+	       }else{
+			//$server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
+			$records = MysqlInterface::getRecordsByAdmin();	
+			//array_shift($users);
+			$i =count($records);
+			echo json_encode($i);
+	       } 		
+	}
+        public static function server_record_search()
+        {
+                $value =addslashes($_POST['value']);
+                //echo $kw;
+                $type =intval($_POST['type']);
+                $records = MysqlInterface::searchRecordsByAdmin($type, $value);
+                $total = count($records);
+?>
+    <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
+     <tr>
+      <th width="20" align="center">记录号</th>
+      <th width="30" align="center">代理商编号</th>
+      <th width="30" align="center">代理商姓名</th>
+      <th width="30" align="center">年卡数</th>
+      <th width="30" align="center">金额</th>
+      <th width="60" align="center">操作时间</th>
+      <th width="80" align="center">操作</th>
+     </tr>       
+<?php
+    foreach ($records AS $record) {
+						
+?>
+<tr>
+
+      <td align="center"><?php echo $record['id'];?></td>
+      <td align="center"><?php echo $record['toId'];?></td>
+      <td align="center"><?php echo $record['name'];?></td>
+      <td align="center"><?php echo $record['cardNum'];?></td>
+      <td align="center"><?php echo $record['cost'];?></td>
+      <td align="center"><?php echo $record['createTime'];?></td>
+      <td align="center">
+             <a href="javascript:;" onclick="if(confirm('确定删除账单?')){jq_bill_remove(<?php echo $record['id'] ?>);}">删除</a>
+             </td>
+     </tr>
+
+<?php
+}
+
+
+?>
+
+        </table>
+		<div class="clear"></div>
+<div class="page" style="text-align: right;padding-top: 20px;"><?php echo "总计".$total."个记录，共 1 页，当前第 1 页"?></div>	
+
+<?php               
+        
+       }
+
+        public static function server_record_file_output()
+        {
+                try{
+			if (!SessionManager::getInstance()->isAdmin())
+				throw new Exception("请用管理员登录.");
+
+
+			$value =addslashes($_POST['value']);
+			$type =intval($_POST['type']);
+			$records = MysqlInterface::searchRecordsByAdmin($type, $value);                 
+			$total = count($records);
+
+			$fp = fopen('php://output', 'a');
+
+			$head = array('账号', '密码', '邮箱', '电话', '备注');
+			foreach ($head as $i => $v) {
+				// CSV的Excel支持GBK编码，一定要转换，否则乱码
+				$head[$i] = iconv('utf-8', 'gbk', $v);
+			}
+
+			// 将数据通过fputcsv写到文件句柄
+			fputcsv($fp, $head);
+			// 计数器
+			$cnt = 0;
+			// 每隔$limit行，刷新一下输出buffer，不要太大，也不要太小
+			$limit = 100000;
+
+			foreach($records as $row)
+			{
+				$cnt ++;
+				if ($limit == $cnt) { //刷新一下输出buffer，防止由于数据过多造成问题
+					ob_flush();
+					flush();
+					$cnt = 0;
+				}
+
+				foreach ($row as $i => $v) {
+					$row[$i] = iconv('utf-8', 'gbk', $v);
+				}
+				fputcsv($fp, $row);
+			}
+			// Create new PHPExcel object
+			/*$objPHPExcel = new PHPExcel();
+
+			// Set document properties
+			$objPHPExcel->getProperties()->setCreator("allptt")
+			->setLastModifiedBy("allptt")
+			->setTitle("企业用户表")
+			->setSubject("")
+			->setDescription("企业用户表")
+			->setKeywords("企业 用户")
+			->setCategory("表单");
+
+
+			// Add some data
+			$objPHPExcel->setActiveSheetIndex(0)
+			->setCellValue('A1', 'Hello')
+			->setCellValue('B2', 'world!')
+			->setCellValue('C1', 'Hello')
+			->setCellValue('D2', 'world!');
+
+			// Miscellaneous glyphs, UTF-8
+			$objPHPExcel->setActiveSheetIndex(0)
+			->setCellValue('A4', 'Miscellaneous glyphs')
+			->setCellValue('A5', 'éàèùâêîôûëïüÿäöüç')
+			->setCellValue('A6', '吴占涛');
+
+			// Rename worksheet
+			$objPHPExcel->getActiveSheet()->setTitle('企业用户');
+
+
+			// Set active sheet index to the first sheet, so Excel opens this as the first sheet
+			$objPHPExcel->setActiveSheetIndex(0);
+			 */
+			// ob_end_clean(); 
+			$filename = "账单名单";
+			// Redirect output to a client’s web browser (Excel2007)
+			//header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+			//header('Content-Disposition: attachment;filename="01simple.xlsx"');
+			//header('Cache-Control: max-age=0');
+			// If you're serving to IE 9, then the following may be needed
+			//header('Cache-Control: max-age=1');
+			header('Content-Type: application/vnd.ms-excel');
+			header('Content-Disposition: attachment;filename='.$filename.'.csv');
+			header('Cache-Control: max-age=0');
+			// If you're serving to IE over SSL, then the following may be needed
+			//header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+			//header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+			//header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+			//header ('Pragma: public'); // HTTP/1.0
+
+			//$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+			//$objWriter->save('php://output');
+			exit;
+                } catch (Exception $exc)
+                {
+                        echo $exc->getMessage();
+                }
+
+	}
+
+        public static function server_dispatcher_add()
+        {
+                $operatorId = $_POST['operatorId'];
+                $toType = 2;
+                $cardNum = intval($_POST['cardNum']);
+                $availableCards =intval( $_POST['availableCards'] );
+                $cost = $_POST['cost'];
+                $fromId = 1;
+                $fromType = 1;
+                $res;
+                //if (!PermissionManager::getInstance()->serverCanEditAdmins())
+                //        return ;
+                try {
+
+                        $res = MysqlInterface::addAdminToOperatorDispatcher($operatorId,$cardNum+$availableCards);
+                        $res = MysqlInterface::addRecord($fromId,$fromType,$operatorId, $toType,$cardNum,$cost);
+
+                } catch(Exception $exc) {
+
+                }
+		echo "succeed!";
+                
+        }
+
+        public static function server_checkOperator()
+        {
+                $account = $_POST['account'];
+                $res = MysqlInterface::checkIfOperatorExist($account);
+                if ($res)
+                    echo "false";
+                else 
+                    echo "true";
+        }
+
 
 }
+

@@ -20,18 +20,20 @@ class Ajax_Operator extends Ajax
         public static function server_operator_add(){
                 $sid =$_GET['sid'];
                 $parentId =$_GET['parentId'];
-                $uname=$_POST['uname'];
+                $account=$_POST['account'];
                 $passwd=$_POST['passwd'];
+                $name=$_POST['name'];
+                $comment=$_POST['comment'];
                 $email=$_POST['email'];
                 $phone=$_POST['phone'];
                 $previlege='r,w';
                 $type=2;
-                $res;
+		$res;
                 //if (!PermissionManager::getInstance()->serverCanEditAdmins())
                 //        return ;
                 try {
                         
-                        $res = MysqlInterface::addOperator($parentId,$type,$uname,$passwd,$email,$phone,$previlege);
+                        $res = MysqlInterface::addOperator($parentId,$type,$account,$passwd,$name, $comment, $email,$phone,$previlege);
 
                 } catch(Exception $exc) {
 
@@ -39,18 +41,22 @@ class Ajax_Operator extends Ajax
                 if ($res > 0)
                     echo "succeed!";
         }
+
         public static function server_operator_update(){
                 $id =$_GET['id'];
-                $uname=$_POST['uname'];
                 $passwd=$_POST['passwd'];
+                if ($passwd == '')
+                     $passwd = null;
+                $name=$_POST['name'];
+                $comment=$_POST['comment'];
                 $email=$_POST['email'];
                 $phone=$_POST['phone'];
-                $res;
+		$res;
                 //if (!PermissionManager::getInstance()->serverCanEditAdmins())
                 //        return ;
                 try {
                         
-                        $res = MysqlInterface::updateOperator($id,null,$uname,$passwd,$email,$phone,null);
+                        $res = MysqlInterface::updateOperator($id,null,$passwd, $name,$comment,$email,$phone,null);
 
                 } catch(Exception $exc) {
 
@@ -104,10 +110,13 @@ class Ajax_Operator extends Ajax
 
       <th width="20" align="center">用户号</th>
       <th width="20" align="center">账号</th>
+      <th width="20" align="center">姓名</th>
+      <th width="60" align="center">备注</th>
       <th width="60" align="center">邮箱</th>
       <th width="60" align="center">电话</th>
+      <th width="20" align="center">年卡数</th>
       <th width="80" align="center">操作</th>
-     </tr>       
+      </tr>       
 <?php
     foreach ($users AS $member) {
 						
@@ -115,13 +124,15 @@ class Ajax_Operator extends Ajax
 <tr>
 
       <td align="center"><?php echo $member['id'];?></td>
+      <td align="center"><?php echo $member['account'];?></td>
       <td align="center"><?php echo $member['name'];?></td>
+      <td align="center"><?php echo $member['comment'];?></td>
       <td align="center"><?php echo $member['email'];?></td>
       <td align="center"><?php echo $member['phone'];?></td>
-
-
+      <td align="center"><?php echo $member['availableCards'];?></td>
+     
       <td align="center">
-             <a href="./?page=operator&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> | <a href="javascript:;
+             <a href="./?page=operator&sid=1&action=dispatcher&id=<?php echo $member['id'] ?>" >分配</a> | <a href="./?page=operator&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> | <a href="javascript:;
 " onclick="if(confirm('确定删除用户?')){jq_operator_remove(<?php echo $member['id'] ?>);}">删除</a>
              </td>
      </tr>
@@ -162,10 +173,13 @@ class Ajax_Operator extends Ajax
 
       <th width="20" align="center">用户号</th>
       <th width="20" align="center">账号</th>
+      <th width="20" align="center">姓名</th>
+      <th width="60" align="center">备注</th>
       <th width="60" align="center">邮箱</th>
       <th width="60" align="center">电话</th>
+      <th width="20" align="center">年卡数</th>
       <th width="80" align="center">操作</th>
-     </tr>       
+      </tr>       
 <?php
     foreach ($users AS $member) {
 						
@@ -173,13 +187,15 @@ class Ajax_Operator extends Ajax
 <tr>
 
       <td align="center"><?php echo $member['id'];?></td>
+      <td align="center"><?php echo $member['account'];?></td>
       <td align="center"><?php echo $member['name'];?></td>
+      <td align="center"><?php echo $member['comment'];?></td>
       <td align="center"><?php echo $member['email'];?></td>
       <td align="center"><?php echo $member['phone'];?></td>
-
-
+      <td align="center"><?php echo $member['availableCards'];?></td>
+     
       <td align="center">
-             <a href="./?page=operator&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> | <a href="javascript:;
+             <a href="./?page=operator&sid=1&action=dispatcher&id=<?php echo $member['id'] ?>" >分配</a> | <a href="./?page=operator&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> | <a href="javascript:;
 " onclick="if(confirm('确定删除用户?')){jq_operator_remove(<?php echo $member['id'] ?>);}">删除</a>
              </td>
      </tr>
@@ -197,22 +213,24 @@ class Ajax_Operator extends Ajax
 <?php               
         }
         
+        
         public static function server_enterprise_add(){
                 $sid =$_GET['sid'];
                 $parentId =$_GET['uid'];
-                $uname=$_POST['uname'];
+                $account=$_POST['account'];
                 $passwd=$_POST['passwd'];
+                $name=$_POST['name'];
                 $email=$_POST['email'];
                 $phone=$_POST['phone'];
                 $comment=$_POST['comment'];
                 $previlege='r,w';
-                $type=2;
+                $type=1;
                 $res;
                 //if (!PermissionManager::getInstance()->serverCanEditAdmins())
                 //        return ;
                 try {
                         
-                        $res = MysqlInterface::addEnterprise($parentId,$type,$uname,$passwd,$email,$phone,$comment,$previlege);
+                        $res = MysqlInterface::addEnterprise($parentId,$type,$account,$passwd,$name,$email,$phone,$comment,$previlege);
 
                 } catch(Exception $exc) {
 
@@ -222,8 +240,10 @@ class Ajax_Operator extends Ajax
         }
         public static function server_enterprise_update(){
                 $id =$_GET['id'];
-                $uname=$_POST['uname'];
                 $passwd=$_POST['passwd'];
+                if ($passwd == '')
+                    $passwd = null;
+                $name=$_POST['name'];
                 $email=$_POST['email'];
                 $phone=$_POST['phone'];
                 $comment=$_POST['comment'];
@@ -232,7 +252,7 @@ class Ajax_Operator extends Ajax
                 //        return ;
                 try {
                         
-                        $res = MysqlInterface::updateEnterprise($id,null,$uname,$passwd,$email,$phone,$comment,null);
+                        $res = MysqlInterface::updateEnterprise($id,null,$passwd, $name,$email,$phone,$comment,null);
 
                 } catch(Exception $exc) {
 
@@ -267,27 +287,31 @@ class Ajax_Operator extends Ajax
 		       try {
 		       $pageIndex =intval($_POST['pageIndex'])-1;
 		       $pageSize =intval($_POST['pageSize']);
+                       
+		       $parentId = $_GET['parentId'];
 		       //echo $pageSize;die;
-			$curpage = $pageIndex*$pageSize;
-			//$server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
-			//$users = $server->getRegisteredUsers();
-			$users = MysqlInterface::getEnterprises();
-			
-		//	unset($users[0]);//不能使用array_shift()这样会重置数组索引
-	        //		var_dump($users);
-			//echo $curpage;
-			$users =array_slice($users,$curpage,$pageSize,true);
-			
+		       $curpage = $pageIndex*$pageSize;
+		       //$server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
+		       //$users = $server->getRegisteredUsers();
+		       $users = MysqlInterface::getEnterprisesByParentId($parentId);
+
+		       //	unset($users[0]);//不能使用array_shift()这样会重置数组索引
+		       //		var_dump($users);
+		       //echo $curpage;
+		       $users =array_slice($users,$curpage,$pageSize,true);
+
 		
 ?>
     <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
      <tr>
 
-      <th width="20" align="center">用户号</th>
+      <th width="20" align="center">用户编号</th>
       <th width="20" align="center">账号</th>
+      <th width="60" align="center">联系人</th>
       <th width="60" align="center">邮箱</th>
       <th width="60" align="center">电话</th>
       <th width="60" align="center">备注</th>
+      <th width="60" align="center">可用年卡数</th>
       <th width="80" align="center">操作</th>
      </tr>       
 <?php
@@ -297,14 +321,30 @@ class Ajax_Operator extends Ajax
 <tr>
 
       <td align="center"><?php echo $member['id'];?></td>
+      <td align="center"><?php echo $member['account'];?></td>
       <td align="center"><?php echo $member['name'];?></td>
       <td align="center"><?php echo $member['email'];?></td>
       <td align="center"><?php echo $member['phone'];?></td>
       <td align="center"><?php echo $member['comment'];?></td>
+      <td align="center"><?php echo $member['availableCards'];?></td>
 
 
       <td align="center">
-             <a href="./?page=enterprise&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> | <a href="javascript:;" onclick="if(confirm('确定删除用户?')){jq_enterprise_remove(<?php echo $member['id'] ?>);}">删除</a>
+             <?php 
+                 if(SessionManager::getInstance()->isOperator() && SessionManager::getInstance()->getLevel() == 1){ 
+             ?>
+             <a href="./?page=enterprise1&sid=1&action=dispatcher&id=<?php echo $member['id'] ?>" >分配</a> | 
+             <a href="./?page=enterprise1&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> 
+             <?php
+                 }else if (SessionManager::getInstance()->isOperator() && SessionManager::getInstance()->getLevel() == 2){
+             ?>
+             <a href="./?page=enterprise2&sid=1&action=dispatcher&id=<?php echo $member['id'] ?>" >分配</a> | 
+             <a href="./?page=enterprise2&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> 
+             <?php 
+                 }
+             ?>
+             
+             | <a href="javascript:;" onclick="if(confirm('确定删除用户?')){jq_enterprise_remove(<?php echo $member['id'] ?>);}">删除</a>
              </td>
      </tr>
 
@@ -323,7 +363,8 @@ class Ajax_Operator extends Ajax
 		        }
 	       }else{
 			//$server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
-			$users = MysqlInterface::getEnterprises();	
+                        $parentId = $_GET['parentId'];
+			$users = MysqlInterface::getEnterprisesByParentId($parentId);	
 			//array_shift($users);
 			$i =count($users);
 			echo json_encode($i);
@@ -334,17 +375,20 @@ class Ajax_Operator extends Ajax
                 $value =addslashes($_POST['value']);
                 //echo $kw;
                 $type =intval($_POST['type']);
-                $users = MysqlInterface::searchEnterprises($type, $value);
+                $parentId =intval($_GET['parentId']);
+                $users = MysqlInterface::searchEnterprisesByParentId($type, $value,$parentId);
                 $total = count($users);
 ?>
      <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
      <tr>
 
-      <th width="20" align="center">用户号</th>
+      <th width="20" align="center">用户编号</th>
       <th width="20" align="center">账号</th>
+      <th width="20" align="center">联系人</th>
       <th width="60" align="center">邮箱</th>
       <th width="60" align="center">电话</th>
       <th width="60" align="center">备注</th>
+      <th width="60" align="center">可用年卡数</th>
       <th width="80" align="center">操作</th>
      </tr>       
 <?php
@@ -354,14 +398,30 @@ class Ajax_Operator extends Ajax
 <tr>
 
       <td align="center"><?php echo $member['id'];?></td>
+      <td align="center"><?php echo $member['account'];?></td>
       <td align="center"><?php echo $member['name'];?></td>
       <td align="center"><?php echo $member['email'];?></td>
       <td align="center"><?php echo $member['phone'];?></td>
       <td align="center"><?php echo $member['comment'];?></td>
+      <td align="center"><?php echo $member['availableCards'];?></td>
 
 
       <td align="center">
-             <a href="./?page=enterprise&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> | <a href="javascript:;" onclick="if(confirm('确定删除用户?')){jq_enterprise_remove(<?php echo $member['id'] ?>);}">删除</a>
+             <?php 
+                 if(SessionManager::getInstance()->isOperator() && SessionManager::getInstance()->getLevel() == 1){ 
+             ?>
+             <a href="./?page=enterprise1&sid=1&action=dispatcher&id=<?php echo $member['id'] ?>" >分配</a> | 
+             <a href="./?page=enterprise1&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> 
+             <?php
+                 }else if (SessionManager::getInstance()->isOperator() && SessionManager::getInstance()->getLevel() == 2){
+             ?>
+             <a href="./?page=enterprise2&sid=1&action=dispatcher&id=<?php echo $member['id'] ?>" >分配</a> | 
+             <a href="./?page=enterprise2&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> 
+             <?php 
+                 }
+             ?>
+
+             | <a href="javascript:;" onclick="if(confirm('确定删除用户?')){jq_enterprise_remove(<?php echo $member['id'] ?>);}">删除</a>
              </td>
      </tr>
 
@@ -590,6 +650,74 @@ class Ajax_Operator extends Ajax
                 echo json_encode($res);
                 
         }
+
+        public static function server_dispatcher_add()
+        {
+                $parentId = intval($_GET['parentId']);
+                $operatorId = $_POST['operatorId'];
+                $toType = 2;
+                $cardNum = intval($_POST['cardNum']);
+                $availableCards =intval( $_POST['availableCards'] );
+                //$availableGroups = intval($_POST['availableGroups']);
+                //$groupNum =intval( $_POST['groupNum']);
+                $cost = $_POST['cost'];
+                $fromId = $parentId;
+                $fromType = 2;
+                $res;
+                //if (!PermissionManager::getInstance()->serverCanEditAdmins())
+                //        return ;
+                try {
+                        $res = MysqlInterface::checkIfOperatorCanDispatcher($fromId, $cardNum);
+                        if ($res)
+                        {
+
+				$res = MysqlInterface::addOperatorToOperatorDispatcher($fromId,$cardNum,$operatorId,$cardNum+$availableCards);
+				$res = MysqlInterface::addRecord($fromId,$fromType,$operatorId, $toType,$cardNum,$cost);
+
+                        } else {
+                                throw new Exception("年卡数量不足，请充卡");
+                        }
+                } catch(Exception $exc) {
+                        echo $exc->getMessage();
+                        return ;
+                }
+		echo "succeed!";
+
+        }
+        public static function server_dispatcher_enterprise_add()
+        {
+                $parentId = intval($_GET['parentId']);
+                $enterpriseId = $_POST['enterpriseId'];
+                $toType = 3;
+                $cardNum = intval($_POST['cardNum']);
+                $availableCards =intval( $_POST['availableCards'] );
+                //$availableGroups = intval($_POST['availableGroups']);
+                //$groupNum =intval( $_POST['groupNum']);
+                $cost = $_POST['cost'];
+                $fromId = $parentId;
+                $fromType = 2;
+                $res;
+                //if (!PermissionManager::getInstance()->serverCanEditAdmins())
+                //        return ;
+                try {
+                        $res = MysqlInterface::checkIfOperatorCanDispatcher($parentId, $cardNum);
+                        if ($res)
+                        {
+                                
+                                $res = MysqlInterface::addOperatorToEnterpriseDispatcher($parentId,$cardNum, $enterpriseId,$cardNum+$availableCards);
+                                $res = MysqlInterface::addRecord($fromId,$fromType,$enterpriseId, $toType,$cardNum,$cost);
+                        }else
+                        {
+                                throw new Exception("年卡数量不足，请充卡");
+                        }
+                } catch(Exception $exc) {
+                        echo $exc->getMessage();
+                        return;
+                }
+		echo "succeed!";
+
+        }
+
 
         public static function server_operator_file_output()
         {
@@ -957,9 +1085,206 @@ class Ajax_Operator extends Ajax
 
 	}
 
+        public static function server_getRecords()
+        {
+                //$serverId = intval($_POST['sid']);
+                //if (!PermissionManager::getInstance()->serverCanViewRegistrations($serverId)) {
+                //      echo tr('permission_denied');
+                //      MessageManager::echoAllMessages();
+                //      exit();
+                //}
+                if(!isset($_GET['najax'])){
+                       try {
+                       $pageIndex =intval($_POST['pageIndex'])-1;
+                       $pageSize =intval($_POST['pageSize']);
+                       //echo $pageSize;die;
+                        $curpage = $pageIndex*$pageSize;
+                        //$server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
+                        //$users = $server->getRegisteredUsers();
+                        $records = MysqlInterface::getRecordsByAdmin();
+
+                //      unset($users[0]);//不能使用array_shift()这样会重置数组索引
+                //              var_dump($users);
+                        //echo $curpage;
+                        $records =array_slice($records,$curpage,$pageSize,true);
 
 
+?>
+    <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
+     <tr>
 
+      <th width="20" align="center">记录号</th>
+      <th width="30" align="center">代理商编号</th>
+      <th width="30" align="center">代理商姓名</th>
+      <th width="30" align="center">年卡数</th>
+      <th width="30" align="center">金额</th>
+      <th width="60" align="center">操作时间</th>
+      <th width="80" align="center">操作</th>
+     </tr>
+<?php
+    foreach ($records AS $record) {
+
+?>
+<tr>
+
+      <td align="center"><?php echo $record['id'];?></td>
+      <td align="center"><?php echo $record['toId'];?></td>
+      <td align="center"><?php echo $record['name'];?></td>
+      <td align="center"><?php echo $record['cardNum'];?></td>
+      <td align="center"><?php echo $record['cost'];?></td>
+      <td align="center"><?php echo $record['createTime'];?></td>
+
+
+      <td align="center">
+             <a href="javascript:;" onclick="if(confirm('确定删除记录?')){jq_record_remove(<?php echo $record['id'] ?>);}">删除</a>
+             </td>
+     </tr>
+
+<?php
+}
+
+
+?>
+
+</table>
+                <div class="clear"></div>
+<div class="pager"></div>
+<?php
+                        } catch(Exception $exc) {
+                                echo '<div class="error">Server is not running</div>';
+                        }
+               }else{
+                        //$server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
+                        $records = MysqlInterface::getRecordsByAdmin();
+                        //array_shift($users);
+                        $i =count($records);
+                        echo json_encode($i);
+               }
+        }
+        public static function server_record_search()
+        {
+                $value =addslashes($_POST['value']);
+                //echo $kw;
+                $type =intval($_POST['type']);
+                $records = MysqlInterface::searchRecordsByAdmin($type, $value);
+                $total = count($records);
+?>
+    <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
+     <tr>
+      <th width="20" align="center">记录号</th>
+      <th width="30" align="center">代理商编号</th>
+      <th width="30" align="center">代理商姓名</th>
+      <th width="30" align="center">年卡数</th>
+      <th width="30" align="center">金额</th>
+      <th width="60" align="center">操作时间</th>
+      <th width="80" align="center">操作</th>
+     </tr>
+<?php
+    foreach ($records AS $record) {
+
+?>
+<tr>
+
+      <td align="center"><?php echo $record['id'];?></td>
+      <td align="center"><?php echo $record['toId'];?></td>
+      <td align="center"><?php echo $record['name'];?></td>
+      <td align="center"><?php echo $record['cardNum'];?></td>
+      <td align="center"><?php echo $record['cost'];?></td>
+      <td align="center"><?php echo $record['createTime'];?></td>
+      <td align="center">
+             <a href="javascript:;" onclick="if(confirm('确定删除账单?')){jq_bill_remove(<?php echo $record['id'] ?>);}">>删除</a>
+             </td>
+     </tr>
+
+<?php
+}
+
+
+?>
+
+        </table>
+                <div class="clear"></div>
+<div class="page" style="text-align: right;padding-top: 20px;"><?php echo "总计".$total."个记录，共 1 页，当前第 1 页"?></div>
+<?php
+
+       }
+
+        public static function server_record_file_output()
+        {
+                $value =addslashes($_POST['value']);
+                $type =intval($_POST['type']);
+                $records = MysqlInterface::searchRecordsByAdmin($type, $value);
+                $total = count($records);
+
+                $fp = fopen('php://output', 'a');
+
+                $head = array('账号', '密码', '邮箱', '电话', '备注');
+                foreach ($head as $i => $v) {
+                        // CSV的Excel支持GBK编码，一定要转换，否则乱码
+                        $head[$i] = iconv('utf-8', 'gbk', $v);
+                }
+
+                // 将数据通过fputcsv写到文件句柄
+                fputcsv($fp, $head);
+                // 计数器
+                $cnt = 0;
+                // 每隔$limit行，刷新一下输出buffer，不要太大，也不要太小
+                $limit = 100000;
+
+                foreach($records as $row)
+                {
+                        $cnt ++;
+                        if ($limit == $cnt) { //刷新一下输出buffer，防止由于数据过多造成问题
+                                ob_flush();
+                                flush();
+                                $cnt = 0;
+                        }
+
+                        foreach ($row as $i => $v) {
+                                $row[$i] = iconv('utf-8', 'gbk', $v);
+                        }
+                        fputcsv($fp, $row);
+                }
+                $filename = "账单名单";
+                // Redirect output to a client’s web browser (Excel2007)
+                //header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                //header('Content-Disposition: attachment;filename="01simple.xlsx"');
+                //header('Cache-Control: max-age=0');
+                // If you're serving to IE 9, then the following may be needed
+                //header('Cache-Control: max-age=1');
+                header('Content-Type: application/vnd.ms-excel');
+                header('Content-Disposition: attachment;filename='.$filename.'.csv');
+                header('Cache-Control: max-age=0');
+                // If you're serving to IE over SSL, then the following may be needed
+                //header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+                //header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+                //header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+                //header ('Pragma: public'); // HTTP/1.0
+
+                //$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+                //$objWriter->save('php://output');
+                exit;
+
+        }
+        public static function server_checkOperator()
+        {
+                $account = $_POST['account'];
+                $res = MysqlInterface::checkIfOperatorExist($account);
+                if ($res)
+                    echo "false";
+                else
+                    echo "true";
+        }
+
+        public static function server_checkEnterprise()
+        {
+                $account = $_POST['account'];
+                $res = MysqlInterface::checkIfEnterpriseExist($account);
+                if ($res)
+                    echo "false";
+                else
+                    echo "true";
+        }
 
 }
 
