@@ -19,6 +19,7 @@ class MysqlManager{
 	private $db;
 	private $charset;
 	private $link;
+	private $linkNotAuto;
 	//私有的构造方法
 	private function __construct($db_config=array()){
 		$this->host = $db_config['DB_HOST'] ? $db_config['DB_HOST'] : 'localhost';
@@ -37,21 +38,31 @@ class MysqlManager{
 	//连接数据库
 	private function db_connect(){
 		
-		$this->link=mysqli_connect($this->host.':'.$this->port,$this->user,$this->pass, $this->db);
+		$this->link=mysqli_connect($this->host,$this->user,$this->pass, $this->db,$this->port);
 		if(!$this->link){
 			echo "数据库连接失败<br>";
 			echo "错误编码".mysqli_errno($this->link)."<br>";
 			echo "错误信息".mysqli_error($this->link)."<br>";
 			exit;
 		}
+        	$this->linkNotAuto=mysqli_connect($this->host,$this->user,$this->pass, $this->db,$this->port);
+		if(!$this->linkNotAuto){
+			echo "数据库连接失败<br>";
+			echo "错误编码".mysqli_errno($this->linkNotAuto)."<br>";
+			echo "错误信息".mysqli_error($this->linkNotAuto)."<br>";
+			exit;
+		}
+
 	}
 	//设置字符集
 	private function db_charset(){
 		mysqli_query($this->link,"set names {$this->charset}");
+		mysqli_query($this->linkNotAuto,"set names {$this->charset}");
 	}
 	//选择数据库
 	private function db_usedb(){
 		mysqli_query($this->link,"use {$this->db}");
+		mysqli_query($this->linkNotAuto,"use {$this->db}");
 	}
 	//私有的克隆
 	private function __clone(){
@@ -75,6 +86,31 @@ class MysqlManager{
 		}
 		return $res;
 	}
+	//非自动commit连接执行sql语句的方法
+	public function queryNotAutoCommit($sql){
+
+		$res=mysqli_query($this->linkNotAuto,$sql);
+		if(!$res){
+			echo "sql语句执行失败<br>";
+			echo "错误编码是".mysqli_errno($this->link)."<br>";
+			echo "错误信息是".mysqli_error($this->link)."<br>";
+		}
+		return $res;
+	}
+
+        //设置autocommit属性
+        public function setAutoCommit($res)
+        {
+                $this->linkNotAuto->autocommit($res);
+        }
+        public function commit()
+        {
+                $this->linkNotAuto->commit();
+        }
+        public function rollback()
+        {
+                $this->linkNotAuto->rollback();
+        }
 	//打印数据
 	public function p($arr){
 		echo "<pre>";
@@ -215,5 +251,14 @@ class MysqlManager{
 		//返回受影响的行数
 		return mysqli_affected_rows($this->link);
 	}
+	/**
+	 * [防止sql注入]
+	 * @param [type] $value
+	 */
+        
+        public function escape_string($value)
+        {
+                return mysqli_escape_string($this->link, $value);
+        }
 }
 ?>
