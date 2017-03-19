@@ -1794,6 +1794,7 @@ return false;
       <th width="60" align="center">邮箱</th>
       <th width="60" align="center">电话</th>
       <th width="20" align="center">年卡数</th>
+      <th width="20" align="center">永久卡数</th>
       <th width="80" align="center">操作</th>
      </tr>       
 <?php
@@ -1809,6 +1810,7 @@ return false;
       <td align="center"><?php echo $member['email'];?></td>
       <td align="center"><?php echo $member['phone'];?></td>
       <td align="center"><?php echo $member['availableCards'];?></td>
+      <td align="center"><?php echo $member['availablePCards'];?></td>
 
 
       <td align="center">
@@ -1860,6 +1862,7 @@ return false;
       <th width="60" align="center">邮箱</th>
       <th width="60" align="center">电话</th>
       <th width="20" align="center">年卡数</th>
+      <th width="20" align="center">永久卡数</th>
       <th width="80" align="center">操作</th>
 
      </tr>       
@@ -1875,6 +1878,7 @@ return false;
       <td align="center"><?php echo $member['email'];?></td>
       <td align="center"><?php echo $member['phone'];?></td>
       <td align="center"><?php echo $member['availableCards'];?></td>
+      <td align="center"><?php echo $member['availablePCards'];?></td>
 
       <td align="center">
              <a href="./?page=operator&sid=1&action=dispatcher&id=<?php echo $member['id'] ?>" >分配</a> | <a href="./?page=operator&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> | <a href="javascript:;
@@ -2181,7 +2185,9 @@ return false;
                 $operatorId = $_POST['operatorId'];
                 $toType = 2;
                 $cardNum = intval($_POST['cardNum']);
+                $pCardNum = intval($_POST['pCardNum']);
                 $availableCards =intval( $_POST['availableCards'] );
+                $availablePCards =intval( $_POST['availablePCards'] );
                 $cost = $_POST['cost'];
                 $fromId = 1;
                 $fromType = 1;
@@ -2190,8 +2196,8 @@ return false;
                 //        return ;
                 try {
 
-                        $res = MysqlInterface::addAdminToOperatorDispatcher($operatorId,$cardNum+$availableCards);
-                        $res = MysqlInterface::addRecord($fromId,$fromType,$operatorId, $toType,$cardNum,$cost);
+                        $res = MysqlInterface::addAdminToOperatorDispatcher($operatorId,$cardNum+$availableCards, $pCardNum+$availablePCards);
+                        $res = MysqlInterface::addRecord($fromId,$fromType,$operatorId, $toType,$cardNum,$pCardNum, $cost);
 
                 } catch(Exception $exc) {
 
@@ -2209,6 +2215,169 @@ return false;
                 else 
                     echo "true";
         }
+
+        public static function batch_add_operator()
+        {
+                $res = array();
+
+                if ($_FILES["fileToUpload"]["error"] > 0)
+                {
+                        $res['code']  = 400;
+                        $res['reason'] = $_FILES["fileToUpload"]["error"];
+                        echo json_encode($res);
+                        return;
+                }
+                $parentId = $_GET['parentId'];
+                $file_types = explode ( ".", $_FILES ['fileToUpload']['name'] );
+                $file_type = $file_types[count ($file_types) - 1];
+                $SUPPORT_TYPE = array('csv','xls','xlsx');
+                if (!in_array($file_type,$SUPPORT_TYPE))
+                {
+                        $res['code']  = 400;
+                        $res['reason'] = "unsupport document type.";
+                        echo json_encode($res);
+                        return;
+                }
+                $PHPExcel=null;
+                if ($file_type == 'xls')
+                {
+                        $reader = PHPExcel_IOFactory::createReader('Excel5'); //设置以Excel5格式(Excel97-2003工作簿)
+                        $PHPExcel = $reader->load($_FILES["fileToUpload"]["tmp_name"]); // 载入excel文件
+                }else if ($file_type == 'xlsx')
+                {
+                        $PHPExcel = PHPExcel_IOFactory::load($_FILES["fileToUpload"]["tmp_name"]);
+                }
+                $sheet = $PHPExcel->getSheet(0); // 读取第一個工作表
+                $highestRow = $sheet->getHighestRow(); // 取得总行数
+                $highestColumm = $sheet->getHighestColumn(); // 取得总列数
+
+                $code = 200;
+                $reason = '';
+                /** 循环读取每个单元格的数据 */
+                for ($row = 1; $row <= $highestRow; $row++){//行数是以第1行开始
+                        $account = $sheet->getCell("A".$row)->getValue();
+                        $passwd = $sheet->getCell("B".$row)->getValue();
+                        if ($account == '' || $passwd == '')    continue;
+                        $name = $sheet->getCell("C".$row)->getValue();
+                        $comment = $sheet->getCell("D".$row)->getValue();
+                        $email = $sheet->getCell("E".$row)->getValue();
+                        $phone = $sheet->getCell("F".$row)->getValue();
+                        $previlege='r,w';
+                        $type=1;
+
+                        $result = MysqlInterface::addOperator($parentId,$type,$account,$passwd,$name,$comment,$email,$phone,$previlege);
+                        if ($result <= 0)
+                        {
+                             $code = 400;
+                             $reason = $reason." | 文件行 ".$row." 添加失败";
+                        }
+                }
+                $res['code'] = $code;
+                $res['reason'] = $reason;
+                echo json_encode($res);
+
+        }
+        public static function server_operator_file_output()
+        {
+                try{
+			if (!SessionManager::getInstance()->isAdmin())
+				throw new Exception("请用管理员登录.");
+
+
+			$value =addslashes($_POST['value']);
+			$type =intval($_POST['type']);
+			$records = MysqlInterface::searchOperatorsByAdmin($type, $value);                 
+			$total = count($records);
+
+			$fp = fopen('php://output', 'a');
+
+			$head = array('代理商编号', '账号', '联系人姓名','备注', '邮箱','电话', '可用年卡数','可用永久卡数');
+			foreach ($head as $i => $v) {
+				// CSV的Excel支持GBK编码，一定要转换，否则乱码
+				$head[$i] = iconv('utf-8', 'gbk', $v);
+			}
+
+			// 将数据通过fputcsv写到文件句柄
+			fputcsv($fp, $head);
+			// 计数器
+			$cnt = 0;
+			// 每隔$limit行，刷新一下输出buffer，不要太大，也不要太小
+			$limit = 100000;
+
+			foreach($records as $row)
+			{
+				$cnt ++;
+				if ($limit == $cnt) { //刷新一下输出buffer，防止由于数据过多造成问题
+					ob_flush();
+					flush();
+					$cnt = 0;
+				}
+
+				foreach ($row as $i => $v) {
+					$row[$i] = iconv('utf-8', 'gbk', $v);
+				}
+				fputcsv($fp, $row);
+			}
+			// Create new PHPExcel object
+			/*$objPHPExcel = new PHPExcel();
+
+			// Set document properties
+			$objPHPExcel->getProperties()->setCreator("allptt")
+			->setLastModifiedBy("allptt")
+			->setTitle("企业用户表")
+			->setSubject("")
+			->setDescription("企业用户表")
+			->setKeywords("企业 用户")
+			->setCategory("表单");
+
+
+			// Add some data
+			$objPHPExcel->setActiveSheetIndex(0)
+			->setCellValue('A1', 'Hello')
+			->setCellValue('B2', 'world!')
+			->setCellValue('C1', 'Hello')
+			->setCellValue('D2', 'world!');
+
+			// Miscellaneous glyphs, UTF-8
+			$objPHPExcel->setActiveSheetIndex(0)
+			->setCellValue('A4', 'Miscellaneous glyphs')
+			->setCellValue('A5', 'éàèùâêîôûëïüÿäöüç')
+			->setCellValue('A6', '吴占涛');
+
+			// Rename worksheet
+			$objPHPExcel->getActiveSheet()->setTitle('企业用户');
+
+
+			// Set active sheet index to the first sheet, so Excel opens this as the first sheet
+			$objPHPExcel->setActiveSheetIndex(0);
+			 */
+			// ob_end_clean(); 
+			$filename = "代理商名单";
+			// Redirect output to a client’s web browser (Excel2007)
+			//header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+			//header('Content-Disposition: attachment;filename="01simple.xlsx"');
+			//header('Cache-Control: max-age=0');
+			// If you're serving to IE 9, then the following may be needed
+			//header('Cache-Control: max-age=1');
+			header('Content-Type: application/vnd.ms-excel');
+			header('Content-Disposition: attachment;filename='.$filename.'.csv');
+			header('Cache-Control: max-age=0');
+			// If you're serving to IE over SSL, then the following may be needed
+			//header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+			//header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+			//header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+			//header ('Pragma: public'); // HTTP/1.0
+
+			//$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+			//$objWriter->save('php://output');
+			exit;
+                } catch (Exception $exc)
+                {
+                        echo $exc->getMessage();
+                }
+
+	}
+
 
 
 }

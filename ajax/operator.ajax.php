@@ -115,6 +115,7 @@ class Ajax_Operator extends Ajax
       <th width="60" align="center">邮箱</th>
       <th width="60" align="center">电话</th>
       <th width="20" align="center">年卡数</th>
+      <th width="20" align="center">永久卡数</th>
       <th width="80" align="center">操作</th>
       </tr>       
 <?php
@@ -130,6 +131,7 @@ class Ajax_Operator extends Ajax
       <td align="center"><?php echo $member['email'];?></td>
       <td align="center"><?php echo $member['phone'];?></td>
       <td align="center"><?php echo $member['availableCards'];?></td>
+      <td align="center"><?php echo $member['availablePCards'];?></td>
      
       <td align="center">
              <a href="./?page=operator&sid=1&action=dispatcher&id=<?php echo $member['id'] ?>" >分配</a> | <a href="./?page=operator&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> | <a href="javascript:;
@@ -165,7 +167,7 @@ class Ajax_Operator extends Ajax
                 //echo $kw;
                 $type =intval($_POST['type']);
                 $parentId =intval($_GET['parentId']);
-                $users = MysqlInterface::searchOperators($type, $value, $parentId);
+                $users = MysqlInterface::searchOperatorsByParentId($type, $value, $parentId);
                 $total = count($users);
 ?>
      <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
@@ -178,6 +180,7 @@ class Ajax_Operator extends Ajax
       <th width="60" align="center">邮箱</th>
       <th width="60" align="center">电话</th>
       <th width="20" align="center">年卡数</th>
+      <th width="20" align="center">永久卡数</th>
       <th width="80" align="center">操作</th>
       </tr>       
 <?php
@@ -193,6 +196,7 @@ class Ajax_Operator extends Ajax
       <td align="center"><?php echo $member['email'];?></td>
       <td align="center"><?php echo $member['phone'];?></td>
       <td align="center"><?php echo $member['availableCards'];?></td>
+      <td align="center"><?php echo $member['availablePCards'];?></td>
      
       <td align="center">
              <a href="./?page=operator&sid=1&action=dispatcher&id=<?php echo $member['id'] ?>" >分配</a> | <a href="./?page=operator&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> | <a href="javascript:;
@@ -312,6 +316,7 @@ class Ajax_Operator extends Ajax
       <th width="60" align="center">电话</th>
       <th width="60" align="center">备注</th>
       <th width="60" align="center">可用年卡数</th>
+      <th width="60" align="center">可用永久卡数</th>
       <th width="80" align="center">操作</th>
      </tr>       
 <?php
@@ -327,6 +332,7 @@ class Ajax_Operator extends Ajax
       <td align="center"><?php echo $member['phone'];?></td>
       <td align="center"><?php echo $member['comment'];?></td>
       <td align="center"><?php echo $member['availableCards'];?></td>
+      <td align="center"><?php echo $member['availablePCards'];?></td>
 
 
       <td align="center">
@@ -389,6 +395,7 @@ class Ajax_Operator extends Ajax
       <th width="60" align="center">电话</th>
       <th width="60" align="center">备注</th>
       <th width="60" align="center">可用年卡数</th>
+      <th width="60" align="center">可用永久卡数</th>
       <th width="80" align="center">操作</th>
      </tr>       
 <?php
@@ -404,6 +411,7 @@ class Ajax_Operator extends Ajax
       <td align="center"><?php echo $member['phone'];?></td>
       <td align="center"><?php echo $member['comment'];?></td>
       <td align="center"><?php echo $member['availableCards'];?></td>
+      <td align="center"><?php echo $member['availablePCards'];?></td>
 
 
       <td align="center">
@@ -449,7 +457,7 @@ class Ajax_Operator extends Ajax
                         echo json_encode($res);
                         return;
 		}
-                $parentId = $_GET['uid'];
+                $parentId = $_GET['parentId'];
 		$file_types = explode ( ".", $_FILES ['fileToUpload']['name'] );
 		$file_type = $file_types[count ($file_types) - 1];
 		$SUPPORT_TYPE = array('csv','xls','xlsx');
@@ -477,16 +485,17 @@ class Ajax_Operator extends Ajax
                 $reason = '';
 		/** 循环读取每个单元格的数据 */
 		for ($row = 1; $row <= $highestRow; $row++){//行数是以第1行开始
-			$name = $sheet->getCell("A".$row)->getValue();
+                        $account = $sheet->getCell("A".$row)->getValue();
                         $passwd = $sheet->getCell("B".$row)->getValue();
-                        if ($name == '' || $passwd == '')    continue;
-                        $email = $sheet->getCell("C".$row)->getValue();
-                        $phone = $sheet->getCell("D".$row)->getValue();
-                        $comment = $sheet->getCell("E".$row)->getValue();
+                        if ($account == '' || $passwd == '')    continue;
+                        $name = $sheet->getCell("C".$row)->getValue();
+                        $comment = $sheet->getCell("D".$row)->getValue();
+                        $email = $sheet->getCell("E".$row)->getValue();
+                        $phone = $sheet->getCell("F".$row)->getValue();
                         $previlege='r,w';
-			$type=2;
-                        
-                        $result = MysqlInterface::addEnterprise($parentId,$type,$name,$passwd,$email,$phone,$comment,$previlege);
+                        $type=1;
+		
+                        $result = MysqlInterface::addEnterprise($parentId,$type,$account,$passwd,$name,$email,$phone,$comment,$previlege);
 		        if ($result <= 0)
                         {
                              $code = 400;
@@ -503,12 +512,13 @@ class Ajax_Operator extends Ajax
         {
 		$value =addslashes($_POST['value']);
 		$type =intval($_POST['type']);
-		$users = MysqlInterface::searchEnterprises($type, $value);                 
+		$parentId =intval($_GET['parentId']);
+		$users = MysqlInterface::searchEnterprisesByParentId($type, $value,$parentId);                 
 		$total = count($users);
 
                 $fp = fopen('php://output', 'a');
 
-                $head = array('账号', '密码', '邮箱', '电话', '备注');
+                $head = array('企业编号', '账号', '联系人姓名','备注', '邮箱','电话', '可用年卡数','可用永久卡数');
 		foreach ($head as $i => $v) {
 			// CSV的Excel支持GBK编码，一定要转换，否则乱码
 			$head[$i] = iconv('utf-8', 'gbk', $v);
@@ -569,7 +579,7 @@ class Ajax_Operator extends Ajax
 		$objPHPExcel->setActiveSheetIndex(0);
 */
                // ob_end_clean(); 
-                $filename = "Enterprise";
+                $filename = "企业用户表";
 		// Redirect output to a client’s web browser (Excel2007)
 		//header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 		//header('Content-Disposition: attachment;filename="01simple.xlsx"');
@@ -601,7 +611,7 @@ class Ajax_Operator extends Ajax
                         echo json_encode($res);
                         return;
 		}
-                $parentId = $_GET['uid'];
+                $parentId = $_GET['parentId'];
 		$file_types = explode ( ".", $_FILES ['fileToUpload']['name'] );
 		$file_type = $file_types[count ($file_types) - 1];
 		$SUPPORT_TYPE = array('csv','xls','xlsx');
@@ -629,16 +639,16 @@ class Ajax_Operator extends Ajax
                 $reason = '';
 		/** 循环读取每个单元格的数据 */
 		for ($row = 1; $row <= $highestRow; $row++){//行数是以第1行开始
-			$name = $sheet->getCell("A".$row)->getValue();
+                        $account = $sheet->getCell("A".$row)->getValue();
                         $passwd = $sheet->getCell("B".$row)->getValue();
-                        if ($name == '' || $passwd == '')    continue;
-                        $email = $sheet->getCell("C".$row)->getValue();
-                        $phone = $sheet->getCell("D".$row)->getValue();
-                        $comment = $sheet->getCell("E".$row)->getValue();
+                        if ($account == '' || $passwd == '')    continue;
+                        $name = $sheet->getCell("C".$row)->getValue();
+                        $comment = $sheet->getCell("D".$row)->getValue();
+                        $email = $sheet->getCell("E".$row)->getValue();
+                        $phone = $sheet->getCell("F".$row)->getValue();
                         $previlege='r,w';
-			$type=2;
-                        
-                        $result = MysqlInterface::addOperator($parentId,$type,$name,$passwd,$email,$phone,$comment,$previlege);
+                        $type=2;
+			$result = MysqlInterface::addOperator($parentId,$type,$account,$passwd,$name,$comment,$email,$phone,$previlege);
 		        if ($result <= 0)
                         {
                              $code = 400;
@@ -657,7 +667,9 @@ class Ajax_Operator extends Ajax
                 $operatorId = $_POST['operatorId'];
                 $toType = 2;
                 $cardNum = intval($_POST['cardNum']);
+                $pCardNum = intval($_POST['pCardNum']);
                 $availableCards =intval( $_POST['availableCards'] );
+                $availablePCards =intval( $_POST['availablePCards'] );
                 //$availableGroups = intval($_POST['availableGroups']);
                 //$groupNum =intval( $_POST['groupNum']);
                 $cost = $_POST['cost'];
@@ -667,12 +679,12 @@ class Ajax_Operator extends Ajax
                 //if (!PermissionManager::getInstance()->serverCanEditAdmins())
                 //        return ;
                 try {
-                        $res = MysqlInterface::checkIfOperatorCanDispatcher($fromId, $cardNum);
+                        $res = MysqlInterface::checkIfOperatorCanDispatcher($fromId, $cardNum, $pCardNum);
                         if ($res)
                         {
 
-				$res = MysqlInterface::addOperatorToOperatorDispatcher($fromId,$cardNum,$operatorId,$cardNum+$availableCards);
-				$res = MysqlInterface::addRecord($fromId,$fromType,$operatorId, $toType,$cardNum,$cost);
+				$res = MysqlInterface::addOperatorToOperatorDispatcher($fromId,$cardNum,$pCardNum,$operatorId,$cardNum+$availableCards, $pCardNum + $availablePCards);
+				$res = MysqlInterface::addRecord($fromId,$fromType,$operatorId, $toType,$cardNum,$pCardNum,$cost);
 
                         } else {
                                 throw new Exception("年卡数量不足，请充卡");
@@ -690,7 +702,9 @@ class Ajax_Operator extends Ajax
                 $enterpriseId = $_POST['enterpriseId'];
                 $toType = 3;
                 $cardNum = intval($_POST['cardNum']);
+                $pCardNum = intval($_POST['pCardNum']);
                 $availableCards =intval( $_POST['availableCards'] );
+                $availablePCards =intval( $_POST['availablePCards'] );
                 //$availableGroups = intval($_POST['availableGroups']);
                 //$groupNum =intval( $_POST['groupNum']);
                 $cost = $_POST['cost'];
@@ -700,12 +714,12 @@ class Ajax_Operator extends Ajax
                 //if (!PermissionManager::getInstance()->serverCanEditAdmins())
                 //        return ;
                 try {
-                        $res = MysqlInterface::checkIfOperatorCanDispatcher($parentId, $cardNum);
+                        $res = MysqlInterface::checkIfOperatorCanDispatcher($parentId, $cardNum, $pCardNum);
                         if ($res)
                         {
                                 
-                                $res = MysqlInterface::addOperatorToEnterpriseDispatcher($parentId,$cardNum, $enterpriseId,$cardNum+$availableCards);
-                                $res = MysqlInterface::addRecord($fromId,$fromType,$enterpriseId, $toType,$cardNum,$cost);
+                                $res = MysqlInterface::addOperatorToEnterpriseDispatcher($parentId,$cardNum,$pCardNum, $enterpriseId,$cardNum+$availableCards, $pCardNum+$availablePCards);
+                                $res = MysqlInterface::addRecord($fromId,$fromType,$enterpriseId, $toType,$cardNum,$pCardNum, $cost);
                         }else
                         {
                                 throw new Exception("年卡数量不足，请充卡");
@@ -729,7 +743,7 @@ class Ajax_Operator extends Ajax
 
                 $fp = fopen('php://output', 'a');
 
-                $head = array('账号', '密码', '邮箱', '电话', '备注');
+                $head = array('二级代理商标号', '账号', '联系人姓名','备注', '邮箱','电话', '可用年卡数','可用永久卡数');
 		foreach ($head as $i => $v) {
 			// CSV的Excel支持GBK编码，一定要转换，否则乱码
 			$head[$i] = iconv('utf-8', 'gbk', $v);
@@ -790,7 +804,7 @@ class Ajax_Operator extends Ajax
 		$objPHPExcel->setActiveSheetIndex(0);
 */
                // ob_end_clean(); 
-                $filename = "代理商名单";
+                $filename = "二级代理商名单";
 		// Redirect output to a client’s web browser (Excel2007)
 		//header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 		//header('Content-Disposition: attachment;filename="01simple.xlsx"');
@@ -1117,6 +1131,7 @@ class Ajax_Operator extends Ajax
       <th width="30" align="center">代理商编号</th>
       <th width="30" align="center">代理商姓名</th>
       <th width="30" align="center">年卡数</th>
+      <th width="30" align="center">永久卡数</th>
       <th width="30" align="center">金额</th>
       <th width="60" align="center">操作时间</th>
       <th width="80" align="center">操作</th>
@@ -1131,6 +1146,7 @@ class Ajax_Operator extends Ajax
       <td align="center"><?php echo $record['toId'];?></td>
       <td align="center"><?php echo $record['name'];?></td>
       <td align="center"><?php echo $record['cardNum'];?></td>
+      <td align="center"><?php echo $record['pCardNum'];?></td>
       <td align="center"><?php echo $record['cost'];?></td>
       <td align="center"><?php echo $record['createTime'];?></td>
 
@@ -1175,6 +1191,7 @@ class Ajax_Operator extends Ajax
       <th width="30" align="center">代理商编号</th>
       <th width="30" align="center">代理商姓名</th>
       <th width="30" align="center">年卡数</th>
+      <th width="30" align="center">永久卡数</th>
       <th width="30" align="center">金额</th>
       <th width="60" align="center">操作时间</th>
       <th width="80" align="center">操作</th>
@@ -1189,6 +1206,7 @@ class Ajax_Operator extends Ajax
       <td align="center"><?php echo $record['toId'];?></td>
       <td align="center"><?php echo $record['name'];?></td>
       <td align="center"><?php echo $record['cardNum'];?></td>
+      <td align="center"><?php echo $record['pCardNum'];?></td>
       <td align="center"><?php echo $record['cost'];?></td>
       <td align="center"><?php echo $record['createTime'];?></td>
       <td align="center">
