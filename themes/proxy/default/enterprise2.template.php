@@ -71,7 +71,6 @@
 function uploadFile(obj,type){
 $.ajaxFileUpload	
 }
-
 </script>
 <?php
      //鉴权 只有一级代理商可以查看
@@ -94,6 +93,13 @@ if($_POST['action']=='lists'){
     <li class="noRight"><a href="http://www.allptt.com">关于我们</a></li>
    </ul>
    <ul class="navRight">
+    <?php
+     $id = SessionManager::getInstance()->getLoginId();
+     $operator = MysqlInterface::getOperatorById($id);
+
+?>
+    <li class="noLeft"><a href="#">可用永久卡数：<?php echo $operator['availablePCards'];?></a></li>
+    <li class="noLeft"><a href="#">可用年卡数：<?php echo $operator['availableCards'];?></a></li>
     <li class="M noLeft"><a href="JavaScript:void(0);">您好，<?php echo SessionManager::getInstance()->getLoginName();?></a>
      <div class="drop mUser">
       <a href="?page=admins&sid=1">编辑我的个人资料</a>
@@ -129,7 +135,7 @@ $(function(){
 	})
 	$('#fileToUpload').change(function(){
 		$.ajaxFileUpload({  
-                    url:'./?ajax=batch_add_enterprise&uid=<?php echo SessionManager::getInstance()->getLoginId();?>',  
+                    url:'./?ajax=batch_add_enterprise&parentId=<?php echo SessionManager::getInstance()->getLoginId();?>',  
 		    secureuri:false,  
 		    fileElementId:'fileToUpload',//file标签的id  
 		    dataType: 'json',//返回数据的类型  
@@ -138,7 +144,7 @@ $(function(){
 		        //$("#upload").attr("src", "../image/"+obj.fileName);  
 
 		        alert(obj.reason);  
-                        window.location.href='./?page=enterprise&sid=1';
+                        window.location.href='./?page=enterprise2&sid=1';
 		    },  
                     error: function (data, status, e) {  
                             alert(e);  
@@ -209,7 +215,7 @@ $(function(){
 <div id="urHere">管理中心<b></b><strong>企业用户管理</strong> </div> 
   <div id="manager" class="mainBox" style="height:auto!important;height:550px;min-height:550px;">
     <h3><a href="?page=enterprise2&sid=1" class="actionBtn">返回列表</a>新建企业用户</h3>
-   <form action="" method="post">
+   <form action="" method="post" id="addForm" name="addForm">
      <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
       <tr>
        <td width="100" align="right">账号</td>
@@ -272,7 +278,7 @@ $(function(){
        <td></td>
        <td>
       
-        <input type="button" name="submit" class="btn" value="提交" onclick="jq_enterprise_add()" />
+        <input type="submit" name="submit" class="btn" value="提交"/>
        </td>
       </tr>
      </table>
@@ -297,7 +303,7 @@ $(function(){
 <div id="urHere">管理中心<b>></b><strong>企业用户管理</strong> </div> 
   <div id="manager" class="mainBox" style="height:auto!important;height:550px;min-height:550px;">
     <h3><a href="?page=enterprise2&sid=1" class="actionBtn">返回列表</a>编辑企业用户</h3>
-   <form action="" method="post">
+   <form action="" method="post" id="updateForm" name="updateForm">
      <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
       <tr>
        <td width="100" align="right">账户编号</td>
@@ -309,6 +315,18 @@ $(function(){
        <td width="100" align="right">账号</td>
        <td>
         <input type="text" name="account" size="40" class="inpMain" id="account" readonly="true" value='<?php echo $enterprise['account'];?>'/>
+       </td>
+      </tr>
+      <tr>
+       <td width="100" align="right">账号密码</td>
+       <td>
+        <input type="text" name="passwd" size="40" class="inpMain" id="passwd"  value=""/>
+       </td>
+      </tr>
+       <tr>
+       <td width="100" align="right">确认密码</td>
+       <td>
+        <input type="text" name="confirmpasswd" size="40" class="inpMain" id="confirmpasswd"  value=""/>
        </td>
       </tr>
 
@@ -338,6 +356,19 @@ $(function(){
       </tr>
 
 
+      <tr>
+       <td width="100" align="right">可用年卡数</td>
+       <td>
+        <input type="text" name="availableCards" size="40" class="inpMain" id="availableCards" readonly="true" value='<?php echo $enterprise['availableCards'];?>'/>
+       </td>
+      </tr>
+      <tr>
+       <td width="100" align="right">可用永久卡数</td>
+       <td>
+        <input type="text" name="availablePCards" size="40" class="inpMain" id="availablePCards" readonly="true" value='<?php echo $enterprise['availablePCards'];?>'/>
+       </td>
+      </tr>
+
 <!---
       <tr>
        <td align="right">密码</td>
@@ -355,7 +386,7 @@ $(function(){
        <td></td>
        <td>
       
-        <input type="button" name="submit" class="btn" value="提交" onclick="jq_enterprise_update()" />
+        <input type="submit" name="submit" class="btn" value="提交" />
        </td>
       </tr>
      </table>
@@ -377,29 +408,37 @@ $(function(){
       <tr>
        <td width="100" align="right">客户编号</td>
        <td>
-        <input type="text" name="enterpriseId" size="40" class="inpMain" id="enterpriseId"  value="<?php echo $enterprise['id'];
+        <input type="text" name="enterpriseId" size="40" class="inpMain" id="enterpriseId" readonly="true" value="<?php echo $enterprise['id'];
 ?>"/>
         </td>
       </tr>
       <tr>
        <td width="100" align="right">账号</td>
        <td>
-        <input type="text" name="enterpriseAccount" size="40" class="inpMain" id="enterpriseAccount"  value="<?php echo $enterprise['account'];?>"/>
+        <input type="text" name="enterpriseAccount" size="40" class="inpMain" id="enterpriseAccount" readonly="true" value="<?php echo $enterprise['account'];?>"/>
         <input type="hidden" name="availableCards" size="40" class="inpMain" id="availableCards"  value="<?php echo $enterprise['availableCards'];?>"/>
+        <input type="hidden" name="availablePCards" size="40" class="inpMain" id="availablePCards"  value="<?php echo $enterprise['availablePCards'];?>"/>
         </td>
       </tr>
       <tr>
        <td width="100" align="right">联系人姓名</td>
        <td>
-       <input type="text" name="enterpriseName" size="40" class="inpMain" id="enterpriseName"  value="<?php echo $enterprise['name'];?>"/>
+       <input type="text" name="enterpriseName" size="40" class="inpMain" id="enterpriseName" readonly="true" value="<?php echo $enterprise['name'];?>"/>
         </td>
       </tr>
-<tr>
-       <td width="100" align="right">增加账号数</td>
+      <tr>
+       <td width="100" align="right">增加年卡数</td>
        <td>
-        <input type="text" name="cardNum" size="40" class="inpMain" id="cardNum"  value=""/>
+        <input type="text" name="cardNum" size="40" class="inpMain" id="cardNum"  value="0"/>
        </td>
       </tr>
+      <tr>
+       <td width="100" align="right">增加永久卡数</td>
+       <td>
+        <input type="text" name="pCardNum" size="40" class="inpMain" id="pCardNum"  value="0"/>
+       </td>
+      </tr>
+
       <!--<tr>
        <td width="100" align="right">增加群组数</td>
        <td>
@@ -506,7 +545,7 @@ $(function(){
 				form.attr("style","display:none");
 				form.attr("target","");
 				form.attr("method","post");
-				form.attr("action","./?ajax=server_enterprise_file_output&sid=1");
+				form.attr("action","./?ajax=server_enterprise_file_output&sid=1&parentId=<?php echo SessionManager::getInstance()->getLoginId();?>");
 				var input1=$("<input>");
 				input1.attr("type","hidden");
 				input1.attr("name","type");
@@ -550,7 +589,7 @@ $(function(){
 					alert('密码不一致');
 					
 				}*/
-				$.post("./?ajax=server_enterprise_update&parentId="+<?php echo SessionManager::getInstance()->getLoginId();?>+"id="+id,param,
+				$.post("./?ajax=server_enterprise_update&parentId="+<?php echo SessionManager::getInstance()->getLoginId();?>+"&id="+id,param,
 						function (data) {
 							if(data.length>0){
 								
@@ -559,7 +598,7 @@ $(function(){
 								
 								window.location.href='./?page=enterprise2&sid=1';
 							}else{
-								alert('添加失败');
+								alert('更新失败');
 								//$(".message").show().html(data);
 							}
 						}
@@ -575,18 +614,119 @@ function jq_dispatcher_enterprise_add(){
                 }*/
         $.post("./?ajax=server_dispatcher_enterprise_add&sid=1&parentId=<?php echo SessionManager::getInstance()->getLoginId();?>",param,
                         function (data) {
-                        if(data.length>0){
+                        if(data.length>0 && data=="succeed!"){
 
                         //location.href="./?page=user&sid=1";
                         $(".message").show().html(data);
-                        //window.location.href='./?page=operator&sid=1';
+                        window.location.href='./?page=enterprise2&sid=1';
 
                         }else{
-                        alert('添加失败');
+                        alert('分配失败,'+data);
                         //$(".message").show().html(data);
                         }
                         }
               );
 }
-		
+$(function () {
+$("#addForm").validate({
+   submitHandler:function() {
+       jq_enterprise_add(); 
+   },
+   rules: {
+       account: {
+           remote:{
+               url: "./?ajax=server_checkEnterprise&page=enterprise1",     //后台处理程序
+               type: "post",               //数据发送方式
+               data: {                     //要传递的数据
+                   account: function() {
+                       return $("#account").val();
+                   }
+               }
+           },
+           required: true
+       },
+       email: {
+           required: true,
+           email: true
+       },
+       passwd: {
+           required: true,
+           minlength: 5
+       },
+       confirmpasswd: {
+           required: true,
+           minlength: 5,
+           equalTo: "#passwd"
+       },
+       phone: {
+           number: true
+       }
+  },
+  messages: {
+       account:{
+            remote:jQuery.format("账号已经被注册"),
+            required: "请输入账号"
+       },
+       email: {
+            required: "请输入Email地址",
+            email: "请输入正确的email地址"
+       },
+       passwd: {
+            required: "请输入密码",
+            minlength: jQuery.format("密码不能小于{0}个字符")
+       },
+       confirmpasswd: {
+           required: "请输入确认密码",
+           minlength: "确认密码不能小于5个字符",
+           equalTo: "两次输入密码不一致"
+       },
+       phone: {
+           number: "请输入正确的电话号码",
+           
+       }
+  }
+});
+$("#updateForm").validate({
+   submitHandler:function() {
+       jq_enterprise_update(); 
+   },
+   rules: {
+       passwd: {
+           minlength: 5
+       },
+       confirmpasswd: {
+           minlength: 5,
+           equalTo: "#passwd"
+       },
+
+       email: {
+           required: true,
+           email: true
+       },
+       phone: {
+           number: true
+       }
+  },
+  messages: {
+       passwd: {
+            minlength: jQuery.format("密码不能小于{0}个字符")
+       },
+       confirmpasswd: {
+           minlength: "确认密码不能小于5个字符",
+           equalTo: "两次输入密码不一致"
+       },
+
+       email: {
+            required: "请输入Email地址",
+            email: "请输入正确的email地址"
+       },
+       phone: {
+           number: "请输入正确的电话号码",
+           
+       }
+  }
+});
+
+});
+	
 	</script>
