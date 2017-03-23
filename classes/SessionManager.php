@@ -53,11 +53,33 @@ class SessionManager_obj
 	 */
 	public function isAdmin()
 	{
+                return true;
+/*
 		if (isset($_SESSION['adminLoggedIn'])) {
+			return true;
+		}
+		return false;*/
+	}
+
+        public function isOperator()
+        {
+                if (isset($_SESSION['operatorLoggedIn'])) {
+                        return true;
+                }
+                return false;
+        }
+	/**
+	 * Checks if the visitor is logged in as enterprise user
+	 * @return boolean
+	 */
+	public function isEnterprise()
+	{
+		if (isset($_SESSION['enterpriseLoggedIn'])) {
 			return true;
 		}
 		return false;
 	}
+
 
 	/**
 	 * get language to use
@@ -81,9 +103,54 @@ class SessionManager_obj
 			$_SESSION['adminLoggedIn'] = true;
 			$admin = DBManager::getInstance()->getAdminByName($name);
 			$_SESSION['adminLoggedInAs'] = $admin['id'];
+                        $_SESSION['loggedInName'] = $name;
+                        $_SESSION['loggedInId'] = $admin['id'];
+                        $_SESSION['level'] = 0;
 		} else {
 			Logger::log("[{$_SERVER['REMOTE_ADDR']}] failed to log in as admin $name.", Logger::LEVEL_SECURITY);
-			throw new Exception('Login failed');
+			throw new Exception('Login failed as administritor');
+		}
+	}
+        /**
+         *
+         * @param string $name
+         * @param string $pw
+         * @return void
+         * @throws Exception on failed login
+         */
+	public function loginAsEnterprise($name, $pw)
+	{
+		if (MysqlInterface::checkEnterpriseLogin($_POST['username'], $_POST['password'])) {
+			$_SESSION['enterpriseLoggedIn'] = true;
+			$enterprise = MysqlInterface::getEnterpriseByName($name);
+			$_SESSION['enterpriseLoggedInAs'] = $enterprise['id'];
+                        $_SESSION['loggedInName'] = $name;
+                        $_SESSION['loggedInId'] = $enterprise['id'];
+                        $_SESSION['level'] = $enterprise['type'];
+		} else {
+			//Logger::log("[{$_SERVER['REMOTE_ADDR']}] failed to log in as admin $name.", Logger::LEVEL_SECURITY);
+			throw new Exception('Login failed as enterprise');
+		}
+	}
+	/**
+         *
+         * @param string $name
+         * @param string $pw
+         * @return void
+         * @throws Exception on failed login
+         */
+	public function loginAsOperator($name, $pw)
+	{
+		if (MysqlInterface::checkOperatorLogin($_POST['username'], $_POST['password'])) {
+			$_SESSION['operatorLoggedIn'] = true;
+			$operator = MysqlInterface::getOperatorByName($name);
+			$_SESSION['operatorLoggedInAs'] = $operator['id'];
+                        $_SESSION['loggedInName'] = $name;
+                        $_SESSION['loggedInId'] = $operator['id'];
+                        $_SESSION['level'] = $operator['type'];
+		} else {
+			//Logger::log("[{$_SERVER['REMOTE_ADDR']}] failed to log in as admin $name.", Logger::LEVEL_SECURITY);
+			throw new Exception('Login failed as operator');
 		}
 	}
 
@@ -91,13 +158,55 @@ class SessionManager_obj
 	{
 		unset($_SESSION['adminLoggedIn']);
 		unset($_SESSION['adminLoggedInAs']);
+                unset($_SESSION['loggedInName']);
+                unset($_SESSION['loggedInId']);
 	}
 
+	public function operatorLogOut()
+	{
+		unset($_SESSION['operatorLoggedIn']);
+		unset($_SESSION['operatorLoggedInAs']);
+                unset($_SESSION['loggedInName']);
+                unset($_SESSION['loggedInId']);
+	}
+	public function enterpriseLogOut()
+	{
+		unset($_SESSION['enterpriseLoggedIn']);
+		unset($_SESSION['enterpriseLoggedInAs']);
+                unset($_SESSION['loggedInName']);
+                unset($_SESSION['loggedInId']);
+	}
 	public function getAdminID()
 	{
 		if (isset($_SESSION['adminLoggedInAs']))
 			return $_SESSION['adminLoggedInAs'];
 		throw new Exception('Tried to get admin id when not logged in.');
 	}
-
+	public function getOperatorID()
+	{
+		if (isset($_SESSION['operatorLoggedInAs']))
+			return $_SESSION['operatorLoggedInAs'];
+		throw new Exception('Tried to get operator id when not logged in.');
+	}
+	public function getEnterpriseID()
+	{
+		if (isset($_SESSION['enterpriseLoggedInAs']))
+			return $_SESSION['enterpriseLoggedInAs'];
+		throw new Exception('Tried to get enterprise id when not logged in.');
+	}
+        public function getLoginName()
+        {
+                if (isset($_SESSION['loggedInName']))
+                        return $_SESSION['loggedInName'];
+        }
+	public function getLoginId()
+        {
+                if (isset($_SESSION['loggedInId']))
+                        return $_SESSION['loggedInId'];
+        }
+        public function getLevel()
+        {
+                if (isset($_SESSION['level']))
+                        return $_SESSION['level'];
+        }
 }

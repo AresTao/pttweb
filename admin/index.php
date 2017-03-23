@@ -19,6 +19,8 @@ define('MUMPHPI_SECTION', 'admin');
 	require_once(MUMPHPI_MAINDIR.'/classes/MessageManager.php');
 	require_once(MUMPHPI_MAINDIR.'/classes/PermissionManager.php');
 	require_once(MUMPHPI_MAINDIR.'/classes/MysqlInterface.php');
+	require_once(MUMPHPI_MAINDIR.'/classes/PHPExcel/IOFactory.php');
+	require_once(MUMPHPI_MAINDIR.'/classes/PHPExcel.php');
 
 	if (SettingsManager::getInstance()->isDebugMode()) {
 		error_reporting(E_ALL);
@@ -51,6 +53,24 @@ define('MUMPHPI_SECTION', 'admin');
 		// TODO: this should probably have a check, whether the function exists
 		if (is_callable('Ajax_Admin::' . $_GET['ajax'])) {
 			eval('Ajax_Admin::' . $_GET['ajax'] . '();');
+		}
+		MessageManager::echoAll();
+		exit();
+	} elseif (SessionManager::getInstance()->isOperator() && isset($_GET['ajax'])) {
+		require_once(MUMPHPI_MAINDIR.'/ajax/operator.ajax.php');
+
+		// TODO: this should probably have a check, whether the function exists
+		if (is_callable('Ajax_Operator::' . $_GET['ajax'])) {
+			eval('Ajax_Operator::' . $_GET['ajax'] . '();');
+		}
+		MessageManager::echoAll();
+		exit();
+	} elseif (SessionManager::getInstance()->isEnterprise() && isset($_GET['ajax'])) {
+		require_once(MUMPHPI_MAINDIR.'/ajax/enterprise.ajax.php');
+
+		// TODO: this should probably have a check, whether the function exists
+		if (is_callable('Ajax_Enterprise::' . $_GET['ajax'])) {
+			eval('Ajax_Enterprise::' . $_GET['ajax'] . '();');
 		}
 		MessageManager::echoAll();
 		exit();
