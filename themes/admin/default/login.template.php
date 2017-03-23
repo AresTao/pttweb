@@ -21,34 +21,18 @@
 		if (isset($_GET['action']) && $_GET['action'] == 'dologin') {
 			// parse and handle login form data
 			try {
-				if ($_POST['type'] == 1)
-				{
-					SessionManager::getInstance()->loginAsAdmin($_POST['username'], $_POST['password']);
-					$isLoggedIn = true;
-					//echo '<script type="text/javascript">location.replace("?page=user&sid=1")</script>';
-					echo '<script type="text/javascript">location.replace("?page=operator&sid=1")</script>';
-                                        //echo '<script type="text/javascript">location.replace("?page=enterprise&sid=1")</script>';
-				
+                                require_once(MUMPHPI_MAINDIR.'/classes/Captcha.php');
+                                $cap = $_POST['cap'];
+                                if (!Captcha::cap_isCorrect($cap))
+                                       throw new Exception("验证码错误！");
+				SessionManager::getInstance()->loginAsAdmin($_POST['username'], $_POST['password']);
+				$isLoggedIn = true;
+				//echo '<script type="text/javascript">location.replace("?page=user&sid=1")</script>';
+				echo '<script type="text/javascript">location.replace("?page=operator&sid=1")</script>';
+				//echo '<script type="text/javascript">location.replace("?page=enterprise&sid=1")</script>';
 
-				} else if ($_POST['type'] == 2)
-			        {	
-                                        SessionManager::getInstance()->loginAsOperator($_POST['username'], $_POST['password']); 
-                                        $isLoggedIn = true;
-                                        //echo '<script type="text/javascript">location.replace("?page=operator&sid=1")</script>';
-                                        echo '<script type="text/javascript">location.replace("?page=enterprise&sid=1")</script>';
-                                        //echo '<script type="text/javascript">location.replace("?page=enterprise&sid=1")</script>';
 
-				} else if ($_POST['type'] == 3)
-                                {
-                                        SessionManager::getInstance()->loginAsEnterprise($_POST['username'],$_POST['password']);
-                                        $isLoggedIn = true;
-                                        echo '<script type="text/javascript">window.location.replace("?page=monitor&sid=1")</script>';
-                                        //echo '<script type="text/javascript">window.location.replace("?page=user&sid=1")</script>';
-                                } else 
-                                {
-                                        throw new Exception('unsupport login type.');
-                                }
-				//$isLoggedIn = true;
+								//$isLoggedIn = true;
 				//echo '<script type="text/javascript">location.replace("?page=user&sid=1")</script>';
 				//echo '<script type="text/javascript">location.replace("?page=operator&sid=1")</script>';
 				
@@ -78,12 +62,12 @@
    <ul>  
     <li class="inpLi"><b>用户名：</b><input name="username" type="text" class="inpLogin" id="mpi_login_username" ></li>
     <li class="inpLi"><b>密码：</b><input name="password" type="password" class="inpLogin" id="mpi_login_password" ></li>
-    <li class="inpLi"><b>账号类型：</b><select name="type">
-      <option value ="1" selected="selected">管理员</option>
-      <option value ="2">代理商</option>
-      <option value="3">企业</option>
-      </select></li>
-        <li class="sub"><input type="submit" name="submit" class="btn" value="login"></li> 
+    <li class="inpLi"><b>验证码：</b><input name="cap" type="text" class="inpLogin" id="cap" value="" ></li>
+    <li class="inpLi"><?php
+                              require_once(MUMPHPI_MAINDIR.'/classes/Captcha.php');
+                              Captcha::cap_show();
+                      ?></li>
+            <li class="sub"><input type="submit" name="submit" class="btn" value="login"></li> 
 
    </ul>
   </form>

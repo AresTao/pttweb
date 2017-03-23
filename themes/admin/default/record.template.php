@@ -124,9 +124,8 @@ if($_POST['action']=='lists'){
     <form action="" method="post">
      <label style='font-size:15px;padding: 5px 5px 5px 2px;'>搜索类型</label> 
      <select name="cat_id" id="catlist">
-                  <option value="1">记录号</option>
-		  <option value="2">代理商编号</option>
-		  <option value="3">代理商姓名</option>
+		  <option value="1">代理商编号</option>
+		  <option value="2">代理商姓名</option>
      </select>
      <input name="keyword" type="text" class="inpMain" value="" size="20" />
      <input name="submit" class="btnGray" type="submit" value="搜索" onclick="jq_record_search();return false;" />

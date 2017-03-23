@@ -4,5 +4,6 @@
 <script type="text/javascript" src="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/jquery.js"></script>
 <script type="text/javascript" src="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/ajaxfileupload.js"></script>
 <script type="text/javascript" src="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/js/global.js"></script>
+<script type="text/javascript" src="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/js/jquery.validate.js"></script>
 <script type="text/javascript" src="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/jquery.pagination.js"></script>
 
