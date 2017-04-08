@@ -179,8 +179,9 @@ $(function(){
 <form action="?page=enterprise&action='lists'" method="post" enctype="multipart/form-data">	
 	<input type="file" name="image" class="hidden" value=""  style="display:none"/>
 </form>
-  <div class="filter">
+  <div class="short-filter">
     <form action="" method="post">
+     <div class="item-left">
      <label style='font-size:15px;padding: 5px 5px 5px 2px;'>搜索类型</label> 
      <select name="cat_id" id="catlist">
                   <option value="1">账号</option>
@@ -189,8 +190,11 @@ $(function(){
 		  <option value="4">电话</option>
      </select>
      <input name="keyword" type="text" class="inpMain" value="" size="20" />
+     </div> 
+     <div class="btn-item">
      <input name="submit" class="btnGray" type="submit" value="搜索" onclick="jq_enterprise_search();return false;" />
      <input name="submit" class="btnGray" type="submit" value="导出为CSV文件" onclick="jq_enterprise_file_output();return false;" />
+     </div>
     </form>
 
     </div>
@@ -505,11 +509,13 @@ $(function(){
 						function (data) {
 							if(data.length>0){
 								
-								$(".message").show().html(data);
+								//$(".message").show().html(data);
+							window.wxc.xcConfirm("添加成功", window.wxc.xcConfirm.typeEnum.success);
                                                                 window.location.href='./?page=enterprise2&sid=1';
 								
 							}else{
-								alert('添加失败');
+								//alert('添加失败');
+							window.wxc.xcConfirm("添加失败", window.wxc.xcConfirm.typeEnum.error);
 								//$(".message").show().html(data);
 							}
 						}
@@ -568,10 +574,12 @@ $(function(){
 				function(data){
                                          if (data.length > 0)
                                          {
+					 window.wxc.xcConfirm("删除成功", window.wxc.xcConfirm.typeEnum.success);
                                                   window.location.href='./?page=enterprise2&sid=1';
                                          }
                                          else{
-                                                  alert("删除失败");
+                                                  //alert("删除失败");
+					 window.wxc.xcConfirm("删除失败", window.wxc.xcConfirm.typeEnum.error);
                                          }
 				
 				}
@@ -594,11 +602,13 @@ $(function(){
 							if(data.length>0){
 								
 								//location.href="./?page=user&sid=1";
-								$(".message").show().html(data);
+								//$(".message").show().html(data);
+							window.wxc.xcConfirm("更新成功", window.wxc.xcConfirm.typeEnum.success);
 								
 								window.location.href='./?page=enterprise2&sid=1';
 							}else{
-								alert('更新失败');
+								//alert('更新失败');
+							window.wxc.xcConfirm("更新失败", window.wxc.xcConfirm.typeEnum.error);
 								//$(".message").show().html(data);
 							}
 						}
@@ -617,11 +627,13 @@ function jq_dispatcher_enterprise_add(){
                         if(data.length>0 && data=="succeed!"){
 
                         //location.href="./?page=user&sid=1";
-                        $(".message").show().html(data);
+                        //$(".message").show().html(data);
+                        window.wxc.xcConfirm("分配成功", window.wxc.xcConfirm.typeEnum.success);
                         window.location.href='./?page=enterprise2&sid=1';
 
                         }else{
-                        alert('分配失败,'+data);
+                        //alert('分配失败,'+data);
+                        window.wxc.xcConfirm("分配失败", window.wxc.xcConfirm.typeEnum.error);
                         //$(".message").show().html(data);
                         }
                         }

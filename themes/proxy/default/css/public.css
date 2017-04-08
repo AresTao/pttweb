@@ -604,13 +604,32 @@ select {
  background: #28B779 url(../images/action_btn.gif) no-repeat 20px 50%;
  padding-left: 40px;
 }
-.mainBox .filter {
+.mainBox .short-filter {
  margin: 0 0 10px -2px;
  height: 35px;
 }
-.mainBox .filter form {
- float: left;
+.mainBox .filter {
+ margin: 0 0 10px -2px;
+ height: 65px;
 }
+.mainBox .item-left {
+    display:block;
+    float:left;
+    width:49%;
+}
+.mainBox .item-right {
+    display:block;
+    float:right;
+    width:49%;
+}
+.mainBox .btn-item {
+    display:block;
+    float:right;
+    padding-top:10px;
+}
+/*.mainBox .filter form {
+ float: left;
+}*/
 .mainBox .filter span {
  float: right;
 }
@@ -1359,4 +1378,9 @@ select {
 #footer ul {
  text-align: center;
  padding: 15px 0;
+}
+
+#list{
+    border-top: 1px solid #D7D7D7;
+    padding-top: 10px;
 }

@@ -169,7 +169,7 @@ if($_POST['action']=='lists'){
 </form>
   <div class="filter">
     <form action="" method="post">
-     <div id = "recordTypeDiv">
+     <div class = "item-left">
      <label style='font-size:15px;padding: 5px 5px 5px 2px;'>记录类型</label> 
      <select name="recordType" id="recordlist">
                   <option value="1">从运营商购入</option>
@@ -186,12 +186,14 @@ if($_POST['action']=='lists'){
      
      <input name="keyword" type="text" class="inpMain" value="" size="20" />
      </div>
-
+     <div class="item-right">
      <label style='font-size:15px;padding: 5px 5px 5px 2px;'>开始时间</label><input type="text" id="startTime" class="inpMain" name="startTime" />
      <label style='font-size:15px;padding: 5px 5px 5px 2px;'>结束时间</label><input type="text" id="endTime" class="inpMain" name="endTime"/>
-
+     </div>
+     <div class="btn-item">
      <input name="submit" class="btnGray" type="submit" value="搜索" onclick="jq_record_search();return false;" />
      <!--<input name="submit" class="btnGray" type="submit" value="导出为CSV文件" onclick="jq_record_file_output();return false;" />-->
+     </div>
     </form>
 
     </div>
@@ -377,25 +379,7 @@ if($_POST['action']=='lists'){
 			
 				
 			}
-                        function jq_record_remove(id){
-				
-				$.post(
-				"./?ajax=server_record_remove&id="+id,'',
-				function(data){
-                                         if (data.length > 0)
-                                         {
-                                                  window.location.href='./?page=record1&sid=1';
-                                         }
-                                         else{
-                                                  alert("删除失败");
-                                         }
-				
-				}
-		
-				)
-			
-				
-			}
+                        
 		        function jq_record_file_output(){
                                 
                                 var kw =$("input[name=keyword]").val();
