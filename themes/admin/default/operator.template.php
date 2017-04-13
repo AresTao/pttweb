@@ -173,8 +173,9 @@ $(function(){
        
 	<input type="file" name="image" class="hidden" value=""  style="display:none"/>
 </form>
-  <div class="filter">
+  <div class="short-filter">
     <form action="" method="post">
+     <div class="item-left">
      <label style='font-size:15px;padding: 5px 5px 5px 2px;'>搜索类型</label> 
      <select name="cat_id" id="catlist">
                   <option value="1">账号</option>
@@ -183,8 +184,11 @@ $(function(){
 		  <option value="4">电话</option>
      </select>
      <input name="keyword" type="text" class="inpMain" value="" size="20" />
+     </div>
+     <div class="btn-item">
      <input name="submit" class="btnGray" type="submit" value="搜索" onclick="jq_operator_search();return false;" />
      <input name="submit" class="btnGray" type="submit" value="导出为CSV文件" onclick="jq_operator_file_output();return false;" />
+    </div>
     </form>
 
     </div>

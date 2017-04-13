@@ -67,6 +67,19 @@
                 }
             }); 
 
+            $(function(){
+                 $('#startTime').datetimepicker({
+	             showSecond: true,
+	             showMillisec: false,
+	             timeFormat: 'hh:mm:ss'
+                 });
+                  $('#endTime').datetimepicker({
+	             showSecond: true,
+	             showMillisec: false,
+	             timeFormat: 'hh:mm:ss'
+                 });
+
+            });
 </script>
 
 <?php
@@ -122,14 +135,22 @@ if($_POST['action']=='lists'){
 </form>
   <div class="filter">
     <form action="" method="post">
-     <label style='font-size:15px;padding: 5px 5px 5px 2px;'>搜索类型</label> 
+     <div class="item-left">
+     <label style='font-size:15px;padding: 5px 5px 5px 2px;'>搜索类型</label>
      <select name="cat_id" id="catlist">
 		  <option value="1">代理商编号</option>
 		  <option value="2">代理商姓名</option>
      </select>
      <input name="keyword" type="text" class="inpMain" value="" size="20" />
+     </div>
+     <div class="item-right">
+     <label style='font-size:15px;padding: 5px 5px 5px 2px;'>开始时间</label><input type="text" id="startTime" class="inpMain" name="startTime" />
+     <label style='font-size:15px;padding: 5px 5px 5px 2px;'>结束时间</label><input type="text" id="endTime" class="inpMain" name="endTime"/>
+     </div>
+     <div class="btn-item">
      <input name="submit" class="btnGray" type="submit" value="搜索" onclick="jq_record_search();return false;" />
      <input name="submit" class="btnGray" type="submit" value="导出为CSV文件" onclick="jq_record_file_output();return false;" />
+     </div>
     </form>
 
     </div>
@@ -290,59 +311,18 @@ if($_POST['action']=='lists'){
 	<div id="jq_information"></div>
 
 	<script type="text/javascript">
-		/*<![CDATA[*/
-	
-			function jq_server_setSuperuserPassword(sid)
-			{
-				//$('#li_server_superuserpassword > .ajax_info').html(imgAjaxLoading);
-				var pw = '123456';
-				//var sid = <?php isset($_GET['sid'])?$_GET['sid']:1; ?>;
-				//alert(pw);
-				sid=1;
-				$.post('./?ajax=server_setSuperuserPassword',
-						{ 'sid':sid , 'pw': pw },
-						function (data) {
-							if (data=='') {
-								$('#li_server_superuserpassword ').html('<div>Password set to: '+pw+'</div>');
-							} else {
-								$('#li_server_superuserpassword').html(data);
-							}
-						}
-					);
-			}
-                        function jq_record_add()
-			{
-				param =$("input").serialize();
-			
-			/*	if(upwd!==rpwd){
-					alert('密码不一致');
-					
-				}*/
-				$.post("./?ajax=server_record_add&sid=1",param,
-						function (data) {
-							if(data.length>0){
-								
-								//location.href="./?page=user&sid=1";
-								$(".message").show().html(data);
-                                                                window.location.href='./?page=record&sid=1';
-								
-							}else{
-								alert('添加失败');
-								//$(".message").show().html(data);
-							}
-						}
-					);
-			}
-			
+	       
 
 			function jq_record_search(){
 				
 				var kw =$("input[name=keyword]").val();
 				var type =$("#catlist").val();
+                                var startTime = $("#startTime").val();
+                                var endTime = $("#endTime").val();
 				var recordstatus =$("#recordstatus").val();
 				$.post(
 				"./?ajax=server_record_search&sid=1",
-				{'type':type,'value':kw, 'status':recordstatus},
+				{'type':type,'value':kw, 'status':recordstatus, 'startTime':startTime, 'endTime':endTime},
 				function(data){
 					
 					$("#list").find("table").remove();
@@ -375,32 +355,7 @@ if($_POST['action']=='lists'){
 			
 				
 			}
-                        function jq_record_update()
-			{
-                                id = $("#recordId").val();
-				param =$("input").serialize();
-			
-			/*	if(upwd!==rpwd){
-					alert('密码不一致');
-					
-				}*/
-				$.post("./?ajax=server_record_update&id="+id,param,
-						function (data) {
-							if(data.length>0){
-								
-								//location.href="./?page=user&sid=1";
-								$(".message").show().html(data);
-								
-							}else{
-								alert('添加失败');
-								//$(".message").show().html(data);
-							}
-						}
-					);
-			}
-			
-
-		        function jq_record_file_output(){
+                        function jq_record_file_output(){
                                 
                                 var kw =$("input[name=keyword]").val();
                                 var type =$("#catlist").val();
