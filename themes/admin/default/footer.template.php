@@ -18,7 +18,7 @@
  <div id="footer">
   <div class="line"></div>
   <ul>
-   版权所有 © 2013-2016 群辉科技有限公司，并保留所有权利。<?php echo '<div class="">Server Version: ' . ServerInterface::getInstance()->getVersion() . '</div>';?>
+   <?php echo '<div class="">Server Version: ' . ServerInterface::getInstance()->getVersion() . '</div>';?>
   <?php echo '<div class="">Script execution time: '.sprintf('%6.3f', PHPStats::scriptExecTimeGet()).'ms | memory peak: '.(memory_get_peak_usage()/1000).' kByte</div>';?>
   </ul>
  </div>

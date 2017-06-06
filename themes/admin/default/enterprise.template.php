@@ -191,13 +191,27 @@ $(function(){
 	$('#pldr').click(function(e){
 		
 		e.preventDefault();
-		$("input[type=file]").trigger('click');
-   
+		$('#fileToUpload').trigger('click');
 		
 	})
-	$("input[type=file]").change(function(){
-		
-		alert('提交成功');
+	$('#fileToUpload').change(function(){
+		$.ajaxFileUpload({  
+                    url:'./?ajax=batch_add_enterprise&uid=<?php echo SessionManager::getInstance()->getLoginId();?>',  
+		    secureuri:false,  
+		    fileElementId:'fileToUpload',//file标签的id  
+		    dataType: 'json',//返回数据的类型  
+		    data:'',//一同上传的数据  
+		    success: function (data, status) {  
+		        //$("#upload").attr("src", "../image/"+obj.fileName);  
+
+		        alert(obj.reason);  
+                        window.location.href='./?page=enterprise&sid=1';
+		    },  
+                    error: function (data, status, e) {  
+                            alert(e);  
+                    }  
+		});
+		//alert('提交成功');
 	});
 	/*$("#catlist").change(function(){
 		var val = $(this).val();
@@ -221,7 +235,8 @@ $(function(){
 </script>
 <div id="urHere">手机对讲系统管理中心<b>></b><strong>企业用户列表</strong> </div>
    <div class="mainBox" style="height:auto!important;height:550px;min-height:550px;">
-        <h3><a href="" id="pldr" class="actionBtn add">批量导入</a> <div style="width:10px;"></div>  <a href="./?page=enterprise&sid=1&action=add" class="actionBtn add">新建企业用户</a> 企业用户列表</h3>
+        <h3><a href="" id="pldr" class="actionBtn add hint_trigger" >批量导入<span class="hintimg"></span></a><div style="width:10px;"></div>  <a href="./?page=enterprise&sid=1&action=add" class="actionBtn add">新建企业用户</a> 企业用户列表</h3>
+	<input type="file" id="fileToUpload" name="fileToUpload" class="hidden" value=""  style="display:none"/>
 <form action="?page=enterprise&action='lists'" method="post" enctype="multipart/form-data">	
 	<input type="file" name="image" class="hidden" value=""  style="display:none"/>
 </form>
@@ -235,6 +250,7 @@ $(function(){
      </select>
      <input name="keyword" type="text" class="inpMain" value="" size="20" />
      <input name="submit" class="btnGray" type="submit" value="搜索" onclick="jq_enterprise_search();return false;" />
+     <input name="submit" class="btnGray" type="submit" value="导出为CSV文件" onclick="jq_enterprise_file_output();return false;" />
     </form>
 
     </div>
@@ -256,7 +272,7 @@ $(function(){
 	  
 
 ?>
-<div id="urHere">管理中心<b>></b><strong>企业用户管理</strong> </div> 
+<div id="urHere">管理中心<b></b><strong>企业用户管理</strong> </div> 
   <div id="manager" class="mainBox" style="height:auto!important;height:550px;min-height:550px;">
     <h3><a href="?page=enterprise&sid=1" class="actionBtn">返回列表</a>新建企业用户</h3>
    <form action="" method="post">
@@ -483,6 +499,30 @@ $(function(){
 			
 				
 			}
+                        function jq_enterprise_file_output(){
+				
+				var kw =$("input[name=keyword]").val();
+				var type =$("#catlist").val();
+                                var form=$("<form>");//定义一个form表单
+				form.attr("style","display:none");
+				form.attr("target","");
+				form.attr("method","post");
+				form.attr("action","./?ajax=server_enterprise_file_output&sid=1");
+				var input1=$("<input>");
+				input1.attr("type","hidden");
+				input1.attr("name","type");
+				input1.attr("value",type);
+                                var input2=$("<input>");
+                                input2.attr("type","hidden");
+                                input2.attr("name","value");
+                                input2.attr("value",kw);
+				$("body").append(form);//将表单放置在web中
+				form.append(input1);
+				form.append(input2);
+
+				form.submit();//表单提交 
+			}
+
                         function jq_enterprise_remove(id){
 				
 				$.post(

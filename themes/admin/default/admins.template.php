@@ -5,7 +5,6 @@
   <div class="nav">
    <ul>
     <li><a href="#" target="_blank">帮助</a></li>
-    <li class="noRight"><a href="http://www.allptt.com">关于我们</a></li>
    </ul>
    <ul class="navRight">
     <li class="M noLeft"><a href="JavaScript:void(0);">您好，admin</a>
@@ -21,9 +20,8 @@
 <!-- dcHead 结束 --> <div id="dcLeft"><div id="menu">
 
  <ul>
-  <li><a href="?page=user&sid=1"><i class="article"></i><em>用户管理</em></a></li>
-  <li><a href="?page=server&sid=1"><i class="articleCat"></i><em>频道管理</em></a></li>
- 
+<li><a href="?page=operator&sid=1"><i class="article"></i><em>代理商管理</em></a></li>
+  <li><a href="?page=record&sid=1"><i class="article"></i><em>记录管理</em></a></li> 
  </ul>
 
 </div></div>

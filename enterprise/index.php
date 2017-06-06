@@ -64,7 +64,7 @@ define('MUMPHPI_SECTION', 'enterprise');
 <head>
 	<meta charset="UTF-8" />
 
-	<title><?php echo SettingsManager::getInstance()->getSiteTitle().' - 群辉科技有限公司'?></title>
+	<title><?php echo SettingsManager::getInstance()->getSiteTitle();?></title>
 	<meta name="description" content="<?php echo SettingsManager::getInstance()->getSiteDescription(); ?>" />
 	<meta name="keywords" content="<?php echo SettingsManager::getInstance()->getSiteKeywords(); ?>" />
 	<meta name="generator" content="MumPI by KCode" />
