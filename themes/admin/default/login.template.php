@@ -57,19 +57,19 @@
 ?>
 
 <div id="login">
-  <div class="dologo"></div>
+  <div class="dologo"><div style = "position:absolute;right:0px;bottom:0px;">系统管理</div></div>
     <form action="?page=login&action=dologin" method="post" onsubmit="
 		if (jQuery('#mpi_login_username').attr('value').length == 0) {window.wxc.xcConfirm('请输入用户名', window.wxc.xcConfirm.typeEnum.error); return false;}
 		if (jQuery('#mpi_login_password').attr('value').length == 0) {window.wxc.xcConfirm('请输入密码', window.wxc.xcConfirm.typeEnum.error); return false;}">
    <ul>  
-    <li class="inpLi"><b>用户名：</b><input name="username" type="text" class="inpLogin" id="mpi_login_username" ></li>
-    <li class="inpLi"><b>密码：</b><input name="password" type="password" class="inpLogin" id="mpi_login_password" ></li>
-    <li class="inpLi"><b>验证码：</b><input name="cap" type="text" class="inpLogin" id="cap" value="" ></li>
+    <li class="inpLi"><b>用户名</b><input name="username" type="text" class="inpLogin" id="mpi_login_username" ></li>
+    <li class="inpLi"><b>密码</b><input name="password" type="password" class="inpLogin" id="mpi_login_password" ></li>
+    <li class="inpLi"><b>输入下式计算结果</b><input name="cap" type="text" class="inpLogin" id="cap" value="" ></li>
     <li class="inpLi"><?php
                               require_once(MUMPHPI_MAINDIR.'/classes/Captcha.php');
                               Captcha::cap_show();
                       ?></li>
-            <li class="sub"><input type="submit" name="submit" class="btn" value="login"></li> 
+            <li class="sub"><input type="submit" name="submit" class="btn" value="登录"></li> 
 
    </ul>
   </form>

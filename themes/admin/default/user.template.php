@@ -91,7 +91,7 @@ if($_POST['action']=='lists'){
     <li class="noRight"><a href="http://www.allptt.com">关于我们</a></li>
    </ul>
    <ul class="navRight">
-    <li class="M noLeft"><a href="JavaScript:void(0);">您好，admin</a>
+    <li class="M noLeft"><a href="JavaScript:void(0);">您好，<?php echo SessionManager::getInstance()->getLoginName();?></a>
      <div class="drop mUser">
       <a href="?page=admins&sid=1">编辑我的个人资料</a>
      </div>

@@ -89,8 +89,7 @@ if($_POST['action']=='lists'){
   <div class="logo"><a href="./"><img src="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/images/mlogo.gif" alt="logo"></a></div>
   <div class="nav">
    <ul>
-    <li><a href="#" target="_blank">帮助</a></li>
-    <li class="noRight"><a href="http://www.allptt.com">关于我们</a></li>
+    <li class="noRight">系统管理</li>
    </ul>
    <ul class="navRight">
     <li class="M noLeft"><a href="JavaScript:void(0);">您好，<?php echo SessionManager::getInstance()->getLoginName();?></a>
@@ -165,7 +164,7 @@ $(function(){
 })
 
 </script>
-<div id="urHere">手机对讲系统管理中心<b>></b><strong>代理商列表</strong> </div>
+<div id="urHere">手机对讲系统管理中心<b>></b><strong>代理商编号</strong> </div>
    <div class="mainBox" style="height:auto!important;height:550px;min-height:550px;">
         <h3><a href="" id="pldr" class="actionBtn add hint_trigger">批量导入<span class="hintimg"></span></a> <div style="width:10px;"></div>  <a href="./?page=operator&sid=1&action=add" class="actionBtn add">新建代理商</a> 代理商列表</h3>
         <input type="file" id="fileToUpload" name="fileToUpload" class="hidden" value=""  style="display:none"/>
@@ -179,7 +178,7 @@ $(function(){
      <label style='font-size:15px;padding: 5px 5px 5px 2px;'>搜索类型</label> 
      <select name="cat_id" id="catlist">
                   <option value="1">账号</option>
-                  <option value="2">姓名</option>
+                  <option value="2">名称</option>
 		  <option value="3">邮箱</option>
 		  <option value="4">电话</option>
      </select>
@@ -234,7 +233,7 @@ $(function(){
        </td>
       </tr>
       <tr>
-       <td width="100" align="right">姓名</td>
+       <td width="100" align="right">名称</td>
        <td>
         <input type="text" name="name" size="40" class="inpMain" id="name"  value=""/>
        </td>
@@ -324,7 +323,7 @@ $(function(){
       </tr>
 
       <tr>
-       <td width="100" align="right">姓名</td>
+       <td width="100" align="right">名称</td>
        <td>
         <input type="text" name="name" size="40" class="inpMain" id="name"  value='<?php echo $operator['name'];?>'/>
        </td>
@@ -414,7 +413,7 @@ $(function(){
 	</td>
       </tr>
       <tr>
-       <td width="100" align="right">代理商姓名</td>
+       <td width="100" align="right">代理商名称</td>
        <td>
         <input type="text" name="operatorName" size="40" class="inpMain" id="operatorName" readonly="true" value="<?php echo $operator['name'];?>"/>
 	</td>
