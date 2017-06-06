@@ -12,7 +12,7 @@
            type: 'post',
            data: { sid: "1" },
 		   dataType: "json",
-           url: "./?ajax=show_tree&najax=1",
+           url: "./?ajax=show_tree&najax=1&entId=<?php echo SessionManager::getInstance()->getLoginId();?>",
            success: function (data) { 
 				num =data;
 				
@@ -40,7 +40,7 @@
                 function InitTable(pageIndex) {                                  
                     $.ajax({   
                         type: "POST",  
-                        url: './?ajax=show_tree',      //提交到一般处理程序请求数据   
+                        url: './?ajax=show_tree&entId=<?php echo SessionManager::getInstance()->getLoginId();?>',      //提交到一般处理程序请求数据   
                         data: "pageIndex=" + (pageIndex+1) + "&pageSize=" + pageSize+"&sid=1",          //提交两个参数：pageIndex(页面索引)，pageSize(显示条数)                   
                         success: function(data) {
                                  
@@ -62,12 +62,20 @@
  <div id="head">
   <div class="logo"><a href="./"><img src="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/images/mlogo.gif" alt="logo"></a></div>
   <div class="nav">
+<?php
+     $id = SessionManager::getInstance()->getLoginId();
+     $enterprise = MysqlInterface::getEnterpriseById($id);
+
+?>
    <ul>
-    <li><a href="#" target="_blank">帮助</a></li>
-    <li class="noRight"><a href="http://www.allptt.com">关于我们</a></li>
+   <li class="noRight"><a href="#"> 企业编号：<?php echo $enterprise['id'];?></a></li>
+        <li class="noRight"><a href="#"> 企业名称：<?php echo $enterprise['name'];?> </a> </li>
    </ul>
    <ul class="navRight">
-    <li class="M noLeft"><a href="JavaScript:void(0);">您好，admin</a>
+
+    <li class="noLeft"><a href="#">可用永久卡：<?php echo $enterprise['availablePCards'];?></a></li>
+    <li class="noLeft"><a href="#">可用年卡：<?php echo $enterprise['availableCards'];?></a></li>
+    <li class="M noLeft"><a href="JavaScript:void(0);">您好，<?php echo SessionManager::getInstance()->getLoginName();?></a>
      <div class="drop mUser">
             <a href="?page=admins&sid=1">编辑我的个人资料</a>
      </div>
@@ -80,8 +88,10 @@
 <!-- dcHead 结束 --> <div id="dcLeft"><div id="menu">
 
   <ul>
-  <li><a href="?page=user&sid=1"><i class="article"></i><em>用户管理</em></a></li>
-  <li><a href="?page=server&sid=1"><i class="articleCat"></i><em>频道管理</em></a></li>
+  <li><a href="?page=user&sid=1"><i class="user"></i><em>用户管理</em></a></li>
+  <li><a href="?page=server&sid=1"><i class="mobile"></i><em>频道管理</em></a></li>
+  <li><a href="?page=monitor&sid=1"><i class="article"></i><em>监控管理</em></a></li>
+  <li><a href="?page=record&sid=1"><i class="articleCat"></i><em>交易记录</em></a></li>
 
  </ul>
 
@@ -143,11 +153,11 @@
 		function jq_server_channel_remove(aid)
 			{
 				$.post(
-							"./?ajax=server_channel_remove",
+							"./?ajax=server_channel_remove&entId=<?php echo SessionManager::getInstance()->getLoginId();?>",
 							{ 'sid':1, 'aid': aid },
 							function(data) {
 								if (data.length>0) {
-									alert('failed: '+data);
+                                                                    window.wxc.xcConfirm("删除成功.", window.wxc.xcConfirm.typeEnum.success);
 								}
 								location.href="?page=server&sid=1";
 							

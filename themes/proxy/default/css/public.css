@@ -1237,6 +1237,8 @@ select {
  background: url(../images/logo.gif) no-repeat 0 0;
  height: 50px;
  margin-bottom: 30px;
+ position:relative;
+ font-size: 25px;
 }
 #login li {
  height: 34px;
@@ -1249,7 +1251,7 @@ select {
  background-color: #E0E0E0;
  float: left;
  display: block;
- width: 70px;
+ width: 120px;
  height: 34px;
  line-height: 34px;
  text-align: center;
@@ -1266,7 +1268,7 @@ select {
  font-size: 14px;
 }
 #login .inpLi .inpLogin {
- width: 280px;
+ width: 230px;
 }
 #login .inpLi .captcha {
  width: 198px;

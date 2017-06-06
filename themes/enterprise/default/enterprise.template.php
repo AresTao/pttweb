@@ -73,7 +73,9 @@ $.ajaxFileUpload
 }
 
 </script>
-
+<?php
+     if (SessionManager::getInstance()->isEnterprise() && SessionManager::getInstance()->getLevel() == 1){
+?>
 <?php
 if($_POST['action']=='lists'){
 	
@@ -93,7 +95,7 @@ if($_POST['action']=='lists'){
    <ul class="navRight">
     <li class="M noLeft"><a href="JavaScript:void(0);">您好，<?php echo SessionManager::getInstance()->getLoginName();?></a>
      <div class="drop mUser">
-      <a href="?page=admins&sid=1">编辑我的个人资料</a>
+      <a href="?page=admins&id=<?php echo SessionManager::getInstance()->getLoginId(); ?>">编辑我的个人资料</a>
      </div>
     </li>
     <li class="noRight"><a href="?page=logout">退出</a></li>
@@ -104,85 +106,15 @@ if($_POST['action']=='lists'){
 <!-- dcHead 结束 --> <div id="dcLeft"><div id="menu">
 
   <ul>
-  <li><a href="?page=enterprise&sid=1"><i class="article"></i><em>企业用户管理</em></a></li>
+  <li><a href="?page=enterprise&sid=1"><i class="article"></i><em>二级管理员管理</em></a></li>
+  <li><a href="?page=bill&sid=1"><i class="article"></i><em>账单管理</em></a></li>
 
  </ul>
 
 </div></div>
  <div id="dcMain">
- <?php
-   if(isset($_GET['action'])&&$_GET['action']=='show_enterprises'){
-   ?>
-<div id="urHere">手机对讲系统管理中心<b>></b><strong>企业用户列表</strong> </div>   <div class="mainBox" style="height:auto!important;height:550px;min-height:550px;">
-        <h3> <div style="width:10px;"></div>  <a href="./?page=enterprise&sid=1&action=add&cid=<?php echo $_GET['cid'] ?>" class="actionBtn add">添加企业用户</a> 企业用户列表</h3>
-
-<?php
-$enterprises = MysqlInterface::getEnterprises();
-//$srid =$_GET['sid'];
-//$server=MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($srid));
-//$chs =$server->getChannelState($_GET['cid']);
-
-//$chs =MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($_GET['sid']))->getChannels($_GET['sid'],$_GET['cid']);
-
-//$members =explode(",",$chs->getMembers());
-//var_dump($members);
-?>
-
-    <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
-     <tr>
-
-      <th width="20" align="center">用户号</th>
-      <th width="20" align="center">账号</th>
-      <th width="60" align="center">邮箱</th>
-      <th width="60" align="center">电话</th>
-      <th width="60" align="center">备注</th>
-      <th width="80" align="center">操作</th>
-     </tr>
-	 
-<?php
-
-foreach($enterprises as $member){
-			
-	//		$users = $server->getRegisteredUsers();
-	//foreach ($users AS $userId=>$userName) {
-        //	foreach ($users AS $userId=>$userName) {
-	//$user = ServerInterface::getInstance()->getServerRegistration($srid,$mr);
-	//if($user->getUserId()!==0){
-?>
-	 
-      <tr>
-    
-      <td align="center"><?php echo $member['id'];?></td>
-      <td align="center"><?php echo $member['name'];?></td>
-      <td align="center"><?php echo $member['email'];?></td>
-      <td align="center"><?php echo $member['phone'];?></td>
-      <td align="center"><?php echo $member['comment'];?></td>
-	  
-
-      <td align="center">
-             <a href="./?page=enterprise&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> | <a href="javascript:;" onclick="if(confirm('确定删除用户?')){jq_enterprise_remove(<?php echo $member['id'] ?>);}">删除</a>
-             </td>
-     </tr>
-
-
-
-<?php
-}
-		
-?>
-
-         </table>
-
-
-
-    <div class="clear"></div>
-	<!--
-    <div class="pager">总计  个记录，共 1 页，当前第 1 页 | <a href="article.php?page=1">第一页</a> 上一页 下一页 <a href="article.php?page=1">最末页</a></div>           </div>-->
-
-   <!-- 当前位置 -->
-   
+  
    <?php
-   }
    if(!isset($_GET['action'])){
    ?>
 <script>
@@ -426,6 +358,7 @@ $(function(){
 				   
 	<?php
 	}
+    }
 	?>
 
 	</div>

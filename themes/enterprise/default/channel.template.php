@@ -4,12 +4,19 @@
  <div id="head">
   <div class="logo"><a href="./"><img src="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/images/mlogo.gif" alt="logo"></a></div>
   <div class="nav">
+<?php
+     $id = SessionManager::getInstance()->getLoginId();
+     $enterprise = MysqlInterface::getEnterpriseById($id);
+
+?>
    <ul>
-    <li><a href="#" target="_blank">帮助</a></li>
-    <li class="noRight"><a href="http://www.allptt.com">关于我们</a></li>
+     <li class="noRight"><a href="#"> 企业编号：<?php echo $enterprise['id'];?></a></li>
+     <li class="noRight"><a href="#"> 企业名称：<?php echo $enterprise['name'];?> </a> </li>
    </ul>
    <ul class="navRight">
-    <li class="M noLeft"><a href="JavaScript:void(0);">您好，admin</a>
+    <li class="noLeft"><a href="#">可用永久卡：<?php echo $enterprise['availablePCards'];?></a></li>
+    <li class="noLeft"><a href="#">可用年卡：<?php echo $enterprise['availableCards'];?></a></li>
+    <li class="M noLeft"><a href="JavaScript:void(0);">您好，<?php echo SessionManager::getInstance()->getLoginName();?></a>
      <div class="drop mUser">
             <a href="?page=admins&sid=1">编辑我的个人资料</a>
      </div>
@@ -22,9 +29,10 @@
 <!-- dcHead 结束 --> <div id="dcLeft"><div id="menu">
 
   <ul>
-  <li><a href="?page=user&sid=1"><i class="article"></i><em>用户管理</em></a></li>
-  <li><a href="?page=server&sid=1"><i class="articleCat"></i><em>频道管理</em></a></li>
-
+  <li><a href="?page=user&sid=1"><i class="user"></i><em>用户管理</em></a></li>
+  <li><a href="?page=server&sid=1"><i class="mobile"></i><em>频道管理</em></a></li>
+  <li><a href="?page=monitor&sid=1"><i class="article"></i><em>监控管理</em></a></li>
+  <li><a href="?page=record&sid=1"><i class="articleCat"></i><em>交易记录</em></a></li>
  </ul>
 
 </div></div>
@@ -42,9 +50,10 @@
       <tr>
        <td width="80" align="right">频道名称</td>
        <td>
-        <input type="text" name="cat_name" value="" size="40" class="inpMain" />
+        <input type="text" id="channelName" name="cat_name" value="" size="40" class="inpMain" />
        </td>
       </tr>
+
       <tr>
        <td></td>
        <td>
@@ -61,9 +70,10 @@
 ?>
  <?php
  	if (isset($_GET['action']) && $_GET['action']=='edit') {
+                $id = SessionManager::getInstance()->getLoginId();
 		$cid =intval($_GET['cid']);
 		$server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($_GET['sid']));
-					$ChannelName = $server->getChannel($cid);
+					$ChannelName = $server->getChannel(intval($id), $cid);
 					//$Channelid = $server->getChannelState($cid);
 					//var_dump($server);
 					
@@ -76,13 +86,13 @@
       <tr>
        <td width="80" align="right">频道名称</td>
        <td>
-        <input type="text" name="cat_name" value="<?php echo $ChannelName; ?>" size="40" class="inpMain" />
+        <input type="text" id='channelName' name="cat_name" value="<?php echo $ChannelName; ?>" size="40" class="inpMain" />
        </td>
       </tr>
       <tr>
        <td></td>
        <td>
-		<input type="hidden" name="cid" value="<?php echo $_GET['cid'] ?>" size="40" class="cid" />
+		<input type="hidden" id="cid" name="cid" value="<?php echo $_GET['cid'] ?>" size="40" class="cid" />
         <input name="button" class="btn" type="submit" value="更新" onclick="jq_server_channel_save();return false;" />
        </td>
       </tr>
@@ -115,11 +125,11 @@
 <?php
 	} else {
 		$_GET['sid'] = intval($_GET['sid']);
-		if (!PermissionManager::getInstance()->isAdminOfServer($_GET['sid'])) {
-			echo tr('permission_denied');
-			MessageManager::echoAllMessages();
-			exit();
-		}
+		//if (!PermissionManager::getInstance()->isAdminOfServer($_GET['sid'])) {
+		//	echo tr('permission_denied');
+		//	MessageManager::echoAllMessages();
+		//	exit();
+		//}
 		$server = ServerInterface::getInstance()->getServer($_GET['sid']);
 ?>
 
@@ -157,7 +167,7 @@
 			function jq_server_registration_remove(uid)
 			{
 				$.post(
-							"./?ajax=server_regstration_remove",
+							"./?ajax=server_regstration_remove&entId=<?php echo SessionManager::getInstance()->getLoginId();?>",
 							{ 'sid': <?php echo $_GET['sid']; ?>, 'uid': uid },
 							function(data) {
 								if (data.length>0) {
@@ -171,7 +181,7 @@
 		function jq_server_channel_remove(aid)
 			{
 				$.post(
-							"./?ajax=server_channel_remove",
+							"./?ajax=server_channel_remove?entId=<?php echo SessionManager::getInstance()->getLoginId();?>",
 							{ 'sid': <?php echo $_GET['sid']; ?>, 'aid': aid },
 							function(data) {
 								if (data.length>0) {
@@ -184,17 +194,17 @@
 			
 	function jq_server_channel_add()
 		{
-			var name = $('.inpMain').attr('value');
+			var name = $('#channelName').val();
 
-			$.post("./?ajax=server_channel_add",
+			$.post("./?ajax=server_channel_add&entId=<?php echo SessionManager::getInstance()->getLoginId();?>",
 					{ 'name': name,'sid': <?php echo $_GET['sid']; ?> },
 					function(data)
 					{
 						if (data.length>0) {
-							$('#jq_information').html('添加失败！');
+                                                        window.wxc.xcConfirm("添加成功", window.wxc.xcConfirm.typeEnum.success);
+							location.href="./?page=server&sid=1";
 						} else {
 							
-							location.href="./?page=server&sid=1";
 						}
 					
 					}
@@ -203,21 +213,20 @@
 		}
 	function jq_server_channel_save()
 		{
-			var cid = $('.cid').attr('value');
-			var name = $('.inpMain').attr('value');
-			$.post("./?ajax=server_channel_save",
+			var cid = $('#cid').val();
+			var name = $('#channelName').val();
+			$.post("./?ajax=server_channel_save&entId=<?php echo SessionManager::getInstance()->getLoginId();?>",
 					{ 'cid': cid,'name':name,'sid': <?php echo $_GET['sid']; ?> },
 					function(data)
 					{
 						if (data.length>0) {
-							$('#jq_information').html('修改失败'+data);
-						
+					               window.wxc.xcConfirm("修改成功", window.wxc.xcConfirm.typeEnum.success);	
+						       url="./?page=server&sid=1";
+						       times=5;
+						       loadUrl(url,times);
+
 						} else {
-								alert('修改成功');
-							url="./?page=server&sid=1";
-							times=5;
-							loadUrl(url,times);
-							
+														
 						}
 						
 					}

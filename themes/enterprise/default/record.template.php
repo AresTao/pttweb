@@ -90,18 +90,19 @@ if($_POST['action']=='lists'){
  <div id="head">
   <div class="logo"><a href="./"><img src="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/images/mlogo.gif" alt="logo"></a></div>
   <div class="nav">
-   <ul>
-    <li><a href="#" target="_blank">帮助</a></li>
-    <li class="noRight"><a href="http://www.allptt.com">关于我们</a></li>
-   </ul>
-   <ul class="navRight">
-    <?php
+<?php
      $id = SessionManager::getInstance()->getLoginId();
      $enterprise = MysqlInterface::getEnterpriseById($id);
 
 ?>
-    <li class="noLeft"><a href="#">可用永久卡数：<?php echo $enterprise['availablePCards'];?></a></li>
-    <li class="noLeft"><a href="#">可用年卡数：<?php echo $enterprise['availableCards'];?></a></li>
+
+   <ul>
+    <li class="noRight"><a href="#"> 企业编号：<?php echo $enterprise['id'];?></a></li>
+        <li class="noRight"><a href="#"> 企业名称：<?php echo $enterprise['name'];?> </a> </li>
+   </ul>
+   <ul class="navRight">
+        <li class="noLeft"><a href="#">可用永久卡：<?php echo $enterprise['availablePCards'];?></a></li>
+    <li class="noLeft"><a href="#">可用年卡：<?php echo $enterprise['availableCards'];?></a></li>
     <li class="M noLeft"><a href="JavaScript:void(0);">您好，<?php echo SessionManager::getInstance()->getLoginName();?></a>
      <div class="drop mUser">
       <a href="?page=admins&sid=1">编辑我的个人资料</a>
@@ -116,9 +117,9 @@ if($_POST['action']=='lists'){
 
   <ul>
 
-  <li><a href="?page=user&sid=1"><i class="article"></i><em>用户管理</em></a></li>
-  <li><a href="?page=server&sid=1"><i class="articleCat"></i><em>频道管理</em></a></li>
-  <li><a href="?page=monitor&sid=1"><i class="articleCat"></i><em>监控管理</em></a></li>
+  <li><a href="?page=user&sid=1"><i class="user"></i><em>用户管理</em></a></li>
+  <li><a href="?page=server&sid=1"><i class="mobile"></i><em>频道管理</em></a></li>
+  <li><a href="?page=monitor&sid=1"><i class="article"></i><em>监控管理</em></a></li>
   <li><a href="?page=record&sid=1"><i class="articleCat"></i><em>交易记录</em></a></li>
  </ul>
 
@@ -140,7 +141,7 @@ if($_POST['action']=='lists'){
 </form>
   <div class="filter">
     <form action="" method="post">
-    <div id = "search" style="">
+    <div class="item-left">
      <label style='font-size:15px;padding: 5px 5px 5px 2px;'>搜索类型</label> 
      <select name="cat_id" id="catlist">
 		  <option value="1">代理商编号</option>
@@ -149,12 +150,14 @@ if($_POST['action']=='lists'){
      
      <input name="keyword" type="text" class="inpMain" value="" size="20" />
      </div>
-
+     <div class="item-right">
      <label style='font-size:15px;padding: 5px 5px 5px 2px;'>开始时间</label><input type="text" id="startTime" class="inpMain" name="startTime" />
      <label style='font-size:15px;padding: 5px 5px 5px 2px;'>结束时间</label><input type="text" id="endTime" class="inpMain" name="endTime"/>
-
+     </div>
+     <div class="btn-item">
      <input name="submit" class="btnGray" type="submit" value="搜索" onclick="jq_record_search();return false;" />
      <!--<input name="submit" class="btnGray" type="submit" value="导出为CSV文件" onclick="jq_record_file_output();return false;" />-->
+    </div>
     </form>
 
     </div>
