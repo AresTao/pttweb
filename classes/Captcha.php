@@ -22,7 +22,7 @@ class Captcha
 		imagettftext($img, 12, rand(-35,35), 30, 20, imagecolorexact($img,rand(150,255),rand(150,255),rand(150,255)), $mainDir.'/resources/arial.ttf', $cap_r2);
 		imagepng($img, $mainDir.'/tmp/'.$filename);
 		imagedestroy($img);
-		echo '<img src="'.SettingsManager::getInstance()->getMainUrl().'/tmp/'.$filename.'" style="float:right;height:35px;width:250px;padding-right:20px;" alt=""/>';
+		echo '<img src="'.SettingsManager::getInstance()->getMainUrl().'/tmp/'.$filename.'" style="float:right;height:35px;width:245px;" alt=""/>';
 		self::cap_cleanup();
 	}
 

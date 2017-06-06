@@ -273,4 +273,34 @@ class HelperFunctions
 		}
 		return strnatcmp($a, $b);
 	}
+        public static function copyFile($entId, $file, $type) //0: 图片 1：视频
+        {
+                $datapath = SettingsManager::getInstance()->getMainDir() . '/file/';
+                $fileName = substr($file, strrpos($file,"/")+1);
+                $res = false;
+                if($type == 1)
+                {
+                    if(!is_dir($datapath.$entId."/video/"))
+                        mkdir($datapath.$entId."/video/", 0777, true);
+                    $targetName = $datapath.$entId."/video/".$fileName;
+                    if(!file_exists($targetName))
+                        $res = copy($file, $targetName);
+                }else if($type == 0){
+                    if(!is_dir($datapath.$entId."/photo/"))
+                        mkdir($datapath.$entId."/photo/", 0777, true);
+                    $targetName = $datapath.$entId."/photo/".$fileName;
+                    if(!file_exists($targetName))
+                        $res = copy($file, $targetName);
+                }
+                return $res;
+        }
+        public static function binaryToStr($bytes)
+        {
+                $str = ''; 
+		foreach($bytes as $ch) { 
+			$str .= chr($ch); 
+		} 
+  
+		return $str; 
+        }
 }
