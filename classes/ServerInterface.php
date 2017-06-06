@@ -103,6 +103,7 @@ class ServerInterface_ice
 		// ice 3.4
 		$initData = new Ice_InitializationData;
 		$initData->properties = Ice_createProperties();
+                $initData->properties->setProperty('Ice.MessageSizeMax', 2048*1024);
 		$initData->properties->setProperty('Ice.ImplicitContext', 'Shared');
 		$initData->properties->setProperty('Ice.Default.EncodingVersion', '1.0');
 		$ICE = Ice_initialize($initData);
@@ -354,36 +355,37 @@ class ServerInterface_ice
 	 * @param string $filter a filter
 	 * @return sequence of registrations
 	 */
-	public function getServerRegistrations($serverId, $filter='')
+	public function getServerRegistrations($serverId,$entId, $filter='')
 	{
-		return $this->getServer($serverId)->getRegisteredUsers($filter);
+		return $this->getServer($serverId)->getRegisteredUsers($entId, $filter);
 	}
 	/**
 	 * @param int $serverId
 	 * @param int $userId
 	 * @return MurmurRegistration
 	 */
-	public function getServerRegistration($serverId, $userId)
+	public function getServerRegistration($serverId,$entId, $userId)
 	{
 		$serverId = intval($serverId);
+		$entId = intval($entId);
 		$userId = intval($userId);
 
 		$server=$this->getServer($serverId);
 		if (null===$server) {
 			throw new Exception('Invalid server id, server not found.');
 		}
-		return MurmurRegistration::fromIceObject($server->getRegistration($userId), $serverId, $userId);
+		return MurmurRegistration::fromIceObject($server->getRegistration($entId, $userId), $serverId, $userId);
 	}
 	/**
 	 * Get connected users of a virtual server
 	 * @param int $sid
 	 * @return array of MurmurUser objects
 	 */
-	public function getServerUsersConnected($serverId)
+	public function getServerUsersConnected($serverId, $entId)
 	{
 		//return $this->getServer($serverId)->getUsers();
 		$users = array();
-		$userMap = $this->getServer($serverId)->getUsers();
+		$userMap = $this->getServer($serverId)->getUsers($entId);
 		foreach ($userMap as $sessionId=>$iceUser) {
 			$user = MurmurUser::fromIceObject($iceUser);
 			$users[] = $user;
@@ -459,7 +461,7 @@ class ServerInterface_ice
 		return $this->getServer($srvid)->getTexture(intval($uid));
 	}
 
-	function addUser($srvid, $name, $password, $email=null)
+	function addUser($srvid,$entId, $account, $password,$name, $comment,$email,$phone,$type) //type 0 ：永久用户 1：年卡用户
 	{
 		try {
 			$tmpServer = ServerInterface::getInstance()->getServer(intval($srvid));
@@ -467,46 +469,47 @@ class ServerInterface_ice
 				echo 'Server could not be found.<br/>';
 				die();
 			}
-
-			$reg = new MurmurRegistration($srvid, null, $name, $email, null, null, $password);
-			$tmpUid = $tmpServer->registerUser($reg->toArray());
+                        $secondOfAYear = 365*24*60*60;
+                        $expireTime = time();
+                        if($type == 0)
+                                $expireTime = 2147483647;
+                        else if($type == 1)
+                                $expireTime = $expireTime + $secondOfAYear;
+                        
+			$reg = new MurmurRegistration($srvid, null, $account, $password, $name, $comment, $email,$phone,strval($expireTime), "");
+			$tmpUid = $tmpServer->registerUser(intval($entId), $reg->toArray());
 			
 
-			echo TranslationManager::getInstance()->getText('doregister_success').'<br/>';
-		} catch(Murmur_InvalidServerException $exc) {	// This is depreciated (murmur.ice)
-			echo 'Invalid server. Please check your server selection.<br/><a onclick="history.go(-1); return false;" href="?page=register">go back</a><br/>If the problem persists, please contact a server admin or webmaster.<br/>';
-		} catch(Murmur_ServerBootedException $exc) {
-			echo 'Server is currently not running, but it has to to be able to register.<br/>Please contact a server admin';
 		} catch(Murmur_InvalidUserException $exc) {
 			echo '该用户名已经存在，请您再添加别的试一试.<br/><a onclick="history.go(-1); return false;" href="?page=user&sid=1" style="color:blue">返回列表</a>';
 		} catch(Ice_UnknownUserException $exc) {	// This should not happen
-			echo $exc->unknown.'<br/>';
-//			echo '<pre>'; var_dump($exc); echo '</pre>';
 		}
 	}
 	
 
 	
 	
-	function removeRegistration($srvid, $uid)
+	function removeRegistration($srvid,$entId, $uid)
 	{
-		ServerInterface::getInstance()->getServer(intval($srvid))->unregisterUser(intval($uid));
+		ServerInterface::getInstance()->getServer(intval($srvid))->unregisterUser(intval($entId),intval($uid));
 	}
 	
-	function removeChannels($srvid, $uid)
+	function removeChannels($srvid, $entId, $cid)
 	{
-		ServerInterface::getInstance()->getServer(intval($srvid))->removeChannel(intval($uid));
+		ServerInterface::getInstance()->getServer(intval($srvid))->removeChannel(intval($entId),intval($cid));
 	}
-	public function addChannels($sid,$name)
+	public function addChannels($srvid, $entId, $name)
 	{
-		
-		//ServerInterface::getInstance()->getServer(intval($srvid))->addChannel($name,0);
-		$this->getServer($sid)->addChannel($name,0);
+	        var_dump($name);	
+		ServerInterface::getInstance()->getServer(intval($srvid))->addChannel($entId, $name,0);
+		//$this->getServer($sid)->addChannel($entId, $name,0);
 	}
-	function updateChannel($sid,$cid,$name=null,$members=null)
+        
+	function updateChannelName($sid,$entid, $cid,$name)
 	{
 		//echo  $cid;
 		$sid=intval($sid);
+		$entid=intval($entid);
 		$cid =intval($cid);
 	//	var_dump($members);die;
 	//var_dump($name);die;
@@ -515,27 +518,28 @@ class ServerInterface_ice
 		//$server = ServerInterface::getInstance()->getServer($sid);
 		//$server =MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($sid));
 		//var_dump($server);
-		$channel=ServerInterface::getInstance()->getServer(intval($sid))->getChannelState($cid);
-		if(isset($name)){
-			$channel->name=$name;
-			
-		}
-		if(isset($members)){
-			$channel->members=$members;
-			
-			
-		}
-		//var_dump($channel);die;
-		ServerInterface::getInstance()->getServer(intval($sid))->setChannelState($channel);
+		//$channel=ServerInterface::getInstance()->getServer(intval($sid))->getChannelState($entid, $cid);
+		//if(isset($name)){
+		//	$channel->name=$name;
+		//	
+		//}
+		//if(isset($members)){
+		//	$channel->members=$members;
+		//	
+		//	
+		//}
+                //$channel->entid = $entid;
+		//var_dump($channel);
+		ServerInterface::getInstance()->getServer(intval($sid))->setChannelName( $entid, $cid, $name);
 		//echo 1;
 		//echo "$cid,$sid";
 	//var_dump(MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($sid)));
 		
 
 	}
-	function getChannel($sid,$cid){
+	function getChannel($sid,$entId, $cid){
 		
-		$channel=ServerInterface::getInstance()->getServer(intval($sid))->getChannelState($cid);
+		$channel=ServerInterface::getInstance()->getServer(intval($sid))->getChannelState($entId, $cid);
 		//$channel->name=$name;
 		//var_dump($channel);die;
 		return $channel;

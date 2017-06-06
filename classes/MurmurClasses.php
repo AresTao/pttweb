@@ -84,9 +84,9 @@ class MurmurServer
 		return $this->iceObj->getLog($startRowFromEnd, $endRow);
 	}
 
-	public function getUsers()
+	public function getUsers($entId)
 	{
-		return $this->iceObj->getUsers();
+		return $this->iceObj->getUsers($entId);
 	}
 	/**
 	 * @param int $userId
@@ -98,9 +98,9 @@ class MurmurServer
 		$user = isset($userMap[$userId])?MurmurUser::fromIceObject($userMap[$userId]):null;
 		return $user;
 	}
-	public function getChannels()
+	public function getChannels($entId)
 	{
-		return $this->iceObj->getChannels();
+		return $this->iceObj->getChannels($entId);
 	}
 	/**
 	 * @return MurmurTree
@@ -151,18 +151,18 @@ class MurmurServer
 	 * !obsolete!
 	 * @return MurmurChannel
 	 */
-	public function getChannelState($channelId)
+	public function getChannelState($entId,$channelId)
 	{
-		return $this->getChannel($channelId);
+		return $this->getChannel($entId, $channelId);
 	}
 	/**
 	 * @param $channelId
 	 * @return MurmurChannel
 	 */
-	public function getChannel($channelId)
+	public function getChannel($entId, $channelId)
 	{
 		try {
-			return MurmurChannel::fromIceObject($this->iceObj->getChannelState(intval($channelId)), $this);
+			return MurmurChannel::fromIceObject($this->iceObj->getChannelState(intval($entId),intval($channelId)), $this);
 		} catch(MurmurException $e) {
 			return 0;
 		}
@@ -171,13 +171,68 @@ class MurmurServer
 	{
 		return $this->iceObj->setChannelState();
 	}
-	public function removeChannel()
+	public function setChannelName($entid,$cid, $name)
+        {
+                return $this->iceObj->setChannelName($entid, $cid, $name);
+        }
+
+        public function addChannelMembers( $entid,$cid, $members)
+        {
+                return $this->iceObj->addChannelMembers($entid, $cid, $members);
+        }
+	public function deleteChannelMembers($entid,$cid, $members)
+        {
+                return $this->iceObj->deleteChannelMembers($entid, $cid, $members);
+        }
+
+        public function getLocation($entid, $userid, $startTime, $endTime)
+        {
+                return $this->iceObj->getLocation($entid, $userid, $startTime, $endTime);
+        }
+
+        public function getVideos($entid, $userid, $startTime, $endTime)
+        {
+                return $this->iceObj->getVideoSummary($entid, $userid, $startTime, $endTime);
+        }
+        public function getVideo($id)
+        {
+                return $this->iceObj->getVideo($id);
+        }
+        public function getPhotos($entid, $userid, $startTime, $endTime)
+        {
+                return $this->iceObj->getPhotoSummary($entid, $userid, $startTime, $endTime);
+        }
+	public function getPhoto($id)
+        {
+                return $this->iceObj->getPhoto($id);
+        }
+        public function addFriends($entid, $userid, $friends)
+        {
+                return $this->iceObj->addFriends($entid, $userid, $friends);
+        }
+
+        public function getFriends($entid, $userid)
+        {
+                return $this->iceObj->getFriends($entid, $userid);
+        }
+
+        public function deleteFriends($entid, $userid, $friends)
+        {
+                return $this->iceObj->deleteFriends($entid, $userid, $friends);
+        }
+        
+        public function sendMessageToChannel($entid, $cId, $info)
+        {
+                return $this->iceObj->setPushInfo($entid, $cId, $info);
+        }
+
+	public function removeChannel($entId, $cId)
 	{
-		return $this->iceObj->removeChannel();
+		return $this->iceObj->removeChannel($entId, $cId);
 	}
-	public function addChannel()
+	public function addChannel($entId, $cName)
 	{
-		return $this->iceObj->addChannel();
+		return $this->iceObj->addChannel($entId,$cName);
 	}
 	public function sendMessageChannel()
 	{
@@ -219,17 +274,18 @@ class MurmurServer
 	 * @param MurmurUser $user
 	 * @return int userId
 	 */
-	public function registerUser(MurmurUser $user)
+	public function registerUser($entId, $user)
 	{
-		return $this->iceObj->registerUser();
+		return $this->iceObj->registerUser($entId, $user);
+		//return $this->iceObj->registerUser($entId, $user);
 	}
 	/**
 	 * @param int $userId
 	 * @return void
 	 */
-	public function unregisterUser($userId)
+	public function unregisterUser($entId, $userId)
 	{
-		return $this->iceObj->unregisterUser();
+		return $this->iceObj->unregisterUser($entId, $userId);
 	}
 	/**
 	 * @param int $registrationId
@@ -244,18 +300,18 @@ class MurmurServer
 	 * @param int $registrationId
 	 * @return MurmurRegistration
 	 */
-	public function getRegistration($registrationId)
+	public function getRegistration($entId, $registrationId)
 	{
-		$reg = MurmurRegistration::fromIceObject(empty($registrationId)?$this->iceObj->getRegistration():$this->iceObj->getRegistration(intval($registrationId)));
+		$reg = MurmurRegistration::fromIceObject(empty($registrationId)?$this->iceObj->getRegistration():$this->iceObj->getRegistration(intval($entId),intval($registrationId)));
 		return $reg;
 	}
 	/**
 	 * @param string $filter
 	 * @return array(int registrationIds, string registrationUserName)
 	 */
-	public function getRegisteredUsers($filter=null)
+	public function getRegisteredUserIds($entid, $filter=null)
 	{
-		return $this->iceObj->getRegisteredUsers($filter);
+		return $this->iceObj->getRegisteredUserIds($entid, $filter);
 	}
 	/**
 	 * @param string $name
@@ -295,6 +351,10 @@ class MurmurServer
 		$port = (!empty($port))?$port:'64738';
 		return 'mumble://' . $host . ':' . $port;
 	}
+        public function addEnt($entid, $entName)
+        {
+                $this->iceObj->addEnt($entid, $entName);
+        }
 }
 
 /**
@@ -306,34 +366,48 @@ class MurmurServer
 class MurmurRegistration
 {
 	// constants – slice definition: enum UserInfo { UserName, UserEmail, UserComment, UserHash, UserPassword };
-	const USERNAME=0;
+/*	const USERNAME=0;
 	const USEREMAIL=1;
 	const USERCOMMENT=2;
 	const USERHASH=3;
 	const USERPASSWORD=4;
 	const USERLASTACTIVE=5;
 	const USERCURRENTCHANID=6;
+*/
+        const USERACCOUNT=0;
+        const USERPASSWD=1;
+        const USERNAME=2;
+        const USERCOMMENT=3;
+        const USEREMAIL=4;
+        const USERPHONE=5;
+        const USERCURRENTCHANID=6;
+        const USEREXPIRETIME=7;
 
 	private $serverId;
+	private $userId;
+        private $account;
 	private $name;
 	private $email;
+        private $phone;
+        private $expireTime;
 	private $comment;
 	private $hash;
 	private $password;
 	private $lastactive;
 	private $currentchanid;
 
-	public function __construct($serverId, $userId, $name, $email=null, $comment=null, $hash=null, $password=null, $lastactive=null, $currentchanid=null)
+	public function __construct($serverId, $userId, $account, $passwd, $name, $comment, $email,$phone,$expireTime, $currentchanid=null)
 	{
 		$this->serverId=$serverId;
 		$this->userId=$userId;
+                $this->account=$account;
 		$this->name=$name;
 		$this->email=$email;
 		$this->comment=$comment;
-		$this->hash=$hash;
-		$this->password=$password;
-		$this->lastactive=$lastactive;
+                $this->phone=$phone;
+		$this->password=$passwd;
 		$this->currentchanid=$currentchanid;
+		$this->expireTime=$expireTime;
 	}
 
 	/**
@@ -343,14 +417,15 @@ class MurmurRegistration
 	 */
 	public static function fromIceObject(array $object, $serverId, $userId)
 	{
+		$account  = isset($object[self::USERACCOUNT])    ?$object[self::USERACCOUNT]    :null;
+		$pwd      = isset($object[self::USERPASSWD])    ?$object[self::USERPASSWD]    :null;
 		$name     = isset($object[self::USERNAME])    ?$object[self::USERNAME]    :null;
+		$comment  = isset($object[self::USERCOMMENT])    ?$object[self::USERCOMMENT]    :null;
 		$email    = isset($object[self::USEREMAIL])   ?$object[self::USEREMAIL]   :null;
-		$comment  = isset($object[self::USERCOMMENT]) ?$object[self::USERCOMMENT] :null;
-		$hash     = isset($object[self::USERHASH])    ?$object[self::USERHASH]    :null;
-		$password = isset($object[self::USERPASSWORD])?$object[self::USERPASSWORD]:null;
-		$lastactive = isset($object[self::USERLASTACTIVE])?$object[self::USERLASTACTIVE]:null;
+		$phone    = isset($object[self::USERPHONE]) ?$object[self::USERPHONE] :null;
 		$currentchanid = isset($object[self::USERCURRENTCHANID])?$object[self::USERCURRENTCHANID]:null;
-		return new self($serverId, $userId, $name, $email, $comment, $hash, $password, $lastactive, $currentchanid);
+		$expireTime    = isset($object[self::USEREXPIRETIME])    ?$object[self::USEREXPIRETIME]    :null;
+		return new self($serverId, $userId, $account, $pwd, $name, $comment, $email,$phone,$expireTime, $currentchanid);
 	}
 	/**
 	 * @return array with name, email, comment, hash, password and indices defined as constants
@@ -358,20 +433,22 @@ class MurmurRegistration
 	public function toArray()
 	{
 		$array = array();
-		if (null!==$this->name)
+		if (null!==$this->account)
+			$array[self::USERACCOUNT] = $this->account;
+                if (null!==$this->password)
+			$array[self::USERPASSWD] = $this->password;
+                if (null!==$this->name)
 			$array[self::USERNAME] = $this->name;
+                if (null!==$this->comment)
+			$array[self::USERCOMMENT] = $this->comment;
 		if (null!==$this->email)
 			$array[self::USEREMAIL] = $this->email;
-		if (null!==$this->comment)
-			$array[self::USERCOMMENT] = $this->comment;
-		if (null!==$this->hash)
-			$array[self::USERHASH] = $this->hash;
-		if (null!==$this->password)
-			$array[self::USERPASSWORD] = $this->password;
-		if (null!==$this->lastactive)
-			$array[self::USERLASTACTIVE] = $this->lastactive;
+		if (null!==$this->phone)
+			$array[self::USERPHONE] = $this->phone;
 		if (null!==$this->currentchanid)
 			$array[self::USERCURRENTCHANID] = $this->currentchanid;
+                if (null!==$this->expireTime)
+			$array[self::USEREXPIRETIME] = $this->expireTime;
 		return $array;
 
 		/* the following would be much easier, but will send the null values which are then saved as empty strings
@@ -394,7 +471,13 @@ class MurmurRegistration
 	public function getUserId()
 	{
 		return $this->userId;
+	} 
+         
+	public function getAccount()
+	{
+		return $this->account;
 	}
+
 	public function getName()
 	{
 		return $this->name;
@@ -407,17 +490,17 @@ class MurmurRegistration
 	{
 		return $this->comment;
 	}
-	public function getHash()
-	{
-		return $this->hash;
-	}
 	public function getPassword()
 	{
 		return $this->password;
 	}
-        public function getLastActive()
+        public function getPhone()
         {
-                return $this->lastactive;
+                return $this->phone;
+        }
+        public function getExpireTime()
+        {
+                return $this->expireTime;
         }
         public function getCurrentChanId()
         {
@@ -428,6 +511,10 @@ class MurmurRegistration
 	{
 		$this->name = $name;
 	}
+        public function setAccount($account)
+	{
+		$this->account = $account;
+	}
 	public function setEmail($email)
 	{
 		$this->email=$email;
@@ -436,9 +523,9 @@ class MurmurRegistration
 	{
 		$this->comment=$comment;
 	}
-	public function setHash($hash)
+	public function setPhone($phone)
 	{
-		$this->hash=$hash;
+		$this->phone=$phone;
 	}
 	public function setPassword($password)
 	{
@@ -947,7 +1034,7 @@ class MurmurChannel
 	 */
 	public static function fromIceObject($iceObject, &$server)
 	{
-		return new self($iceObject->id, $iceObject->name, $iceObject->temporary, $iceObject->members, $server);
+		return new self($iceObject->id,$iceObject->entid, $iceObject->name, $iceObject->temporary, $iceObject->members, $server);
 	}
 
 	/**
@@ -958,6 +1045,7 @@ class MurmurChannel
 	 * @var int
 	 */
 	private $id;
+        private $entid;
 	/**
 	 * @var string
 	 */
@@ -978,9 +1066,10 @@ class MurmurChannel
 	 * @param int $position
 	 * @return MurmurChannel
 	 */
-	public function __construct($id, $name, $isTemporary, $members, &$server)
+	public function __construct($id, $entid,$name, $isTemporary, $members, &$server)
 	{
 		$this->id = $id;
+		$this->entid = $entid;
 		$this->name = $name;
 		$this->isTemporary = $isTemporary;
 		$this->members = $members;
@@ -1018,7 +1107,14 @@ class MurmurChannel
 	{
 		return $this->members;
 	}
-
+        public function getEntid()
+        {
+                return $this->entid;
+        }
+        public function setEntid($entid)
+        {
+                $this->entid = $entid;
+        }
 	/**
 	 * Get the mumble:// join url
 	 * @return string

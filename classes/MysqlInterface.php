@@ -45,6 +45,20 @@ class MysqlInterface{
                     return true;
 		return false;
 	}
+        public static function checkIfEnterpriseCanCreateUser($id, $type){
+                $sql = "select * from enterprise where id = ".$id ;
+                $res = MysqlManager::getInstance()->getRow($sql);
+                if($type == 0)
+                {
+                    if($res['availablePCards'] > 0)
+                        return true;
+                }else if($type == 1)
+                {
+                    if($res['availableCards'] > 0)
+                        return true;
+                }
+                return false;
+        }
 	public static function getOperatorByName($name){
 		$sql = "select * from operator where account = '".$name."'";
 		$res = MysqlManager::getInstance()->getRow($sql);
@@ -221,6 +235,7 @@ class MysqlInterface{
 		return false;
 	}
 	public static function deleteEnterpriseById($id){
+                $id = intval($id);
                 $where = "id = ".$id;
                 $res = MysqlManager::getInstance()->deleteOne("enterprise", $where);
                 return $res;
@@ -359,12 +374,31 @@ class MysqlInterface{
                 $res = MysqlManager::getInstance()->getAll($sql);
                 return $res;
 	}
-	public static function getRecordsByOperator1($operatorId){
-                $sql = "select r.id,r.toId, o.name , r.cardNum, r.pCardNum, r.createTime, r.cost from record r, operator o  where r.fromType = 2 and r.fromId=".$operatorId." and r.toType = 2 and r.toId =o.id ";
+	public static function getRecordsByOperator1FromAdmin($operatorId){
+                $sql = "select distinct r.id,r.cardNum, r.pCardNum, r.createTime, r.cost from record r, operator o  where r.fromType = 1 and r.toId=".$operatorId;
                 $res = MysqlManager::getInstance()->getAll($sql);
                 return $res;
 	}
-
+	public static function getRecordsByOperator2FromOperator1($operatorId){
+                $sql = "select distinct r.id,r.fromId, o.name , r.cardNum, r.pCardNum, r.createTime, r.cost from record r, operator o  where r.fromType = 2 and r.toType = 2 and o.id = r.fromId and r.toId=".$operatorId;
+                $res = MysqlManager::getInstance()->getAll($sql);
+                return $res;
+	}
+	public static function getRecordsByOperator1ToOperator2($operatorId){
+                $sql = "select distinct r.id,r.toId, o.name , r.cardNum, r.pCardNum, r.createTime, r.cost from record r, operator o  where r.fromType = 2 and r.toType = 2 and o.id = r.toId and r.fromId=".$operatorId;
+                $res = MysqlManager::getInstance()->getAll($sql);
+                return $res;
+	}
+        public static function getRecordsByOperatorToEnterprise($operatorId){
+                $sql = "select distinct r.id,r.toId, e.name , r.cardNum, r.pCardNum, r.createTime, r.cost from record r, enterprise e  where r.fromType = 2 and r.toType = 3 and e.id = r.toId and r.fromId=".$operatorId;
+                $res = MysqlManager::getInstance()->getAll($sql);
+                return $res;
+	}
+	public static function getRecordsByEnterprise($enterpriseId){
+                $sql = "select distinct r.id,r.fromId, o.name , r.cardNum, r.pCardNum, r.createTime, r.cost from record r, operator o  where r.fromType = 2 and r.toType = 3 and o.id = r.fromId and r.toId=".$enterpriseId;
+                $res = MysqlManager::getInstance()->getAll($sql);
+                return $res;
+	}
 	public static function getRecordById($id){
                 $sql = "select * from record where id=".$id;
                 $res = MysqlManager::getInstance()->getRow($sql);
@@ -372,7 +406,142 @@ class MysqlInterface{
 	}
 
 
-	public static function searchRecordsByAdmin($type, $value){
+	public static function searchRecordsByAdmin($type, $value, $startTime, $endTime){
+                $sql = '';
+                if ($type == 1)
+                {
+			$sql = "select r.id,r.toId, o.name , r.cardNum, r.pCardNum, r.createTime, r.cost from record r, operator o  where r.fromType = 1 and r.toType = 2 and r.toId =o.id";
+			if ($value != "")
+                             $sql = $sql." and r.toId=".$value;
+
+                
+                }else if ($type == 2)
+                {
+			$sql = "select r.id,r.toId, o.name , r.cardNum, r.pCardNum, r.createTime, r.cost from record r, operator o  where r.fromType = 1 and r.toType = 2 and r.toId =o.id";
+			if ($value != "")
+                             $sql = $sql." and o.name like '%".$value."%'";
+
+                }else 
+                {
+                        return "";
+                }	
+                if ($startTime != "")
+                        $sql = $sql." and r.createTime >='".$startTime."'";
+                if ($endTime != "")
+                        $sql = $sql." and r.createTime <='".$endTime."'";
+                $res = MysqlManager::getInstance()->getAll($sql);
+                return $res;
+        }
+	public static function searchRecordsOperatorFromAdmin($operatorId, $startTime, $endTime){
+		$sql = "select distinct r.id, r.cardNum, r.pCardNum, r.createTime, r.cost from record r, operator o  where r.fromType = 1 and r.toType = 2 and r.toId=".$operatorId;
+                
+                if ($startTime != "")
+                        $sql = $sql." and r.createTime >='".$startTime."'";
+                if ($endTime != "")
+                        $sql = $sql." and r.createTime <='".$endTime."'";
+                var_dump($sql);
+                $res = MysqlManager::getInstance()->getAll($sql);
+                return $res;
+        }
+
+
+	public static function searchRecordsOperator1ToOperator2($operatorId, $type, $value, $startTime, $endTime){
+                $sql = '';
+                if ($type == 1)
+                {
+			$sql = "select distinct r.id,r.toId, o.name , r.cardNum, r.pCardNum, r.createTime, r.cost from record r, operator o  where r.fromType = 2 and r.toType = 2 and r.fromId=".$operatorId." and r.toId =o.id";
+			if ($value != "")
+                             $sql = $sql." and r.toId=".$value;
+
+                }else if ($type == 2)
+                {
+			$sql = "select distinct r.id,r.toId, o.name , r.cardNum, r.pCardNum, r.createTime, r.cost from record r, operator o  where r.fromType = 2 and r.toType = 2 and r.fromId=".$operatorId." and r.toId =o.id";
+			if ($value != "")
+                             $sql = $sql." and o.name like '%".$value."%'";
+
+                }else 
+                {
+                        return "";
+                }	
+                if ($startTime != "")
+                        $sql = $sql." and r.createTime >='".$startTime."'";
+                if ($endTime != "")
+                        $sql = $sql." and r.createTime <='".$endTime."'";
+                $res = MysqlManager::getInstance()->getAll($sql);
+                return $res;
+        }
+	public static function searchRecordsOperator2FromOperator1($operatorId, $type, $value, $startTime, $endTime){
+                $sql = '';
+                if ($type == 1)
+                {
+			$sql = "select distinct r.id,r.toId, o.name , r.cardNum, r.pCardNum, r.createTime, r.cost from record r, operator o  where r.fromType = 2 and r.toType = 2 and r.toId=".$operatorId;
+			if ($value != "")
+                             $sql = $sql." and r.fromId=".$value;
+
+                }else if ($type == 2)
+                {
+			$sql = "select distinct r.id,r.toId, o.name , r.cardNum, r.pCardNum, r.createTime, r.cost from record r, operator o  where r.fromType = 2 and r.toType = 2 and r.toId=".$operatorId;
+			if ($value != "")
+                             $sql = $sql." and o.name like '%".$value."%'";
+
+                }else 
+                {
+                        return "";
+                }	
+                if ($startTime != "")
+                        $sql = $sql." and r.createTime >='".$startTime."'";
+                if ($endTime != "")
+                        $sql = $sql." and r.createTime <='".$endTime."'";
+                $res = MysqlManager::getInstance()->getAll($sql);
+                return $res;
+        }
+	public static function searchRecordsOperatorToEnterprise($operatorId, $type, $value, $startTime, $endTime){
+                $sql = '';
+                if ($type == 1)
+                {
+			$sql = "select distinct r.id,r.toId, e.name , r.cardNum, r.pCardNum, r.createTime, r.cost from record r, operator o, enterprise e where r.fromType = 2 and r.toType = 3 and r.toId=e.id and r.fromId=".$operatorId;
+                
+                        if ($value != "")
+                             $sql = $sql." and r.toId=".$value." and e.id=".$value;
+                }else if ($type == 2)
+                {
+			//$sql = "select distinct r.id,r.toId, e.name , r.cardNum, r.pCardNum, r.createTime, r.cost from record r, enterprise e where r.fromType = 2 and r.toType = 3 and r.fromId =".$operatorId;
+			$sql = "select distinct record.id,record.toId, enterprise.name , record.cardNum, record.pCardNum, record.createTime, record.cost from record  join  enterprise on record.fromType = 2 and record.toType = 3 and record.toId=enterprise.id and record.fromId =".$operatorId;
+                        if ($value != "")
+                             $sql = $sql." and enterprise.name like '%".$value."%'";
+                }else 
+                {
+                        return "";
+                }	
+                if ($startTime != "")
+                        $sql = $sql." and r.createTime >='".$startTime."'";
+                if ($endTime != "")
+                        $sql = $sql." and r.createTime <='".$endTime."'";
+                $res = MysqlManager::getInstance()->getAll($sql);
+                return $res;
+        }
+	public static function searchRecordsEnterpriseFromOperator($enterpriseId, $type, $value, $startTime, $endTime){
+                $sql = '';
+                if ($type == 1)
+                {
+			$sql = "select distinct r.id,r.fromId, o.name , r.cardNum, r.pCardNum, r.createTime, r.cost from record r, operator o, enterprise e where r.fromType = 2 and r.toType = 3 and r.toId= ".$enterpriseId." and r.fromId=".$value;
+                
+                }else if ($type == 2)
+                {
+			$sql = "select distinct r.id,r.fromId, o.name , r.cardNum, r.pCardNum, r.createTime, r.cost from record r, operator o, enterprise e where r.fromType = 2 and r.toType = 3 and r.toId = ".$enterpriseId." and o.name like '%".$value."%'";
+                }else 
+                {
+                        return "";
+                }	
+                if ($startTime != "")
+                        $sql = $sql." and r.createTime >='".$startTime."'";
+                if ($endTime != "")
+                        $sql = $sql." and r.createTime <='".$endTime."'";
+                $res = MysqlManager::getInstance()->getAll($sql);
+                return $res;
+        }
+
+	public static function searchRecordsByEnterprise($type, $value, $startTime, $endTime){
                 $sql = '';
                 if ($type == 1)
                 {
@@ -385,13 +554,13 @@ class MysqlInterface{
                 {
                         return "";
                 }	
+                if ($startTime != "")
+                        $sql = $sql." and r.createTime >='".$startTime."'";
+                if ($endTime != "")
+                        $sql = $sql." and r.createTime <='".$endTime."'";
                 $res = MysqlManager::getInstance()->getAll($sql);
                 return $res;
         }
-	public static function enbleRecord(){
-	}
-	public static function disableRecord(){
-	}
 	public static function deleteRecordById($id){
                 $where = "id = ".$id;
                 $res = MysqlManager::getInstance()->deleteOne("record", $where);
@@ -466,8 +635,24 @@ class MysqlInterface{
                 return $res1&&$res2;
         }
 
-
-
+        public static function chargeEnterpriseCardNum($entId, $type)
+        {
+                $sql = "";
+                $res;
+                MysqlManager::getInstance()->setAutoCommit(false);
+                if($type == 0)
+                {
+                    $sql = "update enterprise set availablePCards = availablePCards-1 where id=".$entId;
+                    $res = MysqlManager::getInstance()->queryNotAutoCommit($sql);
+                }else if ($type == 1)
+                {
+                    $sql = "update enterprise set availableCards = availableCards-1 where id=".$entId;
+                    $res = MysqlManager::getInstance()->queryNotAutoCommit($sql);
+                }
+                MysqlManager::getInstance()->commit();
+                return $res; 
+                
+        }
 }
 
 

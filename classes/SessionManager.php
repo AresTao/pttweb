@@ -53,12 +53,12 @@ class SessionManager_obj
 	 */
 	public function isAdmin()
 	{
-                return true;
-/*
+                //return true;
+
 		if (isset($_SESSION['adminLoggedIn'])) {
 			return true;
 		}
-		return false;*/
+		return false;
 	}
 
         public function isOperator()
@@ -108,7 +108,7 @@ class SessionManager_obj
                         $_SESSION['level'] = 0;
 		} else {
 			Logger::log("[{$_SERVER['REMOTE_ADDR']}] failed to log in as admin $name.", Logger::LEVEL_SECURITY);
-			throw new Exception('Login failed as administritor');
+			throw new Exception('管理员账号或密码错误！');
 		}
 	}
         /**
@@ -129,7 +129,7 @@ class SessionManager_obj
                         $_SESSION['level'] = $enterprise['type'];
 		} else {
 			//Logger::log("[{$_SERVER['REMOTE_ADDR']}] failed to log in as admin $name.", Logger::LEVEL_SECURITY);
-			throw new Exception('Login failed as enterprise');
+			throw new Exception('用户名或密码错误');
 		}
 	}
 	/**
@@ -150,7 +150,7 @@ class SessionManager_obj
                         $_SESSION['level'] = $operator['type'];
 		} else {
 			//Logger::log("[{$_SERVER['REMOTE_ADDR']}] failed to log in as admin $name.", Logger::LEVEL_SECURITY);
-			throw new Exception('Login failed as operator');
+			throw new Exception('代理商用户名或密码错误');
 		}
 	}
 
