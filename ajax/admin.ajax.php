@@ -358,7 +358,7 @@ class Ajax_Admin extends Ajax
 	  </td>
 
       <td align="center">
-<a href="#" onclick="jq_server_reset_user_password(<?php echo $serverId;?>,<?php echo $userId; ?>);">重置密码</a> | <a href="javascript:;" onclick="if(confirm('确定删除用户?')){jq_server_registration_remove(<?php echo $userId; ?>);}">删除</a>
+<a href="#" onclick="jq_server_reset_user_password(<?php echo $serverId;?>,<?php echo $userId; ?>);">重置密码</a> | <a href="javascript:;" onclick="window.wxc.xcConfirm('确定删除用户?',window.wxc.xcConfirm.typeEnum.warning,{onOk:function(){jq_server_registration_remove(<?php echo $userId; ?>);}})">删除</a>
 	 </td>
      </tr>
 
@@ -454,7 +454,7 @@ class Ajax_Admin extends Ajax
 	  </td>
 
       <td align="center">
-<a href="#" onclick="jq_server_reset_user_password(<?php echo $serverId;?>,<?php echo $userId; ?>);">重置密码</a> | <a href="javascript:;" onclick="if(confirm('确定删除用户?')){jq_server_registration_remove(<?php echo $userId; ?>);}">删除</a> 
+<a href="#" onclick="jq_server_reset_user_password(<?php echo $serverId;?>,<?php echo $userId; ?>);">重置密码</a> | <a href="javascript:;" onclick="window.wxc.xcConfirm('确定删除用户?',window.wxc.xcConfirm.typeEnum.warning,{onOk:function(){jq_server_registration_remove(<?php echo $userId; ?>);}})">删除</a> 
 	 </td>
      </tr>
 		
@@ -710,7 +710,7 @@ return false;
 	  ?></a></td>
 
       <td align="center">
-<a href="#" onclick="jq_server_reset_user_password(<?php echo $serverId;?>,<?php echo $userId; ?>);">重置密码</a> | <a href="javascript:;" onclick="if(confirm('确定删除用户?')){jq_server_registration_remove(<?php echo $userId; ?>);}">删除</a>     
+<a href="#" onclick="jq_server_reset_user_password(<?php echo $serverId;?>,<?php echo $userId; ?>);">重置密码</a> | <a href="javascript:;" onclick="window.wxc.xcConfirm('确定删除用户?',window.wxc.xcConfirm.typeEnum.warning,{onOk:function(){jq_server_registration_remove(<?php echo $userId; ?>);}})">删除</a>     
 	 </td>
      </tr>
 <?php
@@ -1182,7 +1182,7 @@ return false;
        <td align='left'><?php echo $k; ?></td>
         <td><?php echo $row->name; ?></td>
         <td><?php echo $n;?><a href='?page=user&sid=1&action=show_members&cid=<?php echo $row->id; ?>'> &nbsp;查看</a></td>
-		<td align="center"><a href="./?page=channel&action=edit&sid=1&cid=<?php echo $row->id; ?>">编辑</a> | <a href="javascript:;" onclick="if(confirm('确定删除吗')){jq_server_channel_remove(<?php echo $row->id; ?>);}">删除</a></td>
+		<td align="center"><a href="./?page=channel&action=edit&sid=1&cid=<?php echo $row->id; ?>">编辑</a> | <a href="javascript:;" onclick="window.wxc.xcConfirm('确定删除吗?',window.wxc.xcConfirm.typeEnum.warning,{onOk:function(){jq_server_channel_remove(<?php echo $row->id; ?>);}})">删除</a></td>
      </tr>
 	 <?php
       // ++$i;
@@ -1793,8 +1793,8 @@ return false;
       <th width="60" align="center">备注</th>
       <th width="60" align="center">邮箱</th>
       <th width="60" align="center">电话</th>
-      <th width="20" align="center">年卡数</th>
-      <th width="20" align="center">永久卡数</th>
+      <th width="20" align="center">剩余年卡</th>
+      <th width="20" align="center">剩余永久卡</th>
       <th width="80" align="center">操作</th>
      </tr>       
 <?php
@@ -1814,8 +1814,8 @@ return false;
 
 
       <td align="center">
-             <a href="./?page=operator&sid=1&action=dispatcher&id=<?php echo $member['id'] ?>" >分配</a> | <a href="./?page=operator&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> | <a href="javascript:;
-" onclick="if(confirm('确定删除用户?')){jq_operator_remove(<?php echo $member['id'] ?>);}">删除</a>
+             <a href="./?page=operator&sid=1&action=dispatcher&id=<?php echo $member['id'] ?>" >新增卡</a> | <a href="./?page=operator&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> | <a href="javascript:;
+" onclick="window.wxc.xcConfirm('确定删除用户?',window.wxc.xcConfirm.typeEnum.warning,{onOk:function(){jq_operator_remove(<?php echo $member['id'] ?>);}})">删除</a>
              </td>
      </tr>
 
@@ -1861,8 +1861,8 @@ return false;
       <th width="60" align="center">备注</th>
       <th width="60" align="center">邮箱</th>
       <th width="60" align="center">电话</th>
-      <th width="20" align="center">年卡数</th>
-      <th width="20" align="center">永久卡数</th>
+      <th width="20" align="center">剩余年卡</th>
+      <th width="20" align="center">剩余永久卡</th>
       <th width="80" align="center">操作</th>
 
      </tr>       
@@ -1881,8 +1881,8 @@ return false;
       <td align="center"><?php echo $member['availablePCards'];?></td>
 
       <td align="center">
-             <a href="./?page=operator&sid=1&action=dispatcher&id=<?php echo $member['id'] ?>" >分配</a> | <a href="./?page=operator&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> | <a href="javascript:;
-" onclick="if(confirm('确定删除用户?')){jq_operator_remove(<?php echo $member['id'] ?>);}">删除</a>
+             <a href="./?page=operator&sid=1&action=dispatcher&id=<?php echo $member['id'] ?>" >新增卡</a> | <a href="./?page=operator&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> | <a href="javascript:;
+" onclick="window.wxc.xcConfirm('确定删除用户?',window.wxc.xcConfirm.typeEnum.warning,{onOk:function(){jq_operator_remove(<?php echo $member['id'] ?>);}})">删除</a>
              </td>
      </tr>
 
@@ -1986,9 +1986,9 @@ return false;
       <th width="30" align="center">代理商编号</th>
       <th width="30" align="center">代理商姓名</th>
       <th width="30" align="center">年卡数</th>
+      <th width="30" align="center">永久卡数</th>
       <th width="30" align="center">金额</th>
       <th width="60" align="center">操作时间</th>
-      <th width="80" align="center">操作</th>
      </tr>       
 <?php
     foreach ($records AS $record) {
@@ -2000,14 +2000,12 @@ return false;
       <td align="center"><?php echo $record['toId'];?></td>
       <td align="center"><?php echo $record['name'];?></td>
       <td align="center"><?php echo $record['cardNum'];?></td>
+      <td align="center"><?php echo $record['pCardNum'];?></td>
       <td align="center"><?php echo $record['cost'];?></td>
       <td align="center"><?php echo $record['createTime'];?></td>
 
 
-      <td align="center">
-             <a href="javascript:;" onclick="if(confirm('确定删除记录?')){jq_record_remove(<?php echo $record['id'] ?>);}">删除</a>
-             </td>
-     </tr>
+      </tr>
 
 <?php
 }
@@ -2035,7 +2033,9 @@ return false;
                 $value =addslashes($_POST['value']);
                 //echo $kw;
                 $type =intval($_POST['type']);
-                $records = MysqlInterface::searchRecordsByAdmin($type, $value);
+                $startTime = $_POST['startTime'];
+                $endTime = $_POST['endTime'];
+                $records = MysqlInterface::searchRecordsByAdmin($type, $value,$startTime, $endTime);
                 $total = count($records);
 ?>
     <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
@@ -2044,9 +2044,9 @@ return false;
       <th width="30" align="center">代理商编号</th>
       <th width="30" align="center">代理商姓名</th>
       <th width="30" align="center">年卡数</th>
+      <th width="30" align="center">永久卡数</th>
       <th width="30" align="center">金额</th>
       <th width="60" align="center">操作时间</th>
-      <th width="80" align="center">操作</th>
      </tr>       
 <?php
     foreach ($records AS $record) {
@@ -2058,12 +2058,10 @@ return false;
       <td align="center"><?php echo $record['toId'];?></td>
       <td align="center"><?php echo $record['name'];?></td>
       <td align="center"><?php echo $record['cardNum'];?></td>
+      <td align="center"><?php echo $record['pCardNum'];?></td>
       <td align="center"><?php echo $record['cost'];?></td>
       <td align="center"><?php echo $record['createTime'];?></td>
-      <td align="center">
-             <a href="javascript:;" onclick="if(confirm('确定删除账单?')){jq_bill_remove(<?php echo $record['id'] ?>);}">删除</a>
-             </td>
-     </tr>
+      </tr>
 
 <?php
 }

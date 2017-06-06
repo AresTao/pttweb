@@ -114,8 +114,8 @@ class Ajax_Operator extends Ajax
       <th width="60" align="center">备注</th>
       <th width="60" align="center">邮箱</th>
       <th width="60" align="center">电话</th>
-      <th width="20" align="center">年卡数</th>
-      <th width="20" align="center">永久卡数</th>
+      <th width="20" align="center">剩余年卡</th>
+      <th width="20" align="center">剩余永久卡</th>
       <th width="80" align="center">操作</th>
       </tr>       
 <?php
@@ -134,8 +134,8 @@ class Ajax_Operator extends Ajax
       <td align="center"><?php echo $member['availablePCards'];?></td>
      
       <td align="center">
-             <a href="./?page=operator&sid=1&action=dispatcher&id=<?php echo $member['id'] ?>" >分配</a> | <a href="./?page=operator&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> | <a href="javascript:;
-" onclick="if(confirm('确定删除用户?')){jq_operator_remove(<?php echo $member['id'] ?>);}">删除</a>
+             <a href="./?page=operator&sid=1&action=dispatcher&id=<?php echo $member['id'] ?>" >新增卡</a> | <a href="./?page=operator&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> | <a href="javascript:;
+" onclick="window.wxc.xcConfirm('确定删除用户?',window.wxc.xcConfirm.typeEnum.warning,{onOk:function(){jq_operator_remove(<?php echo $member['id'] ?>);}})">删除</a>
              </td>
      </tr>
 
@@ -179,8 +179,8 @@ class Ajax_Operator extends Ajax
       <th width="60" align="center">备注</th>
       <th width="60" align="center">邮箱</th>
       <th width="60" align="center">电话</th>
-      <th width="20" align="center">年卡数</th>
-      <th width="20" align="center">永久卡数</th>
+      <th width="20" align="center">剩余年卡</th>
+      <th width="20" align="center">剩余永久卡</th>
       <th width="80" align="center">操作</th>
       </tr>       
 <?php
@@ -199,8 +199,8 @@ class Ajax_Operator extends Ajax
       <td align="center"><?php echo $member['availablePCards'];?></td>
      
       <td align="center">
-             <a href="./?page=operator&sid=1&action=dispatcher&id=<?php echo $member['id'] ?>" >分配</a> | <a href="./?page=operator&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> | <a href="javascript:;
-" onclick="if(confirm('确定删除用户?')){jq_operator_remove(<?php echo $member['id'] ?>);}">删除</a>
+             <a href="./?page=operator&sid=1&action=dispatcher&id=<?php echo $member['id'] ?>" >新增卡</a> | <a href="./?page=operator&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> | <a href="javascript:;
+" onclick="window.wxc.xcConfirm('确定删除用户?',window.wxc.xcConfirm.typeEnum.warning,{onOk:function(){jq_operator_remove(<?php echo $member['id'] ?>);}})">删除</a>
              </td>
      </tr>
 
@@ -230,16 +230,24 @@ class Ajax_Operator extends Ajax
                 $previlege='r,w';
                 $type=1;
                 $res;
+                $iceRes;
                 //if (!PermissionManager::getInstance()->serverCanEditAdmins())
                 //        return ;
                 try {
                         
                         $res = MysqlInterface::addEnterprise($parentId,$type,$account,$passwd,$name,$email,$phone,$comment,$previlege);
+                        if ($res > 0)
+                        {
+                             $server=MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($sid));
+			     $iceRes =$server->addEnt($res, $account);
+                             var_dump($iceRes);
+                        }
 
                 } catch(Exception $exc) {
 
                 }
                 if ($res > 0)
+                    //echo $iceRes;
                     echo "succeed!";
         }
         public static function server_enterprise_update(){
@@ -265,7 +273,7 @@ class Ajax_Operator extends Ajax
                     echo "succeed!";
         }
         public static function server_enterprise_remove(){
-                $id =$_GET['id'];
+                $id =intval($_GET['id']);
                 $res;
                 //if (!PermissionManager::getInstance()->serverCanEditAdmins())
                 //        return ;
@@ -315,8 +323,8 @@ class Ajax_Operator extends Ajax
       <th width="60" align="center">邮箱</th>
       <th width="60" align="center">电话</th>
       <th width="60" align="center">备注</th>
-      <th width="60" align="center">可用年卡数</th>
-      <th width="60" align="center">可用永久卡数</th>
+      <th width="60" align="center">剩余年卡</th>
+      <th width="60" align="center">剩余永久卡</th>
       <th width="80" align="center">操作</th>
      </tr>       
 <?php
@@ -339,18 +347,18 @@ class Ajax_Operator extends Ajax
              <?php 
                  if(SessionManager::getInstance()->isOperator() && SessionManager::getInstance()->getLevel() == 1){ 
              ?>
-             <a href="./?page=enterprise1&sid=1&action=dispatcher&id=<?php echo $member['id'] ?>" >分配</a> | 
+             <a href="./?page=enterprise1&sid=1&action=dispatcher&id=<?php echo $member['id'] ?>" >新增卡</a> | 
              <a href="./?page=enterprise1&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> 
              <?php
                  }else if (SessionManager::getInstance()->isOperator() && SessionManager::getInstance()->getLevel() == 2){
              ?>
-             <a href="./?page=enterprise2&sid=1&action=dispatcher&id=<?php echo $member['id'] ?>" >分配</a> | 
+             <a href="./?page=enterprise2&sid=1&action=dispatcher&id=<?php echo $member['id'] ?>" >新增卡</a> | 
              <a href="./?page=enterprise2&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> 
              <?php 
                  }
              ?>
              
-             | <a href="javascript:;" onclick="if(confirm('确定删除用户?')){jq_enterprise_remove(<?php echo $member['id'] ?>);}">删除</a>
+             | <a href="javascript:;" onclick="window.wxc.xcConfirm('确定删除用户?',window.wxc.xcConfirm.typeEnum.warning,{onOk:function(v){jq_enterprise_remove(<?php echo $member['id'] ?>);}})">删除</a>
              </td>
      </tr>
 
@@ -394,8 +402,8 @@ class Ajax_Operator extends Ajax
       <th width="60" align="center">邮箱</th>
       <th width="60" align="center">电话</th>
       <th width="60" align="center">备注</th>
-      <th width="60" align="center">可用年卡数</th>
-      <th width="60" align="center">可用永久卡数</th>
+      <th width="60" align="center">剩余年卡</th>
+      <th width="60" align="center">剩余永久卡</th>
       <th width="80" align="center">操作</th>
      </tr>       
 <?php
@@ -418,18 +426,18 @@ class Ajax_Operator extends Ajax
              <?php 
                  if(SessionManager::getInstance()->isOperator() && SessionManager::getInstance()->getLevel() == 1){ 
              ?>
-             <a href="./?page=enterprise1&sid=1&action=dispatcher&id=<?php echo $member['id'] ?>" >分配</a> | 
+             <a href="./?page=enterprise1&sid=1&action=dispatcher&id=<?php echo $member['id'] ?>" >新增卡</a> | 
              <a href="./?page=enterprise1&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> 
              <?php
                  }else if (SessionManager::getInstance()->isOperator() && SessionManager::getInstance()->getLevel() == 2){
              ?>
-             <a href="./?page=enterprise2&sid=1&action=dispatcher&id=<?php echo $member['id'] ?>" >分配</a> | 
+             <a href="./?page=enterprise2&sid=1&action=dispatcher&id=<?php echo $member['id'] ?>" >新增卡</a> | 
              <a href="./?page=enterprise2&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> 
              <?php 
                  }
              ?>
 
-             | <a href="javascript:;" onclick="if(confirm('确定删除用户?')){jq_enterprise_remove(<?php echo $member['id'] ?>);}">删除</a>
+             | <a href="javascript:;" onclick="window.wxc.xcConfirm('确定删除用户?',window.wxc.xcConfirm.typeEnum.warning,{onOk:function(v){jq_enterprise_remove(<?php echo $member['id'] ?>);}})">删除</a>
              </td>
      </tr>
 
@@ -518,7 +526,7 @@ class Ajax_Operator extends Ajax
 
                 $fp = fopen('php://output', 'a');
 
-                $head = array('企业编号', '账号', '联系人姓名','备注', '邮箱','电话', '可用年卡数','可用永久卡数');
+                $head = array('企业编号', '账号', '联系人姓名','备注', '邮箱','电话', '剩余年卡','剩余永久卡');
 		foreach ($head as $i => $v) {
 			// CSV的Excel支持GBK编码，一定要转换，否则乱码
 			$head[$i] = iconv('utf-8', 'gbk', $v);
@@ -1099,7 +1107,7 @@ class Ajax_Operator extends Ajax
 
 	}
 
-        public static function server_getRecords()
+        public static function server_getRecordsByOperator1()
         {
                 //$serverId = intval($_POST['sid']);
                 //if (!PermissionManager::getInstance()->serverCanViewRegistrations($serverId)) {
@@ -1111,33 +1119,73 @@ class Ajax_Operator extends Ajax
                        try {
                        $pageIndex =intval($_POST['pageIndex'])-1;
                        $pageSize =intval($_POST['pageSize']);
+                       $operatorId =intval($_GET['operatorId']);
+                       $recordType = intval($_GET['recordType']); 
                        //echo $pageSize;die;
                         $curpage = $pageIndex*$pageSize;
                         //$server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
                         //$users = $server->getRegisteredUsers();
-                        $records = MysqlInterface::getRecordsByAdmin();
-
+                        $records;
+                        if ($recordType == 1)
+                                $records = MysqlInterface::getRecordsByOperator1FromAdmin($operatorId);
+                        else if ($recordType == 2)
+                                $records = MysqlInterface::getRecordsByOperator1ToOperator2($operatorId);
+                        else if ($recordType == 3)
+                                $records = MysqlInterface::getRecordsByOperatorToEnterprise($operatorId);
+                        else {
+                                echo "不支持的参数recordtype.";
+                                return;
+                        }
                 //      unset($users[0]);//不能使用array_shift()这样会重置数组索引
                 //              var_dump($users);
                         //echo $curpage;
                         $records =array_slice($records,$curpage,$pageSize,true);
-
+                        if ($recordType == 1){
 
 ?>
     <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
      <tr>
 
       <th width="20" align="center">记录号</th>
-      <th width="30" align="center">代理商编号</th>
-      <th width="30" align="center">代理商姓名</th>
       <th width="30" align="center">年卡数</th>
       <th width="30" align="center">永久卡数</th>
       <th width="30" align="center">金额</th>
       <th width="60" align="center">操作时间</th>
-      <th width="80" align="center">操作</th>
      </tr>
 <?php
-    foreach ($records AS $record) {
+                               foreach ($records AS $record) {
+
+?>
+<tr>
+
+      <td align="center"><?php echo $record['id'];?></td>
+      <td align="center"><?php echo $record['cardNum'];?></td>
+      <td align="center"><?php echo $record['pCardNum'];?></td>
+      <td align="center"><?php echo $record['cost'];?></td>
+      <td align="center"><?php echo $record['createTime'];?></td>
+
+
+     </tr>
+
+<?php
+                                }
+                        }else if ($recordType == 2){
+
+
+?>
+<table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
+     <tr>
+
+      <th width="20" align="center">记录号</th>
+      <th width="40" align="center">二级代理商编号</th>
+      <th width="30" align="center">联系人</th>
+      <th width="30" align="center">年卡数</th>
+      <th width="30" align="center">永久卡数</th>
+      <th width="30" align="center">金额</th>
+      <th width="60" align="center">操作时间</th>
+     </tr>
+<?php
+                               foreach ($records AS $record) {
 
 ?>
 <tr>
@@ -1151,15 +1199,165 @@ class Ajax_Operator extends Ajax
       <td align="center"><?php echo $record['createTime'];?></td>
 
 
-      <td align="center">
-             <a href="javascript:;" onclick="if(confirm('确定删除记录?')){jq_record_remove(<?php echo $record['id'] ?>);}">删除</a>
-             </td>
+     </tr>
+<?php 
+                               }
+                        }else if ($recordType == 3)
+                        {
+?>
+<table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
+     <tr>
+
+      <th width="20" align="center">记录号</th>
+      <th width="40" align="center">企业用户编号</th>
+      <th width="30" align="center">联系人</th>
+      <th width="30" align="center">年卡数</th>
+      <th width="30" align="center">永久卡数</th>
+      <th width="30" align="center">金额</th>
+      <th width="60" align="center">操作时间</th>
+     </tr>
+<?php
+                               foreach ($records AS $record) {
+
+?>
+<tr>
+
+      <td align="center"><?php echo $record['id'];?></td>
+      <td align="center"><?php echo $record['toId'];?></td>
+      <td align="center"><?php echo $record['name'];?></td>
+      <td align="center"><?php echo $record['cardNum'];?></td>
+      <td align="center"><?php echo $record['pCardNum'];?></td>
+      <td align="center"><?php echo $record['cost'];?></td>
+      <td align="center"><?php echo $record['createTime'];?></td>
+
+
+     </tr>
+<?php 
+                               }
+                        }
+?>
+</table>
+                <div class="clear"></div>
+<div class="pager"></div>
+<?php
+                        } catch(Exception $exc) {
+                                echo '<div class="error">Server is not running</div>';
+                        }
+               }else{
+                        //$server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
+                        $operatorId =intval($_GET['operatorId']);
+                        $recordType = intval($_GET['recordType']); //1 为一级代理商 2为二级代理商
+                        $records;
+                        if ($recordType == 1)
+                            $records = MysqlInterface::getRecordsByOperator1FromAdmin($operatorId);
+                        else if ($recordType == 2)
+                            $records = MysqlInterface::getRecordsByOperator1ToOperator2($operatorId); 
+                        else if ($recordType == 3)
+                            $records = MysqlInterface::getRecordsByOperatorToEnterprise($operatorId);
+                        //array_shift($users);
+                        $i =count($records);
+                        echo json_encode($i);
+               }
+        }
+
+        public static function server_getRecordsByOperator2()
+        {
+                //$serverId = intval($_POST['sid']);
+                //if (!PermissionManager::getInstance()->serverCanViewRegistrations($serverId)) {
+                //      echo tr('permission_denied');
+                //      MessageManager::echoAllMessages();
+                //      exit();
+                //}
+                if(!isset($_GET['najax'])){
+                       try {
+                       $pageIndex =intval($_POST['pageIndex'])-1;
+                       $pageSize =intval($_POST['pageSize']);
+                       $operatorId =intval($_GET['operatorId']);
+                       $recordType = intval($_GET['recordType']); //1 为从一级代理购入记录 2 为向企业客户划拨记录
+                       //echo $pageSize;die;
+                       $curpage = $pageIndex*$pageSize;
+                       //$server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
+                       //$users = $server->getRegisteredUsers();
+                       $records;
+                       if ($recordType == 1)
+                                $records = MysqlInterface::getRecordsByOperator2FromOperator1($operatorId);
+                       else if ($recordType == 2)
+                                $records = MysqlInterface::getRecordsByOperatorToEnterprise($operatorId);
+                       else {
+                                echo "不支持的参数recordtype.";
+                                return;
+                       }
+                //      unset($users[0]);//不能使用array_shift()这样会重置数组索引
+                //              var_dump($users);
+                        //echo $curpage;
+                        $records =array_slice($records,$curpage,$pageSize,true);
+                        if ($recordType == 1){
+
+?>
+    <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
+     <tr>
+
+      <th width="20" align="center">记录号</th>
+      <th width="40" align="center">上级代理商编号</th>
+      <th width="30" align="center">联系人</th>
+      <th width="30" align="center">年卡数</th>
+      <th width="30" align="center">永久卡数</th>
+      <th width="30" align="center">金额</th>
+      <th width="60" align="center">操作时间</th>
+     </tr>
+<?php
+                               foreach ($records AS $record) {
+
+?>
+<tr>
+
+      <td align="center"><?php echo $record['id'];?></td>
+      <td align="center"><?php echo $record['fromId'];?></td>
+      <td align="center"><?php echo $record['name'];?></td>
+      <td align="center"><?php echo $record['cardNum'];?></td>
+      <td align="center"><?php echo $record['pCardNum'];?></td>
+      <td align="center"><?php echo $record['cost'];?></td>
+      <td align="center"><?php echo $record['createTime'];?></td>
+
+
      </tr>
 
 <?php
-}
+                                }
+                        }else if ($recordType == 2){
 
 
+?>
+<table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
+     <tr>
+
+      <th width="20" align="center">记录号</th>
+      <th width="40" align="center">企业用户编号</th>
+      <th width="30" align="center">联系人</th>
+      <th width="30" align="center">年卡数</th>
+      <th width="30" align="center">永久卡数</th>
+      <th width="30" align="center">金额</th>
+      <th width="60" align="center">操作时间</th>
+     </tr>
+<?php
+                               foreach ($records AS $record) {
+
+?>
+<tr>
+
+      <td align="center"><?php echo $record['id'];?></td>
+      <td align="center"><?php echo $record['toId'];?></td>
+      <td align="center"><?php echo $record['name'];?></td>
+      <td align="center"><?php echo $record['cardNum'];?></td>
+      <td align="center"><?php echo $record['pCardNum'];?></td>
+      <td align="center"><?php echo $record['cost'];?></td>
+      <td align="center"><?php echo $record['createTime'];?></td>
+
+
+     </tr>
+<?php 
+                               }
+                        }
 ?>
 
 </table>
@@ -1171,33 +1369,156 @@ class Ajax_Operator extends Ajax
                         }
                }else{
                         //$server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
-                        $records = MysqlInterface::getRecordsByAdmin();
+                        $operatorId =intval($_GET['operatorId']);
+                        $recordType = intval($_GET['recordType']);
+                        $records;
+                        if ($recordType == 1)
+                            $records = MysqlInterface::getRecordsByOperator2FromOperator1($operatorId);
+                        else if ($recordType == 2)
+                            $records = MysqlInterface::getRecordsByOperatorToEnterprise($operatorId); 
+                        
                         //array_shift($users);
                         $i =count($records);
                         echo json_encode($i);
                }
         }
-        public static function server_record_search()
+        
+        public static function server_getRecordsByEnterprise()
         {
-                $value =addslashes($_POST['value']);
-                //echo $kw;
-                $type =intval($_POST['type']);
-                $records = MysqlInterface::searchRecordsByAdmin($type, $value);
-                $total = count($records);
+                //$serverId = intval($_POST['sid']);
+                //if (!PermissionManager::getInstance()->serverCanViewRegistrations($serverId)) {
+                //      echo tr('permission_denied');
+                //      MessageManager::echoAllMessages();
+                //      exit();
+                //}
+                if(!isset($_GET['najax'])){
+                       try {
+                       $pageIndex =intval($_POST['pageIndex'])-1;
+                       $pageSize =intval($_POST['pageSize']);
+                       $enterpriseId =intval($_GET['enterpriseId']);
+                       //echo $pageSize;die;
+                       $curpage = $pageIndex*$pageSize;
+                       //$server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
+                       //$users = $server->getRegisteredUsers();
+		       $records = MysqlInterface::getRecordsByEnterprise($enterpriseId);
+                //      unset($users[0]);//不能使用array_shift()这样会重置数组索引
+                //              var_dump($users);
+                        //echo $curpage;
+                        $records =array_slice($records,$curpage,$pageSize,true);
+
 ?>
     <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
      <tr>
+
       <th width="20" align="center">记录号</th>
-      <th width="30" align="center">代理商编号</th>
-      <th width="30" align="center">代理商姓名</th>
+      <th width="40" align="center">代理商编号</th>
+      <th width="30" align="center">联系人</th>
       <th width="30" align="center">年卡数</th>
       <th width="30" align="center">永久卡数</th>
       <th width="30" align="center">金额</th>
       <th width="60" align="center">操作时间</th>
-      <th width="80" align="center">操作</th>
      </tr>
 <?php
-    foreach ($records AS $record) {
+                               foreach ($records AS $record) {
+
+?>
+<tr>
+
+      <td align="center"><?php echo $record['id'];?></td>
+      <td align="center"><?php echo $record['fromId'];?></td>
+      <td align="center"><?php echo $record['name'];?></td>
+      <td align="center"><?php echo $record['cardNum'];?></td>
+      <td align="center"><?php echo $record['pCardNum'];?></td>
+      <td align="center"><?php echo $record['cost'];?></td>
+      <td align="center"><?php echo $record['createTime'];?></td>
+
+
+     </tr>
+
+<?php
+                              }
+?>
+
+</table>
+                <div class="clear"></div>
+<div class="pager"></div>
+<?php
+                        } catch(Exception $exc) {
+                                echo '<div class="error">Server is not running</div>';
+                        }
+               }else{
+                        //$server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
+                        $enterpriseId =intval($_GET['enterpriseId']);
+			$records = MysqlInterface::getRecordsByEnterprise($enterpriseId);
+                        
+                        //array_shift($users);
+                        $i =count($records);
+                        echo json_encode($i);
+               }
+        }
+
+
+
+        public static function server_record_searchByOperator2()
+        {
+                $value =addslashes($_POST['value']);
+                $type =intval($_POST['type']);
+                //记录类型字段，1 从运营商到一级代理商的划拨记录 2 从一级代理商向二级代理商划拨记录 3 从一级代理商向企业用户划拨记录
+                $recordType = intval($_POST['recordType']);
+                $startTime = $_POST['startTime'];
+                $endTime = $_POST['endTime'];
+                $operatorId = intval($_GET['operatorId']);
+                $records;
+                $total=0;
+                if ($recordType == 1){
+                    $records = MysqlInterface::searchRecordsOperator2FromOperator1($operatorId,$type,$value, $startTime, $endTime);
+                    $total = count($records);
+?>
+    <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
+     <tr>
+      <th width="20" align="center">记录号</th>
+      <th width="40" align="center">上级代理商编号</th>
+      <th width="30" align="center">联系人</th>
+      <th width="30" align="center">永久卡数</th>
+      <th width="30" align="center">金额</th>
+      <th width="60" align="center">操作时间</th>
+     </tr>
+<?php
+                    foreach ($records AS $record) {
+
+?>
+<tr>
+
+      <td align="center"><?php echo $record['id'];?></td>
+      <td align="center"><?php echo $record['fromId'];?></td>
+      <td align="center"><?php echo $record['name'];?></td>
+      <td align="center"><?php echo $record['cardNum'];?></td>
+      <td align="center"><?php echo $record['pCardNum'];?></td>
+      <td align="center"><?php echo $record['cost'];?></td>
+      <td align="center"><?php echo $record['createTime'];?></td>
+     </tr>
+
+<?php
+                    }
+            }else if ($recordType == 2)
+            {    
+		    $records = MysqlInterface::searchRecordsOperatorToEnterprise($operatorId, $type, $value, $startTime, $endTime);
+                    $total = count($records);
+
+
+?>
+    <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
+     <tr>
+      <th width="20" align="center">记录号</th>
+      <th width="30" align="center">企业用户编号</th>
+      <th width="30" align="center">姓名</th>
+      <th width="30" align="center">年卡数</th>
+      <th width="30" align="center">永久卡数</th>
+      <th width="30" align="center">金额</th>
+      <th width="60" align="center">操作时间</th>
+     </tr>
+<?php
+                    foreach ($records AS $record) {
 
 ?>
 <tr>
@@ -1209,17 +1530,12 @@ class Ajax_Operator extends Ajax
       <td align="center"><?php echo $record['pCardNum'];?></td>
       <td align="center"><?php echo $record['cost'];?></td>
       <td align="center"><?php echo $record['createTime'];?></td>
-      <td align="center">
-             <a href="javascript:;" onclick="if(confirm('确定删除账单?')){jq_bill_remove(<?php echo $record['id'] ?>);}">>删除</a>
-             </td>
-     </tr>
+      </tr>
 
 <?php
-}
-
-
+                    }
+           } 
 ?>
-
         </table>
                 <div class="clear"></div>
 <div class="page" style="text-align: right;padding-top: 20px;"><?php echo "总计".$total."个记录，共 1 页，当前第 1 页"?></div>
@@ -1227,6 +1543,120 @@ class Ajax_Operator extends Ajax
 
        }
 
+        
+        public static function server_record_searchByOperator1()
+        {
+                $value =addslashes($_POST['value']);
+                $type =intval($_POST['type']);
+                //记录类型字段，1 从运营商到一级代理商的划拨记录 2 从一级代理商向二级代理商划拨记录 3 从一级代理商向企业用户划拨记录
+                $recordType = intval($_POST['recordType']);
+                $startTime = $_POST['startTime'];
+                $endTime = $_POST['endTime'];
+                $operatorId = intval($_GET['operatorId']);
+                $records;
+                $total=0;
+                if ($recordType == 1){
+                    $records = MysqlInterface::searchRecordsOperator2FromAdmin($operatorId, $startTime, $endTime);
+                    $total = count($records);
+?>
+    <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
+     <tr>
+      <th width="20" align="center">记录号</th>
+      <th width="30" align="center">年卡数</th>
+      <th width="30" align="center">永久卡数</th>
+      <th width="30" align="center">金额</th>
+      <th width="60" align="center">操作时间</th>
+     </tr>
+<?php
+                    foreach ($records AS $record) {
+
+?>
+<tr>
+
+      <td align="center"><?php echo $record['id'];?></td>
+      <td align="center"><?php echo $record['cardNum'];?></td>
+      <td align="center"><?php echo $record['pCardNum'];?></td>
+      <td align="center"><?php echo $record['cost'];?></td>
+      <td align="center"><?php echo $record['createTime'];?></td>
+     </tr>
+
+<?php
+                    }
+            }else if ($recordType == 2)
+            {    
+		    $records = MysqlInterface::searchRecordsOperator1ToOperator2($operatorId, $type, $value, $startTime, $endTime);
+                    $total = count($records);
+
+
+?>
+    <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
+     <tr>
+      <th width="20" align="center">记录号</th>
+      <th width="30" align="center">二级代理商编号</th>
+      <th width="30" align="center">姓名</th>
+      <th width="30" align="center">年卡数</th>
+      <th width="30" align="center">永久卡数</th>
+      <th width="30" align="center">金额</th>
+      <th width="60" align="center">操作时间</th>
+     </tr>
+<?php
+                    foreach ($records AS $record) {
+
+?>
+<tr>
+
+      <td align="center"><?php echo $record['id'];?></td>
+      <td align="center"><?php echo $record['toId'];?></td>
+      <td align="center"><?php echo $record['name'];?></td>
+      <td align="center"><?php echo $record['cardNum'];?></td>
+      <td align="center"><?php echo $record['pCardNum'];?></td>
+      <td align="center"><?php echo $record['cost'];?></td>
+      <td align="center"><?php echo $record['createTime'];?></td>
+      </tr>
+
+<?php
+                    }
+           } else if ($recordType == 3)
+           {
+		   $records = MysqlInterface::searchRecordsOperatorToEnterprise($operatorId, $type, $value, $startTime, $endTime);
+		   $total = count($records);
+ 
+?>
+<table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
+     <tr>
+      <th width="20" align="center">记录号</th>
+      <th width="30" align="center">企业编号</th>
+      <th width="30" align="center">联系人姓名</th>
+      <th width="30" align="center">年卡数</th>
+      <th width="30" align="center">永久卡数</th>
+      <th width="30" align="center">金额</th>
+      <th width="60" align="center">操作时间</th>
+     </tr>
+<?php
+                    foreach ($records AS $record) {
+
+?>
+<tr>
+
+      <td align="center"><?php echo $record['id'];?></td>
+      <td align="center"><?php echo $record['toId'];?></td>
+      <td align="center"><?php echo $record['name'];?></td>
+      <td align="center"><?php echo $record['cardNum'];?></td>
+      <td align="center"><?php echo $record['pCardNum'];?></td>
+      <td align="center"><?php echo $record['cost'];?></td>
+      <td align="center"><?php echo $record['createTime'];?></td>
+     </tr>
+
+<?php
+                    }
+           } 
+?>
+        </table>
+                <div class="clear"></div>
+<div class="page" style="text-align: right;padding-top: 20px;"><?php echo "总计".$total."个记录，共 1 页，当前第 1 页"?></div>
+<?php
+
+       }
         public static function server_record_file_output()
         {
                 $value =addslashes($_POST['value']);

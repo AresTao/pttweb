@@ -358,7 +358,7 @@ class Ajax_Enterprise extends Ajax
 	  </td>
 
       <td align="center">
-<a href="#" onclick="jq_server_reset_user_password(<?php echo $serverId;?>,<?php echo $userId; ?>);">重置密码</a> | <a href="javascript:;" onclick="if(confirm('确定删除用户?')){jq_server_registration_remove(<?php echo $userId; ?>);}">删除</a>
+<a href="#" onclick="jq_server_reset_user_password(<?php echo $serverId;?>,<?php echo $userId; ?>);">重置密码</a> | <a href="javascript:;" onclick="if(window.wxc.xcConfirm('确定删除用户?',window.wxc.xcConfirm.typeEnum.warning)){jq_server_registration_remove(<?php echo $userId; ?>);}">删除</a>
 	 </td>
      </tr>
 
@@ -391,11 +391,11 @@ class Ajax_Enterprise extends Ajax
      <tr>
 
       <th width="20" align="center">用户号</th>
-      <th width="150">用户名</th>
-	  <th width="150">昵称</th>
-      <th width="150" align="center">当前频道</th>
+      <th width="50">用户名</th>
+	  <th width="50">昵称</th>
+      <th width="50" align="center">当前频道</th>
 
-      <th width="80" align="center">操作</th>
+      <th width="180" align="center">操作</th>
      </tr>
 <?php	
 
@@ -454,7 +454,7 @@ class Ajax_Enterprise extends Ajax
 	  </td>
 
       <td align="center">
-<a href="#" onclick="jq_server_reset_user_password(<?php echo $serverId;?>,<?php echo $userId; ?>);">重置密码</a> | <a href="javascript:;" onclick="if(confirm('确定删除用户?')){jq_server_registration_remove(<?php echo $userId; ?>);}">删除</a> 
+<a href="#" onclick="jq_server_reset_user_password(<?php echo $serverId;?>,<?php echo $userId; ?>);">重置密码</a> | <a href="javascript:;" onclick="if(window.wxc.xcConfirm('确定删除用户?',window.wxc.xcConfirm.typeEnum.warning)){jq_server_registration_remove(<?php echo $userId; ?>);}">删除</a> 
 	 </td>
      </tr>
 		
@@ -480,42 +480,56 @@ var total=<?php echo count($data[$v]);?>
 		MessageManager::echoAllErrors();
 	}
 	public static function server_user_add(){
-		$sid =$_GET['sid'];
+		$sid =intval($_GET['sid']);
+		$entId =intval($_GET['entId']);
 		$uname=$_POST['uname'];
+		$pwd=$_POST['pwd'];
+		$email=$_POST['email'];
+		$comment=$_POST['comment'];
+		$phone=$_POST['phone'];
+		$nick=$_POST['nick'];
+		$type=intval($_GET['type']);
 		//$upwd=$_POST['pwd'];
 	
-		if (!PermissionManager::getInstance()->serverCanEditAdmins())
-			return ;
-			try {
-				ServerInterface::getInstance()->addUser($sid,$uname,null, null);
-			
-			} catch(Exception $exc) {
-
-			}	
+		//if (!PermissionManager::getInstance()->serverCanEditAdmins())
+		//	return ;
+		try {
+                        if(MysqlInterface::checkIfEnterpriseCanCreateUser($entId, $type))
+                        {
+			    $userid = ServerInterface::getInstance()->addUser($sid,$entId,$uname,$pwd,$nick,$comment,$email,$phone,$type);
+                            MysqlInterface::chargeEnterpriseCardNum($entId, $type);
+			}
+                        else{
+                            echo "卡余额不足，请联系代理商购买.";
+                        }
+		} catch(Exception $exc) {
+                        echo $exc->getMessage();
+		}	
 	}
 	public static function server_member_add(){
 		$mt4Ids = !empty($_POST['mt4Ids']) ? $_POST['mt4Ids'] : false;
 		$stripMt4Ids = preg_replace('/[\"\[\]]/', '', $mt4Ids);
 		$mt4IdsToArr = explode(',', $stripMt4Ids);
 		$srid =$_GET['sid'];
-		$cid =$_GET['cid'];
+		$cid =intval($_GET['cid']);
+		$entId =intval($_GET['entId']);
 		$server=MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($srid));
 		//$server=ServerInterface::getInstance()->getServer(intval($srid));
 		//$chs =$server->getChannel($cid);
-		$chs =$server->getChannelState($cid);
+		//$chs =$server->getChannelState($entId,$cid);
 		//var_dump($chs);die;
-		$name =$chs->getName();
+		//$name =$chs->getName();
 		//var_dump($name);die;
-		$members= $chs->getmembers();
-		$members =explode(",",$members);
+		//$members= $chs->getmembers();
+		//$members =explode(",",$members);
 		//var_dump($members);die;
-		foreach($mt4IdsToArr as $uid){
+		//foreach($mt4IdsToArr as $uid){
 			
-			$members[]=$uid;
-		}
-		$msstring =implode(",",$members);
+		//	$members[]=$uid;
+		//}
+		//$msstring =implode(",",$members);
 		//var_dump($chs);die;
-		ServerInterface::getInstance()->updateChannel($srid,$cid,$name,$msstring);
+		$server->addChannelMembers( $entId, $cid, $stripMt4Ids);
 		
 	//	echo 1;die;
 		
@@ -523,8 +537,8 @@ var total=<?php echo count($data[$v]);?>
 		   'state' => 1,
 		   'msg'  => '操作成功'
 		);
-echo json_encode($data);
-return false;
+		echo json_encode($data);
+		return false;
 	
 	}
 	
@@ -641,24 +655,29 @@ return false;
 	public static function server_getRegistrations()
 	{
 		$serverId = intval($_POST['sid']);
-		if (!PermissionManager::getInstance()->serverCanViewRegistrations($serverId)) {
+		$entId = intval($_GET['entId']);
+		/*if (!PermissionManager::getInstance()->serverCanViewRegistrations($serverId)) {
 			echo tr('permission_denied');
 			MessageManager::echoAllMessages();
 			exit();
-		}
-	if(!isset($_GET['najax'])){
+		}*/
+		if(!isset($_GET['najax'])){
 		try {
 		$pageIndex =intval($_POST['pageIndex'])-1;
 		$pageSize =intval($_POST['pageSize']);
 		//echo $pageSize;die;
 			$curpage = $pageIndex*$pageSize;
 			$server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
-			$users = $server->getRegisteredUsers();
+			$usersStr = $server->getRegisteredUserIds($entId, "");
 			
-			unset($users[0]);//不能使用array_shift()这样会重置数组索引
-			//var_dump($users);
+			//unset($users[0]);//不能使用array_shift()这样会重置数组索引
+			//var_dump($users);die;
 			//echo $curpage;
-			$users =array_slice($users,$curpage,$pageSize,true);
+                        $users = explode(",", $usersStr);
+                        if(count($users) > 1)
+                            array_pop($users);
+                        //var_dump($users);die;
+			//$users =array_slice($users,$curpage,$pageSize,true);
 			
 		
 ?>
@@ -666,26 +685,27 @@ return false;
      <tr>
 
       <th width="20" align="center">用户号</th>
-      <th width="150">用户名</th>
-	  <th width="150">昵称</th>
-      <th width="150" align="center">当前频道</th>
+      <th width="50">账号</th>
+      <th width="50">昵称</th>
+      <th width="50" align="center">当前频道</th>
 
-      <th width="80" align="center">操作</th>
+      <th width="50">到期时间</th>
+      <th width="180" align="center">操作</th>
      </tr>
        
 <?php
-					foreach ($users AS $userId=>$userName) {
+					foreach ($users AS $userId ) {
 						
 						//FIXME Ice version check, enum-index available? otherwise, one has to edit his slice file – actually, this fixme should be a general check, in install or general warning-disableable
-						$user = ServerInterface::getInstance()->getServerRegistration($serverId, $userId);
+						$user = ServerInterface::getInstance()->getServerRegistration($serverId,$entId, $userId);
 						
 						if($user->getUserId()!==0){
 ?>
    <tr>
       <td align="center"><?php echo $userId; ?></td>
-      <td><a href="edituser.html?rec=edit&id=10"><?php echo $userName; ?></a></td>
-      <td align="center"><a href="article.php?cat_id=1"><?php echo $user->getEmail();?></a></td>
-	  <td align="center"><a href="article.php?cat_id=1"><?php
+      <td align="center"><a href="#"><?php echo $user->getAccount(); ?></a></td>
+      <td align="center"><a href="#"><?php echo $user->getName(); ?></a></td>
+      <td align="center"><a href="#"><?php
 	  $cha=$user->getCurrentChanId();
 	  if(intval($cha)<0){
 		  
@@ -697,20 +717,26 @@ return false;
 		  $cid= intval($cha);
 		  $server=MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
 
-		$chs =$server->getChannelState($cid);
+		$chs =$server->getChannelState($entId, $cid);
 		echo $chs->getName();
 		  
 	  }
-	  
-
-	  
-	  
 
 	  
 	  ?></a></td>
 
+      <td align="center"><a href="#">
+      <?php 
+          $time =  $user->getExpireTime(); 
+          if($time == 2147483647)
+              echo "永久用户";
+          else
+              echo date("Y-m-d H:i:s",$time);
+         
+      ?>
+      </a></td>
       <td align="center">
-<a href="#" onclick="jq_server_reset_user_password(<?php echo $serverId;?>,<?php echo $userId; ?>);">重置密码</a> | <a href="javascript:;" onclick="if(confirm('确定删除用户?')){jq_server_registration_remove(<?php echo $userId; ?>);}">删除</a>     
+<a href="#" onclick="jq_server_reset_user_password(<?php echo $serverId;?>,<?php echo $userId; ?>);">重置密码</a> | <a href="javascript:;" onclick="window.wxc.xcConfirm('确定删除用户?',window.wxc.xcConfirm.typeEnum.warning,{onOk:function(){jq_server_registration_remove(<?php echo $userId; ?>);}})">删除</a> | <a href="?page=videos&sid=1&action=show_videos&uid=<?php echo $userId; ?>">视频</a> | <a href="?page=photos&sid=1&action=show_photos&uid=<?php echo $userId; ?>" >图片</a> | <a href="?page=friends&sid=1&action=show_friends&uid=<?php echo $userId; ?>" >好友</a>
 	 </td>
      </tr>
 <?php
@@ -729,8 +755,10 @@ return false;
 		}
 		}else{
 			$server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
-			$users = $server->getRegisteredUsers();	
-			array_shift($users);
+			$usersStr = $server->getRegisteredUserIds($entId);	
+                        $users = explode(",", $usersStr);
+                        if(count($users) > 1)
+                            array_pop($users);
 			$i =count($users);
 			echo json_encode($i);
 			
@@ -739,15 +767,192 @@ return false;
 			
 		}
 	}
+        public static function server_getUserList()
+	{
+		$serverId = intval($_POST['sid']);
+		$entId = intval($_GET['entId']);
+		/*if (!PermissionManager::getInstance()->serverCanViewRegistrations($serverId)) {
+			echo tr('permission_denied');
+			MessageManager::echoAllMessages();
+			exit();
+		}*/
+		if(!isset($_GET['najax'])){
+		try {
+		$pageIndex =intval($_POST['pageIndex'])-1;
+		$pageSize =intval($_POST['pageSize']);
+		//echo $pageSize;die;
+			$curpage = $pageIndex*$pageSize;
+			$server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
+			$usersStr = $server->getRegisteredUserIds($entId, "");
+			$users = explode(",", $usersStr);
+                        if(count($users) > 1)
+                            array_pop($users);
+			//unset($users[0]);//不能使用array_shift()这样会重置数组索引
+			//var_dump($users);
+			//echo $curpage;
+			//$users =array_slice($users,$curpage,$pageSize,true);
+			
+		
+?>
+    <ul>  
+<?php
+					foreach ($users AS $userId) {
+						
+						//FIXME Ice version check, enum-index available? otherwise, one has to edit his slice file – actually, this fixme should be a general check, in install or general warning-disableable
+						$user = ServerInterface::getInstance()->getServerRegistration($serverId,$entId, $userId);
+						
+						if($user->getUserId()!==0){
+?>
+   <li><?php echo $user->getName(); ?></li>
+ <?php
+    }
+
+}
+
+?>
+
+<div class="pager"></div>	
+<?php
+		} catch(Murmur_ServerBootedException $exc) {
+			echo '<div class="error">Server is not running</div>';
+		}
+		}else{
+			$server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
+			$usersStr = $server->getRegisteredUserIds($entId);	
+                        $users = explode(",", $usersStr);
+                        if(count($users) > 1)
+                            array_pop($users);
+			//array_shift($users);
+			$i =count($users);
+			echo json_encode($i);
+		}
+	}
+        public static function server_get_location()
+        {
+                $serverId = 1;
+                $entid = intval($_GET['entId']);
+                $userid = intval($_POST['uid']);
+                $startTime = intval($_POST['startTime']);
+                $endTime = intval($_POST['endTime']);
+                $server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
+                $locations = $server->getLocation($entid, $userid, $startTime, $endTime);
+                $locationArray = array();
+                forEach($locations As $key => $location)
+                {
+                    array_push($locationArray,$location);
+                }
+                echo json_encode($locationArray); 
+                //var_dump($locations);
+        }
+
+        public static function server_get_videos()
+        {
+                $serverId = 1;
+                $entid = intval($_GET['entId']);
+                $userid = 1001001;
+                $startTime = 1495267561;
+                $endTime = 1494676608;
+                $server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
+                $videos = $server->getVideos($entid, $userid, $startTime, $endTime);
+                var_dump($videos);
+        }
+        public static function server_get_video()
+        {
+                $serverId = 1;
+                $entid = intval($_GET['entId']);
+                $id = 1;
+                $saveName = "test.mp4";
+                $server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
+                $video = $server->getVideo($id);
+                HelperFunctions::binaryToFile($video, $saveName); 
+        }
+
+        public static function server_get_images()
+        {
+                $serverId = 1;
+                $entid = intval($_GET['entId']);
+                $userid = 1001001;
+                $startTime = 1495267562;
+                $endTime = 1495280239;
+                $server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
+                $photos = $server->getPhotos($entid, $userid, $startTime, $endTime);
+                var_dump($photos);
+        }
+
+        public static function server_get_image()
+        {
+                $serverId = 1;
+                $entid = intval($_GET['entId']);
+                $id = 6;
+                $saveName = "test1.jpg";
+                $server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
+                $photo = $server->getPhoto($id);
+                HelperFunctions::binaryToFile($photo, $saveName);
+                
+        }
+        public static function server_add_friends()
+        {
+                $mt4Ids = !empty($_POST['mt4Ids']) ? $_POST['mt4Ids'] : false;
+                $stripMt4Ids = preg_replace('/[\"\[\]]/', '', $mt4Ids);
+                $mt4IdsToArr = explode(',', $stripMt4Ids);
+                $serverId =$_GET['sid'];
+                $userid =intval($_GET['uid']);
+                $entId =intval($_GET['entId']);
+                //$userid = 1001001;
+                //$friends = "1001002";
+                $server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
+                $res = $server->addFriends($entId, $userid, $stripMt4Ids);
+                
+                $data = array(
+                   'state' => 1,
+                   'msg'  => '操作成功'
+                );
+                echo json_encode($data);
+        }
+        
+        public static function server_get_friends()
+        {
+                $serverId = 1;
+                $entid = intval($_GET['entId']);
+                $userid = 1001001;
+                
+                $server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
+                $res = $server->getFriends($entid, $userid);
+                var_dump($res);
+        }
+
+        public static function server_friend_remove()
+        {
+                $serverId = 1;
+                $entid = intval($_GET['entId']);
+                $userId = intval($_POST['uid']);
+                $friendId = $_POST['fid'];
+                //$userid = 1001001;
+                
+                $server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
+                $res = $server->deleteFriends($entid, $userId, $friendId);
+                var_dump($res);
+        }
+        
+        public static function server_send_message()
+        {
+                $serverId = 1;
+                $entid = intval($_GET['entId']);
+                $cid = intval($_POST['cid']);
+                $info = $_POST['message'];
+                $server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
+                $res = $server->sendMessageToChannel($entid, $cid, $info);
+                var_dump($res);
+        }
 
 	public static function server_onlineUsers_show()
 	{
 		$_POST['sid'] = intval($_POST['sid']);
-		if (!PermissionManager::getInstance()->isAdminOfServer($_POST['sid'])) {
+		/*if (!PermissionManager::getInstance()->isAdminOfServer($_POST['sid'])) {
 			echo tr('permission_denied');
 			MessageManager::echoAllMessages();
 			exit();
-		}
+		}*/
 		$canModerate = PermissionManager::getInstance()->serverCanModerate($_POST['sid']);
 
 		$users = array();
@@ -899,37 +1104,49 @@ return false;
 
 	public static function server_regstration_remove()
 	{
-		$_POST['sid'] = intval($_POST['sid']);
-		if (!PermissionManager::getInstance()->serverCanEditRegistrations($_POST['sid']))
-			return ;
+		$sid = intval($_POST['sid']);
+		$entId = intval($_GET['entId']);
+		$uid = intval($_POST['uid']);
+		//if (!PermissionManager::getInstance()->serverCanEditRegistrations($_POST['sid']))
+		//	return ;
 
-		ServerInterface::getInstance()->removeRegistration($_POST['sid'], $_POST['uid']);
+		ServerInterface::getInstance()->removeRegistration($sid,$entId, $uid);
+                $data = array(
+                   'state' => 1,
+                   'msg'  => '操作成功'
+                );
+                echo json_encode($data);
 	}
 	
 	public static function server_channel_remove()
 	{
-		$_POST['sid'] = intval($_POST['sid']);
-		if (!PermissionManager::getInstance()->serverCanEditChannels($_POST['sid']))
-			return ;
-
-		ServerInterface::getInstance()->removeChannels($_POST['sid'], $_POST['aid']);
+		$sid = intval($_POST['sid']);
+                $entId = intval($_GET['entId']);
+                $cid = intval($_POST['aid']);
+		//if (!PermissionManager::getInstance()->serverCanEditChannels($_POST['sid']))
+		//	return ;
+                var_dump($entId);
+                var_dump($cid);
+		ServerInterface::getInstance()->removeChannels($sid,$entId,$cid);
 	}
 	public static function server_member_remove(){
 		$srid =intval($_POST['sid']);
+                $entId = intval($_GET['entId']);
 		$cid =intval($_POST['cid']);
-		$uid =intval($_POST['uid']);
+		$uid =$_POST['uid'];
 		$server=MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($srid));
 		//$server=ServerInterface::getInstance()->getServer(intval($srid));
 		//$chs =$server->getChannel($cid);
-		$chs =$server->getChannelState($cid);
-		$name =$chs->getName();
-		$members =$chs->getMembers();
-		$mbs =explode(",",$members);
-		foreach( $mbs as $k=>$v) {
-			if($uid == $v) unset($mbs[$k]);
-		}
-		$mstrings=implode(",",$mbs);
-		ServerInterface::getInstance()->updateChannel($srid,$cid,$name,$mstrings);
+		//$chs =$server->getChannelState($cid);
+		//$name =$chs->getName();
+		//$members =$chs->getMembers();
+		//$mbs =explode(",",$members);
+		//foreach( $mbs as $k=>$v) {
+		//	if($uid == $v) unset($mbs[$k]);
+		//}
+		//$mstrings=implode(",",$mbs);
+                $server->deleteChannelMembers($entId,$cid, $uid);
+		//$server->updateChannel($srid,$cid,$name,$mstrings);
 		//var_dump($mbs);
 		
 	}
@@ -938,28 +1155,29 @@ return false;
 	public static function server_channel_add()
 	{
 		$sid = intval($_POST['sid']);
+		$entId = intval($_GET['entId']);
 		$name =trim($_POST['name']);
 		
 		
-		if (!PermissionManager::getInstance()->serverCanEditChannels($_POST['sid']))
-			return ;
+		//if (!PermissionManager::getInstance()->serverCanEditChannels($_POST['sid']))
+		//	return ;
 		
-		ServerInterface::getInstance()->addChannels($sid,$name);
+		ServerInterface::getInstance()->addChannels($sid,$entId,$name);
 	}
 	
 	public static function server_channel_save()
 	{
 		$sid = intval($_POST['sid']);
-
+                $entId = intval($_GET['entId']);
 		$cid =intval($_POST['cid']);
 		$name =trim($_POST['name']);
-		//var_dump($name);
-	
-		if (!PermissionManager::getInstance()->serverCanEditChannels($_POST['sid']))
-			return ;
+
+
+		//if (!PermissionManager::getInstance()->serverCanEditChannels($_POST['sid']))
+		//	return ;
 		
 
-		 ServerInterface::getInstance()->updateChannel($sid,$cid,$name);
+		 ServerInterface::getInstance()->updateChannelName($sid,$entId, $cid,$name);
 	
 		
 	}
@@ -970,8 +1188,8 @@ return false;
 		$userId = intval($_POST['userId']);
 		$newPw = $_POST['newPw'];
 	
-		if (!PermissionManager::getInstance()->serverCanEditRegistrations($_POST['serverId']))
-			return ;
+		//if (!PermissionManager::getInstance()->serverCanEditRegistrations($_POST['serverId']))
+		//	return ;
 		//$reg = ServerInterface::getInstance()->getServerRegistration($serverId, $userId);
 		//$reg->setPassword($newPw);
 		//var_dump($reg);
@@ -993,8 +1211,8 @@ return false;
 	public static function server_user_mute()
 	{
 		$_POST['sid'] = intval($_POST['sid']);
-		if (!PermissionManager::getInstance()->serverCanModerate($_POST['sid']))
-			return ;
+		//if (!PermissionManager::getInstance()->serverCanModerate($_POST['sid']))
+		//	return ;
 
 		ServerInterface::getInstance()->muteUser($_POST['sid'], $_POST['sessid']);
 	}
@@ -1002,8 +1220,8 @@ return false;
 	public static function server_user_unmute()
 	{
 		$_POST['sid'] = intval($_POST['sid']);
-		if (!PermissionManager::getInstance()->serverCanModerate($_POST['sid']))
-			return ;
+		//if (!PermissionManager::getInstance()->serverCanModerate($_POST['sid']))
+		//	return ;
 
 		ServerInterface::getInstance()->unmuteUser($_POST['sid'], $_POST['sessid']);
 	}
@@ -1011,8 +1229,8 @@ return false;
 	public static function server_user_deaf()
 	{
 		$_POST['sid'] = intval($_POST['sid']);
-		if (!PermissionManager::getInstance()->serverCanModerate($_POST['sid']))
-			return ;
+		//if (!PermissionManager::getInstance()->serverCanModerate($_POST['sid']))
+		//	return ;
 
 		ServerInterface::getInstance()->deafUser($_POST['sid'], $_POST['sessid']);
 	}
@@ -1020,8 +1238,8 @@ return false;
 	public static function server_user_undeaf()
 	{
 		$_POST['sid'] = intval($_POST['sid']);
-		if (!PermissionManager::getInstance()->serverCanModerate($_POST['sid']))
-			return ;
+		//if (!PermissionManager::getInstance()->serverCanModerate($_POST['sid']))
+		//	return ;
 
 		ServerInterface::getInstance()->undeafUser($_POST['sid'], $_POST['sessid']);
 	}
@@ -1029,18 +1247,18 @@ return false;
 	public static function server_user_kick()
 	{
 		$_POST['sid'] = intval($_POST['sid']);
-		if (PermissionManager::getInstance()->serverCanKick($_POST['sid']))
+		//if (PermissionManager::getInstance()->serverCanKick($_POST['sid']))
 			ServerInterface::getInstance()->kickUser($_POST['sid'], $_POST['sessid']);
 	}
 
 	public static function server_bans_show()
 	{
 		$serverId = intval($_POST['sid']);
-		if (!PermissionManager::getInstance()->isAdminOfServer($serverId)) {
+		/*if (!PermissionManager::getInstance()->isAdminOfServer($serverId)) {
 			echo tr('permission_denied');
 			MessageManager::echoAllMessages();
 			exit();
-		}
+		}*/
 		$bans = array();
 		try {
 			$bans = ServerInterface::getInstance()->getServerBans($serverId);
@@ -1134,21 +1352,23 @@ return false;
 	public static function show_tree()
 	{
 		$sid = intval($_POST['sid']);
-		if (!PermissionManager::getInstance()->isAdminOfServer($sid)) {
+		$entId = intval($_GET['entId']);
+		/*if (!PermissionManager::getInstance()->isAdminOfServer($sid)) {
 			echo tr('permission_denied');
 			MessageManager::echoAllMessages();
 			exit();
-		}
+		}*/
 		if(!isset($_GET['najax'])){
 		$pageIndex =intval($_POST['pageIndex'])-1;
 		$pageSize =intval($_POST['pageSize']);
 		$curpage = $pageIndex*$pageSize;
-         $data =MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($sid))->getChannels();
+         $data =MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($sid))->getChannels($entId);
 	 //var_dump($data);
 	 			unset($data[0]);//不能使用array_shift()这样会重置数组索引
 			//var_dump($users);
 			//echo $curpage;
 			$data =array_slice($data,$curpage,$pageSize,true);
+                        //var_dump($data); die;
 		
 	 ?>
 	 
@@ -1166,13 +1386,9 @@ return false;
 		 foreach($data as $k =>$row){
 			// echo "<pre>";
 			// echo $k;
-			// var_dump($row->members);
 			$num =explode(",",$row->members);
-						//var_dump($num);
-			if(empty($num[0])){
-				
-				unset($num[0]);
-			}
+                        //var_dump($num);
+                        if(count($num) >= 1) array_pop($num);
 			$n =count($num)>0?count($num):0;
 			//echo $n;
 			//if($k==0) continue;
@@ -1182,7 +1398,7 @@ return false;
        <td align='left'><?php echo $k; ?></td>
         <td><?php echo $row->name; ?></td>
         <td><?php echo $n;?><a href='?page=user&sid=1&action=show_members&cid=<?php echo $row->id; ?>'> &nbsp;查看</a></td>
-		<td align="center"><a href="./?page=channel&action=edit&sid=1&cid=<?php echo $row->id; ?>">编辑</a> | <a href="javascript:;" onclick="if(confirm('确定删除吗')){jq_server_channel_remove(<?php echo $row->id; ?>);}">删除</a></td>
+		<td align="center"><a href="./?page=channel&action=edit&sid=1&cid=<?php echo $row->id; ?>">编辑</a> | <a href="javascript:;" onclick="window.wxc.xcConfirm('确定删除吗?',window.wxc.xcConfirm.typeEnum.warning,{onOk:function(){jq_server_channel_remove(<?php echo $row->id; ?>);}})">删除</a></td>
      </tr>
 	 <?php
       // ++$i;
@@ -1197,7 +1413,7 @@ return false;
 	
 		}else{
 			
-			 $data =MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($sid))->getChannels();
+			 $data =MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($sid))->getChannels($entId);
 			 $num =count($data);
 			 if( $num>0){
 				 unset($data[0]);
@@ -1796,7 +2012,7 @@ return false;
 
 
       <td align="center">
-             <a href="./?page=enterprise&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> | <a href="javascript:;" onclick="if(confirm('确定删除用户?')){jq_enterprise_remove(<?php echo $member['id'] ?>);}">删除</a>
+             <a href="./?page=enterprise&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> | <a href="javascript:;" onclick="if(window.wxc.xcConfirm('确定删除用户?',window.wxc.xcConfirm.typeEnum.warning)){jq_enterprise_remove(<?php echo $member['id'] ?>);}">删除</a>
              </td>
      </tr>
 
@@ -1853,7 +2069,7 @@ return false;
 
 
       <td align="center">
-             <a href="./?page=enterprise&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> | <a href="javascript:;" onclick="if(confirm('确定删除用户?')){jq_enterprise_remove(<?php echo $member['id'] ?>);}">删除</a>
+             <a href="./?page=enterprise&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> | <a href="javascript:;" onclick="if(window.wxc.xcConfirm('确定删除用户?',window.wxc.xcConfirm.typeEnum.warning)){jq_enterprise_remove(<?php echo $member['id'] ?>);}">删除</a>
              </td>
      </tr>
 
@@ -2022,60 +2238,8 @@ return false;
 		exit;
 
 	}
-        public static function server_bill_add(){
-                $sid =$_GET['sid'];
-                $parentId =$_GET['uid'];
-                $operatorId=$_POST['operatorId'];
-                $allCards=$_POST['number'];
-                $res;
-                //if (!PermissionManager::getInstance()->serverCanEditAdmins())
-                //        return ;
-                try {
-                        
-                        $res = MysqlInterface::addBill($operatorId,$operatorId,$allCards);
-
-                } catch(Exception $exc) {
-
-                }
-                if ($res > 0)
-                    echo "succeed!";
-        }
-        public static function server_bill_update(){
-                $id =$_GET['id'];
-                $uname=$_POST['uname'];
-                $passwd=$_POST['passwd'];
-                $email=$_POST['email'];
-                $phone=$_POST['phone'];
-                $comment=$_POST['comment'];
-                $res;
-                //if (!PermissionManager::getInstance()->serverCanEditAdmins())
-                //        return ;
-                try {
-                        
-                        $res = MysqlInterface::updateEnterprise($id,null,$uname,$passwd,$email,$phone,$comment,null);
-
-                } catch(Exception $exc) {
-
-                }
-                if ($res > 0)
-                    echo "succeed!";
-        }
-        public static function server_bill_remove(){
-                $id =$_GET['id'];
-                $res;
-                //if (!PermissionManager::getInstance()->serverCanEditAdmins())
-                //        return ;
-                try {
-                        
-                        $res = MysqlInterface::deleteEnterpriseById($id);
-
-                } catch(Exception $exc) {
-
-                }
-                if ($res > 0)
-                    echo "succeed!";
-        }
-	public static function server_getBills()
+       
+      	public static function server_getRecordsByEnterprise()
 	{
 		//$serverId = intval($_POST['sid']);
 		//if (!PermissionManager::getInstance()->serverCanViewRegistrations($serverId)) {
@@ -2087,56 +2251,52 @@ return false;
 		       try {
 		       $pageIndex =intval($_POST['pageIndex'])-1;
 		       $pageSize =intval($_POST['pageSize']);
+                       $enterpriseId =intval($_GET['enterpriseId']);
 		       //echo $pageSize;die;
 			$curpage = $pageIndex*$pageSize;
 			//$server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
 			//$users = $server->getRegisteredUsers();
-			$bills = MysqlInterface::getBills();
+			$records = MysqlInterface::getRecordsByEnterprise($enterpriseId);
 			
 		//	unset($users[0]);//不能使用array_shift()这样会重置数组索引
 	        //		var_dump($users);
 			//echo $curpage;
-			$bills =array_slice($bills,$curpage,$pageSize,true);
+			$records =array_slice($records,$curpage,$pageSize,true);
 			
 		
 ?>
-    <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
+<table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
      <tr>
 
-      <th width="20" align="center">账单号</th>
-      <th width="20" align="center">代理商</th>
-      <th width="60" align="center">企业</th>
-      <th width="60" align="center">已用数</th>
-      <th width="60" align="center">总数</th>
-      <th width="60" align="center">状态</th>
-      <th width="80" align="center">操作</th>
-     </tr>       
+      <th width="20" align="center">记录号</th>
+      <th width="40" align="center">代理商编号</th>
+      <th width="30" align="center">联系人</th>
+      <th width="30" align="center">年卡数</th>
+      <th width="30" align="center">永久卡数</th>
+      <th width="30" align="center">金额</th>
+      <th width="60" align="center">操作时间</th>
+     </tr>
 <?php
-    foreach ($bills AS $bill) {
-						
+                               foreach ($records AS $record) {
+
 ?>
 <tr>
 
-      <td align="center"><?php echo $bill['id'];?></td>
-      <td align="center"><?php echo $bill['operatorId'];?></td>
-      <td align="center"><?php echo $bill['enterpriseId'];?></td>
-      <td align="center"><?php echo $bill['usedCards'];?></td>
-      <td align="center"><?php echo $bill['allCards'];?></td>
-      <td align="center"><?php echo $bill['status'];?></td>
+      <td align="center"><?php echo $record['id'];?></td>
+      <td align="center"><?php echo $record['fromId'];?></td>
+      <td align="center"><?php echo $record['name'];?></td>
+      <td align="center"><?php echo $record['cardNum'];?></td>
+      <td align="center"><?php echo $record['pCardNum'];?></td>
+      <td align="center"><?php echo $record['cost'];?></td>
+      <td align="center"><?php echo $record['createTime'];?></td>
 
 
-      <td align="center">
-             <a href="./?page=bill&sid=1&action=edit&id=<?php echo $bill['id'] ?>" >编辑</a> | <a href="javascript:;" onclick="if(confirm('确定删除账单?')){jq_bill_remove(<?php echo $bill['id'] ?>);}">删除</a>
-             </td>
      </tr>
 
 <?php
-}
-
-
+                              }
 ?>
-
-        </table>
+         </table>
 		<div class="clear"></div>
 <div class="pager"></div>	
 <?php
@@ -2145,57 +2305,56 @@ return false;
 		        }
 	       }else{
 			//$server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
-			$bills = MysqlInterface::getBills();	
-			//array_shift($users);
-			$i =count($bills);
-			echo json_encode($i);
+                       $enterpriseId =intval($_GET['enterpriseId']);
+                       $records = MysqlInterface::getRecordsByEnterprise($enterpriseId);
+		       $i =count($records);
+                       echo json_encode($i);
 	       } 		
 	}
-        public static function server_bill_search()
+        public static function server_record_searchByEnterprise()
         {
                 $value =addslashes($_POST['value']);
                 //echo $kw;
                 $type =intval($_POST['type']);
-                $users = MysqlInterface::searchBills($type, $value);
-                $total = count($users);
+                $enterpriseId = intval($_GET['enterpriseId']);
+                $startTime = $_POST['startTime'];
+                $endTime = $_POST['endTime'];
+                $records = MysqlInterface::searchRecordsEnterpriseFromOperator($enterpriseId, $type, $value, $startTime, $endTime);
+                $total = count($records);
 ?>
-    <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
+<table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
      <tr>
 
-      <th width="20" align="center">账单号</th>
-      <th width="20" align="center">代理商</th>
-      <th width="60" align="center">企业</th>
-      <th width="60" align="center">已用数</th>
-      <th width="60" align="center">总数</th>
-      <th width="60" align="center">状态</th>
-      <th width="80" align="center">操作</th>
-     </tr>       
+      <th width="20" align="center">记录号</th>
+      <th width="40" align="center">代理商编号</th>
+      <th width="30" align="center">联系人</th>
+      <th width="30" align="center">年卡数</th>
+      <th width="30" align="center">永久卡数</th>
+      <th width="30" align="center">金额</th>
+      <th width="60" align="center">操作时间</th>
+     </tr>
 <?php
-    foreach ($bills AS $bill) {
-						
+                               foreach ($records AS $record) {
+
 ?>
 <tr>
 
-      <td align="center"><?php echo $bill['id'];?></td>
-      <td align="center"><?php echo $bill['operatorId'];?></td>
-      <td align="center"><?php echo $bill['enterpriseId'];?></td>
-      <td align="center"><?php echo $bill['usedCards'];?></td>
-      <td align="center"><?php echo $bill['allCards'];?></td>
-      <td align="center"><?php echo $bill['status'];?></td>
+      <td align="center"><?php echo $record['id'];?></td>
+      <td align="center"><?php echo $record['fromId'];?></td>
+      <td align="center"><?php echo $record['name'];?></td>
+      <td align="center"><?php echo $record['cardNum'];?></td>
+      <td align="center"><?php echo $record['pCardNum'];?></td>
+      <td align="center"><?php echo $record['cost'];?></td>
+      <td align="center"><?php echo $record['createTime'];?></td>
 
 
-      <td align="center">
-             <a href="./?page=bill&sid=1&action=edit&id=<?php echo $bill['id'] ?>" >编辑</a> | <a href="javascript:;" onclick="if(confirm('确定删除账单?')){jq_bill_remove(<?php echo $bill['id'] ?>);}">删除</a>
-             </td>
      </tr>
 
 <?php
-}
-
-
+                              }
 ?>
 
-        </table>
+            </table>
 		<div class="clear"></div>
 <div class="page" style="text-align: right;padding-top: 20px;"><?php echo "总计".$total."个记录，共 1 页，当前第 1 页"?></div>	
 
