@@ -21,11 +21,19 @@
 		if (isset($_GET['action']) && $_GET['action'] == 'dologin') {
 			// parse and handle login form data
 			try {
-			
+				require_once(MUMPHPI_MAINDIR.'/classes/Captcha.php');
+		                $cap = $_POST['cap'];
+                                if ($cap == "")
+                                       throw new Exception("请输入验证码！");
+                                if (!Captcha::cap_isCorrect($cap))	
+                                       throw new Exception("验证码错误！");
 				SessionManager::getInstance()->loginAsOperator($_POST['username'], $_POST['password']); 
 				$isLoggedIn = true;
-				//echo '<script type="text/javascript">location.replace("?page=enterprise&sid=1")</script>';
-				echo '<script type="text/javascript">location.replace("?page=operator&sid=1")</script>';
+                                if (SessionManager::getInstance()->getLevel() == 2)
+                                
+				        echo '<script type="text/javascript">location.replace("?page=enterprise2&sid=1")</script>';
+				else if (SessionManager::getInstance()->getLevel() == 1)
+                                        echo '<script type="text/javascript">location.replace("?page=operator&sid=1")</script>';
 
 
 				//$isLoggedIn = true;
@@ -35,8 +43,7 @@
 				//echo 'Login successfull.<br/>
 				//	Go on to the <a href="?page=meta">Meta Page</a>.';
 			} catch(Exception $exc) {
-                                
-				echo '<div class="infobox infobox_error">Login failed.</div>';
+                                echo '<script type="text/javascript">window.wxc.xcConfirm("'.$exc->getMessage().'", window.wxc.xcConfirm.typeEnum.error);</script>';
 			}
 		}
 		if (!$isLoggedIn) {
@@ -51,15 +58,19 @@
 ?>
 
 <div id="login">
-  <div class="dologo"></div>
+  <div class="dologo"><div style = "position:absolute;right:0px;bottom:0px;">代理商管理</div></div>
     <form action="?page=login&action=dologin" method="post" onsubmit="
-		if (jQuery('#mpi_login_username').attr('value').length == 0) {alert('You did not enter a username!'); return false;}
-		if (jQuery('#mpi_login_password').attr('value').length == 0) {alert('You did not enter a password!'); return false;}">
+		if (jQuery('#mpi_login_username').attr('value').length == 0) {window.wxc.xcConfirm('请输入用户名', window.wxc.xcConfirm.typeEnum.error); return false;}
+		if (jQuery('#mpi_login_password').attr('value').length == 0) {window.wxc.xcConfirm('请输入密码', window.wxc.xcConfirm.typeEnum.error); return false;}">
    <ul>  
-    <li class="inpLi"><b>用户名：</b><input name="username" type="text" class="inpLogin" id="mpi_login_username" ></li>
-    <li class="inpLi"><b>密码：</b><input name="password" type="password" class="inpLogin" id="mpi_login_password" ></li>
-    <li class="inpLi"><b>账号类型：</b><input name="type" type="hidden" class="inpLogin" id="type" value="2" ></li>
-        <li class="sub"><input type="submit" name="submit" class="btn" value="login"></li> 
+    <li class="inpLi"><b>用户名</b><input name="username" type="text" class="inpLogin" id="mpi_login_username" ></li>
+    <li class="inpLi"><b>密码</b><input name="password" type="password" class="inpLogin" id="mpi_login_password" ></li>
+    <li class="inpLi"><b>输入下式计算结果</b><input name="cap" type="text" class="inpLogin" id="cap" value="" ></li>
+    <li class="inpLi"><?php 
+                              require_once(MUMPHPI_MAINDIR.'/classes/Captcha.php');
+                              Captcha::cap_show();
+                      ?></li>
+        <li class="sub"><input type="submit" name="submit" class="btn" value="登录"></li> 
 
    </ul>
   </form>

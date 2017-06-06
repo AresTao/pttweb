@@ -88,18 +88,19 @@ if($_POST['action']=='lists'){
  <div id="head">
   <div class="logo"><a href="./"><img src="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/images/mlogo.gif" alt="logo"></a></div>
   <div class="nav">
-   <ul>
-    <li><a href="#" target="_blank">帮助</a></li>
-    <li class="noRight"><a href="http://www.allptt.com">关于我们</a></li>
-   </ul>
-   <ul class="navRight">
 <?php
      $id = SessionManager::getInstance()->getLoginId();
      $operator = MysqlInterface::getOperatorById($id);
 
 ?>
-    <li class="noLeft"><a href="#">可用永久卡数：<?php echo $operator['availablePCards'];?></a></li>
-    <li class="noLeft"><a href="#">可用年卡数：<?php echo $operator['availableCards'];?></a></li>
+
+   <ul>
+        <li class="noRight"><a href="#"> 代理商编号：<?php echo $operator['id'];?></a></li>
+        <li class="noRight"><a href="#"> 代理商名称：<?php echo $operator['name'];?> </a> </li>
+   </ul>
+   <ul class="navRight">
+    <li class="noLeft"><a href="#">可用永久卡：<?php echo $operator['availablePCards'];?></a></li>
+    <li class="noLeft"><a href="#">可用年卡：<?php echo $operator['availableCards'];?></a></li>
     <li class="M noLeft"><a href="JavaScript:void(0);">您好，<?php echo SessionManager::getInstance()->getLoginName();?></a>
      <div class="drop mUser">
       <a href="?page=admins&sid=1">编辑我的个人资料</a>
@@ -493,7 +494,8 @@ function jq_enterprise_add()
 			if(data.length>0){
 
 			//$(".message").show().html(data);
-                        window.wxc.xcConfirm("添加成功", window.wxc.xcConfirm.typeEnum.success);
+                        //window.wxc.xcConfirm("添加成功", window.wxc.xcConfirm.typeEnum.success);
+                        window.wxc.xcConfirm(data, window.wxc.xcConfirm.typeEnum.success);
 			window.location.href='./?page=enterprise1&sid=1';
 
 			}else{
@@ -553,7 +555,7 @@ function jq_enterprise_file_output(){
 function jq_enterprise_remove(id){
 
 	$.post(
-			"./?ajax=server_enterprise_remove&parentId="+<?php echo SessionManager::getInstance()->getLoginId();?>+"id="+id,'',
+			"./?ajax=server_enterprise_remove&parentId="+<?php echo SessionManager::getInstance()->getLoginId();?>+"&id="+id,'',
 			function(data){
 			if (data.length > 0)
 			{

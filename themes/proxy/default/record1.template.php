@@ -120,18 +120,19 @@ if($_POST['action']=='lists'){
  <div id="head">
   <div class="logo"><a href="./"><img src="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/images/mlogo.gif" alt="logo"></a></div>
   <div class="nav">
-   <ul>
-    <li><a href="#" target="_blank">帮助</a></li>
-    <li class="noRight"><a href="http://www.allptt.com">关于我们</a></li>
-   </ul>
-   <ul class="navRight">
-    <?php
+  <?php
      $id = SessionManager::getInstance()->getLoginId();
      $operator = MysqlInterface::getOperatorById($id);
 
 ?>
-    <li class="noLeft"><a href="#">可用永久卡数：<?php echo $operator['availablePCards'];?></a></li>
-    <li class="noLeft"><a href="#">可用年卡数：<?php echo $operator['availableCards'];?></a></li>
+
+   <ul>
+        <li class="noRight"><a href="#"> 代理商编号：<?php echo $operator['id'];?></a></li>
+        <li class="noRight"><a href="#"> 代理商名称：<?php echo $operator['name'];?> </a> </li>
+   </ul>
+   <ul class="navRight">
+   <li class="noLeft"><a href="#">可用永久卡：<?php echo $operator['availablePCards'];?></a></li>
+    <li class="noLeft"><a href="#">可用年卡：<?php echo $operator['availableCards'];?></a></li>
     <li class="M noLeft"><a href="JavaScript:void(0);">您好，<?php echo SessionManager::getInstance()->getLoginName();?></a>
      <div class="drop mUser">
       <a href="?page=admins&sid=1">编辑我的个人资料</a>
