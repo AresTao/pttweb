@@ -45,7 +45,7 @@
  <?php
  	if (isset($_GET['action']) && $_GET['action']=='add') {
  ?> 
- <h3>频道添加</h3>
+  <h3> <div style="width:10px;"></div>  <a href="./?page=server&sid=1" class="actionBtn">返回列表</a> 频道添加</h3>
      <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
       <tr>
        <td width="80" align="right">频道名称</td>
@@ -81,7 +81,7 @@
 	
  ?> 
  
- <h3>频道修改</h3>
+  <h3> <div style="width:10px;"></div>  <a href="./?page=server&sid=1" class="actionBtn">返回列表</a> 频道修改</h3>
      <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
       <tr>
        <td width="80" align="right">频道名称</td>

@@ -34,7 +34,7 @@
 				//     echo '<script type="text/javascript">window.location.replace("?page=enterprise&sid=1")</script>';
                                 //else
                                      
-				     echo '<script type="text/javascript">window.location.replace("?page=monitor&sid=1")</script>';
+				     echo '<script type="text/javascript">window.location.replace("?page=user&sid=1")</script>';
 				//echo '<script type="text/javascript">window.location.replace("?page=user&sid=1")</script>';
 				//$isLoggedIn = true;
 				//echo '<script type="text/javascript">location.replace("?page=user&sid=1")</script>';

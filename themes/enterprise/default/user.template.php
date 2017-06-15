@@ -143,8 +143,9 @@ $members =explode(",",$chs->getMembers());
      <tr>
 
       <th width="20" align="center">用户号</th>
-      <th width="150">账号</th>
-	  <th width="150">昵称</th>
+      <th width="100">账号</th>
+	  <th width="100">昵称</th>
+	  <th width="100">优先级</th>
       
 
       <th width="80" align="center">操作</th>
@@ -166,17 +167,47 @@ foreach($members as $member){
         
 	$user = ServerInterface::getInstance()->getServerRegistration($srid,$id, $mr);
 	if($user->getUserId()!==0){
+            $memberLevel = $server->getChannelMemberLevel(intval($id),intval($_GET['cid']), $mr);
 ?>
 	 
           <tr>
     
       <td align="center"><?php echo $user->getUserId();?></td>
-      <td><?php echo $user->getAccount();?></td>
+      <td align="center"><?php echo $user->getAccount();?></td>
       <td align="center"><?php echo $user->getName();?></td>
+      <td align="center"><?php if($memberLevel == 0){
+      ?>
+      <select name="memberLevel" id="memberLevel<?php echo $user->getUserId();?>">
+                  <option value="0" selected="selected">低</option>
+                  <option value="1">中</option>
+                  <option value="2">高</option>
+     </select>
+     <?php 
+           }
+           else if ($memberLevel == 1){
+     ?>
+     <select name="memberLevel" id="memberLevel<?php echo $user->getUserId();?>">
+                  <option value="0">低</option>
+                  <option value="1" selected="selected">中</option>
+                  <option value="2">高</option>
+     </select>
+     <?php 
+           }
+           else if ($memberLevel == 2){
+           ?>
+     <select name="memberLevel" id="memberLevel<?php echo $user->getUserId();?>">
+                  <option value="0">低</option>
+                  <option value="1">中</option>
+                  <option value="2" selected="selected">高</option>
+     </select>
+     <?php 
+           }
+     ?>
+</td>
 	  
 
       <td align="center">
-             <a href="javascript:;" onclick="window.wxc.xcConfirm('确定删除用户?',window.wxc.xcConfirm.typeEnum.warning,{onOk:function(){jq_server_member_remove(<?php echo $user->getUserId() ?>,<?php echo intval($_GET['cid'])?>);}})">删除</a>
+            <a href="javascript:;" onclick="jq_set_member_level(<?php echo intval($_GET['cid'])?>, <?php echo $user->getUserId() ?>);">设置优先级</a> | <a href="javascript:;" onclick="window.wxc.xcConfirm('确定删除用户?',window.wxc.xcConfirm.typeEnum.warning,{onOk:function(){jq_server_member_remove(<?php echo $user->getUserId() ?>,<?php echo intval($_GET['cid'])?>);}})">删除</a>
              </td>
      </tr>
 
@@ -382,7 +413,7 @@ $(function(){
       <tr>
        <td width="100" align="right">用户名</td>
        <td>
-        <input type="text" name="uname" size="40" class="inpMain" id="uname"  value=""/><label class="inps" style="color:#ccc;">&nbsp;用户默认密码为123456</label>
+        <input type="text" name="uname" size="40" class="inpMain" id="uname"  value=""/>
        </td>
       </tr>
       <tr>
@@ -443,42 +474,64 @@ $(function(){
 	
 	$uid =intval($_GET['uid']);
 	$sid=intval($_GET['sid']);
-	
+        $entId=SessionManager::getInstance()->getLoginId();	
 	$server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($sid));
-	$user = ServerInterface::getInstance()->getUserName($sid, $uid);
-	//var_dump($user);
+	$user = $server->getRegistration($entId, $uid);
+	//var_dump($user);die;
 		
 	  
 
 ?>
 <div id="urHere">管理中心<b>></b><strong>用户管理</strong> </div>   <div id="manager" class="mainBox" style="height:auto!important;height:550px;min-height:550px;">
-    <h3><a href="article.html" class="actionBtn">返回列表</a>添加用户</h3>
+    <h3><a href="?page=user&sid=1" class="actionBtn">返回列表</a>编辑用户信息</h3>
    <form action="" method="post">
      <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
       <tr>
-       <td width="100" align="right">用户名称</td>
+       <td width="100" align="right">账号</td>
        <td>
-        <input type="text" name="uname" size="40" class="inpMain" id="uname"  value="<?php echo $user;?>"/>
+        <input type="hidden" name="uid" size="40" class="inpMain" id="uid"  value='<?php echo $uid;?>'/>
+        <input type="text" name="uname" size="40" class="inpMain" id="uname"  value='<?php echo $user->getAccount();?>'/>
        </td>
       </tr>
-
       <tr>
        <td align="right">密码</td>
        <td>
-        <input type="password" name="pwd" size="40" class="inpMain" id="upwd" value="" />
+        <input type="password" name="pwd" size="40" class="inpMain" id="upwd" value="123456" />
        </td>
       </tr>
       <tr>
-       <td align="right">确认密码</td>
+       <td align="right">昵称</td>
        <td>
-        <input type="password" name="password_confirm" size="40" class="inpMain" id="rpwd" />
+        <input type="text" name="nick" size="40" class="inpMain" id="" value='<?php echo $user->getName();?>'/>
        </td>
       </tr>
+      <tr>
+      <tr>
+       <td align="right">备注</td>
+       <td>
+        <input type="text" name="comment" size="40" class="inpMain" id="" value='<?php echo $user->getComment();?>'/>
+       </td>
+      </tr>
+      <tr>
+       <td align="right">邮箱</td>
+       <td>
+        <input type="text" name="email" size="40" class="inpMain" id=""  value='<?php echo $user->getEmail();?>'/>
+       </td>
+      </tr>
+      <tr>
+       <td align="right">电话</td>
+       <td>
+        <input type="text" name="phone" size="40" class="inpMain" id=""  value='<?php echo $user->getPhone();?>'/>
+       </td>
+      </tr>
+
+
+
       <tr>
        <td></td>
        <td>
       
-        <input type="button" name="submit" class="btn" value="提交" onclick="jq_user_add()" />
+        <input type="button" name="submit" class="btn" value="提交" onclick="jq_user_update()" />
        </td>
       </tr>
      </table>
@@ -489,8 +542,56 @@ $(function(){
 				   
 	<?php
 	}
+        if(isset($_GET['action']) && $_GET['action']=='renew'){
+            $uid =intval($_GET['uid']);
+	    $sid=intval($_GET['sid']);
+	    $entId=SessionManager::getInstance()->getLoginId();
+	    $server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($sid));
+	    $user = $server->getRegistration($entId, $uid);
+ 
 	?>
+<div id="urHere">管理中心<b>></b><strong>用户管理</strong> </div>   <div id="manager" class="mainBox" style="height:auto!important;height:550px;min-height:550px;">
+    <h3><a href="?page=user&sid=1" class="actionBtn">返回列表</a>用户续卡</h3>
+   <form action="" method="post">
+     <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
+     
+      <tr>
+       <td width="100" align="right">用户ID</td>
+       <td>
+        <input type="text" name="uid" size="40" readonly="true" class="inpMain" id="uid"  value='<?php echo $uid;?>'/>
+       </td>
+      </tr>
+       <tr>
+       <td width="100" align="right">用户账号</td>
+       <td>
+        <input type="text" name="uname" size="40" readonly="true" class="inpMain" id="uname"  value='<?php echo $user->getAccount();?>'/>
+       </td>
+      </tr>
+      
+      <tr>
+      <td width="100" align="right">续卡类型</td>
+      <td>
+             <select name="type" id="type">
+                  <option value="0">成为永久用户</option>
+                  <option value="1">续年卡 </option>
+             </select>
+      </td>
+      </tr> 
 
+      <tr>
+       <td></td>
+       <td>
+      
+        <input type="button" name="submit" class="btn" value="提交" onclick="jq_user_renew()" />
+       </td>
+      </tr>
+     </table>
+    </form>
+		<div class="message"></div>
+                   </div>
+<?php
+}
+?>	
 	</div>
 
 
@@ -630,8 +731,67 @@ $(function(){
 						}
 					);
 			}
+			function jq_user_update()
+			{
+			        uid =$("#uid").val();
+				param =$("input").serialize();
 			
+				$.post("./?ajax=server_user_update&sid=1&uid="+uid+"&entId=<?php echo SessionManager::getInstance()->getLoginId();?>",param,
+						function (data) {
+							
+							if(data.length == 0){
+								
+                                                                window.wxc.xcConfirm("修改成功.", window.wxc.xcConfirm.typeEnum.success); 
+								location.href="./?page=user&sid=1";
+								
+							}else{
+								window.wxc.xcConfirm(data, window.wxc.xcConfirm.typeEnum.warning);
+								//$(".message").show().html(data);
+							}
+						}
+					);
+			}
+
+			function jq_user_renew()
+			{
+				type =$("#type").val();
+				param =$("input").serialize();
 			
+				$.post("./?ajax=server_user_renew&sid=1&type="+type+"&entId=<?php echo SessionManager::getInstance()->getLoginId();?>",param,
+						function (data) {
+							
+							if(data.length == 0){
+								
+                                                                window.wxc.xcConfirm("续卡成功.", window.wxc.xcConfirm.typeEnum.success); 
+								//location.href="./?page=user&sid=1";
+								
+							}else{
+								window.wxc.xcConfirm(data, window.wxc.xcConfirm.typeEnum.warning);
+								//$(".message").show().html(data);
+							}
+						}
+					);
+			}
+                        function jq_set_member_level(channelId, userId)
+			{
+				level =$("#memberLevel"+userId).val();
+			
+				$.post("./?ajax=server_set_member_level&sid=1&level="+level+"&entId=<?php echo SessionManager::getInstance()->getLoginId();?>"+"&uid="+userId+"&cid="+channelId,null,
+						function (data) {
+							
+							if(data.length == 0){
+								
+                                                                window.wxc.xcConfirm("设置优先级成功.", window.wxc.xcConfirm.typeEnum.success); 
+								//location.href="./?page=user&sid=1";
+								
+							}else{
+								window.wxc.xcConfirm(data, window.wxc.xcConfirm.typeEnum.warning);
+								//$(".message").show().html(data);
+							}
+						}
+					);
+			}
+
 		function jq_member_add(cid)
 			{
 		mt4Ids=[];

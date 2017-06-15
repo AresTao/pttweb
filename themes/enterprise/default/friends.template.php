@@ -54,8 +54,8 @@ if($_POST['action']=='lists'){
  <?php
    if(isset($_GET['action'])&&$_GET['action']=='show_friends'){
    ?>
-<div id="urHere">手机对讲系统管理中心<b>></b><strong>好友列表</strong> </div>   <div class="mainBox" style="height:auto!important;height:550px;min-height:550px;">
-        <h3> <div style="width:10px;"></div>  <a href="./?page=friends&sid=1&action=friend_add&uid=<?php echo intval($_GET['uid']) ?>" class="actionBtn add">添加好友</a> 好友列表</h3>
+<div id="urHere">手机对讲系统管理中心<b>></b><strong>联系人列表</strong> </div>   <div class="mainBox" style="height:auto!important;height:550px;min-height:550px;">
+        <h3> <div style="width:10px;"></div>  <a href="./?page=friends&sid=1&action=friend_add&uid=<?php echo intval($_GET['uid']) ?>" class="actionBtn add">添加联系人</a> 联系人列表</h3>
 
 <?php
 $id = SessionManager::getInstance()->getLoginId();
@@ -107,7 +107,7 @@ foreach($members as $member){
 	  
 
       <td align="center">
-             <a href="javascript:;" onclick="window.wxc.xcConfirm('确定删除好友?',window.wxc.xcConfirm.typeEnum.warning,{onOk:function(){jq_friend_remove(<?php echo $user->getUserId() ?>,<?php echo $uid?>);}})">删除</a>
+             <a href="javascript:;" onclick="window.wxc.xcConfirm('确定删除联系人?',window.wxc.xcConfirm.typeEnum.warning,{onOk:function(){jq_friend_remove(<?php echo $user->getUserId() ?>,<?php echo $uid?>);}})">删除</a>
              </td>
      </tr>
 
@@ -158,9 +158,9 @@ foreach($members as $member){
                             array_pop($users);
 		
    ?>
-<div id="urHere">管理中心<b>></b><strong>好友管理</strong> </div> 
+<div id="urHere">管理中心<b>></b><strong>联系人管理</strong> </div> 
   <div id="manager" class="mainBox" style="height:auto!important;height:550px;min-height:550px;">
-    <h3><a href="?page=friends&sid=1&action=show_friends&uid=<?php echo $_GET['uid'];?>" class="actionBtn">返回列表</a>添加好友</h3>
+    <h3><a href="?page=friends&sid=1&action=show_friends&uid=<?php echo $_GET['uid'];?>" class="actionBtn">返回列表</a>添加联系人</h3>
    <form action="" method="post">
      <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
       <tr>
