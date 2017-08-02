@@ -55,7 +55,7 @@ if($_POST['action']=='lists'){
    if(isset($_GET['action'])&&$_GET['action']=='show_friends'){
    ?>
 <div id="urHere">手机对讲系统管理中心<b>></b><strong>联系人列表</strong> </div>   <div class="mainBox" style="height:auto!important;height:550px;min-height:550px;">
-        <h3> <div style="width:10px;"></div>  <a href="./?page=friends&sid=1&action=friend_add&uid=<?php echo intval($_GET['uid']) ?>" class="actionBtn add">添加联系人</a> 联系人列表</h3>
+        <h3> <div style="width:10px;"></div>  <a href="./?page=friends&sid=1&action=friend_add&uid=<?php echo intval($_GET['uid']) ?>" class="actionBtn add">添加联系人</a><a href="?page=user&sid=1" class="actionBtn">返回列表</a> 联系人列表</h3>
 
 <?php
 $id = SessionManager::getInstance()->getLoginId();
