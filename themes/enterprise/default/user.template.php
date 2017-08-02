@@ -125,7 +125,7 @@ if($_POST['action']=='lists'){
    if(isset($_GET['action'])&&$_GET['action']=='show_members'){
    ?>
 <div id="urHere">手机对讲系统管理中心<b>></b><strong>成员列表</strong> </div>   <div class="mainBox" style="height:auto!important;height:550px;min-height:550px;">
-        <h3> <div style="width:10px;"></div>  <a href="./?page=user&sid=1&action=member_add&cid=<?php echo $_GET['cid'] ?>" class="actionBtn add">添加成员</a> 成员列表</h3>
+        <h3> <div style="width:10px;"></div>  <a href="./?page=user&sid=1&action=member_add&cid=<?php echo $_GET['cid'] ?>" class="actionBtn add">添加成员</a><a href="?page=server&sid=1" class="actionBtn">返回列表</a> 成员列表</h3>
 
 <?php
 $id = SessionManager::getInstance()->getLoginId();

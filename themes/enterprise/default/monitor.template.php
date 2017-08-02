@@ -5,7 +5,7 @@
 <link href="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/loading.css" rel="stylesheet" type="text/css">
 <style type="text/css">
     </style>
-<script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=sSelQoVi2L3KofLo1HOobonW"></script>
+<script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=F0i6SrLmHquLVNLCqpExxPrj8mWVdFwx"></script>
 <div id="dcWrap">
  <div id="dcHead">
  <div id="head">
