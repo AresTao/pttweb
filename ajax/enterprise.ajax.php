@@ -489,6 +489,7 @@ var total=<?php echo count($data[$v]);?>
 		$phone=$_POST['phone'];
 		$nick=$_POST['nick'];
 		$type=intval($_GET['type']);
+		$fenceAlarm=$_GET['fenceAlarm'];
 		//$upwd=$_POST['pwd'];
 	
 		//if (!PermissionManager::getInstance()->serverCanEditAdmins())
@@ -496,12 +497,67 @@ var total=<?php echo count($data[$v]);?>
 		try {
                         if(MysqlInterface::checkIfEnterpriseCanCreateUser($entId, $type))
                         {
-			    $userid = ServerInterface::getInstance()->addUser($sid,$entId,$uname,$pwd,$nick,$comment,$email,$phone,$type);
+			    $userid = ServerInterface::getInstance()->addUser($sid,$entId,$uname,$pwd,$nick,$comment,$email,$phone,$fenceAlarm, $type);
                             MysqlInterface::chargeEnterpriseCardNum($entId, $type);
 			}
                         else{
                             echo "卡余额不足，请联系代理商购买.";
                         }
+		} catch(Exception $exc) {
+                        echo $exc->getMessage();
+		}	
+	}
+        public static function server_user_update(){
+		$sid =intval($_GET['sid']);
+		$entId =intval($_GET['entId']);
+                $uid = intval($_GET['uid']);
+		$uname=$_POST['uname'];
+		$pwd=$_POST['pwd'];
+		$email=$_POST['email'];
+		$comment=$_POST['comment'];
+		$phone=$_POST['phone'];
+		$nick=$_POST['nick'];
+	
+		$fenceAlarm=$_GET['fenceAlarm'];
+		//if (!PermissionManager::getInstance()->serverCanEditAdmins())
+		//	return ;
+		try {
+			$res = ServerInterface::getInstance()->updateUser($sid,$entId,$uid, $uname,$pwd,$nick,$comment,$email,$phone,$fenceAlarm);
+		} catch(Exception $exc) {
+                        echo $exc->getMessage();
+		}	
+	}
+        public static function server_user_renew(){
+		$sid =intval($_GET['sid']);
+		$entId =intval($_GET['entId']);
+                $uid = intval($_POST['uid']);
+                $type=intval($_GET['type']);
+		//if (!PermissionManager::getInstance()->serverCanEditAdmins())
+		//	return ;
+		try {
+                        if(MysqlInterface::checkIfEnterpriseCanCreateUser($entId, $type))
+                        {
+			    $res = ServerInterface::getInstance()->renewUser($sid,$entId,$uid,$type);
+                            MysqlInterface::chargeEnterpriseCardNum($entId, $type);
+                        }
+                        else{
+                            echo "卡余额不足，请联系代理商购买.";
+                        }
+		} catch(Exception $exc) {
+                        echo $exc->getMessage();
+		}	
+	}
+        public static function server_set_member_level(){
+		$sid =intval($_GET['sid']);
+		$entId =intval($_GET['entId']);
+                $uid = intval($_GET['uid']);
+                $channelId=intval($_GET['cid']);
+                $level=intval($_GET['level']);
+		//if (!PermissionManager::getInstance()->serverCanEditAdmins())
+		//	return ;
+		try {
+                        $server=MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($sid));
+                        $server->setChannelMemberLevel($entId, $channelId, $uid, $level); 
 		} catch(Exception $exc) {
                         echo $exc->getMessage();
 		}	
@@ -688,6 +744,7 @@ var total=<?php echo count($data[$v]);?>
       <th width="50">账号</th>
       <th width="50">昵称</th>
       <th width="50" align="center">当前频道</th>
+      <th width="50" align="center">告警提醒</th>
 
       <th width="50">到期时间</th>
       <th width="180" align="center">操作</th>
@@ -698,7 +755,6 @@ var total=<?php echo count($data[$v]);?>
 						
 						//FIXME Ice version check, enum-index available? otherwise, one has to edit his slice file – actually, this fixme should be a general check, in install or general warning-disableable
 						$user = ServerInterface::getInstance()->getServerRegistration($serverId,$entId, $userId);
-						
 						if($user->getUserId()!==0){
 ?>
    <tr>
@@ -724,6 +780,16 @@ var total=<?php echo count($data[$v]);?>
 
 	  
 	  ?></a></td>
+      <td align="center"><a href="#">
+      <?php 
+          $fenceAlarm =  $user->getFenceAlarm(); 
+          if($fenceAlarm == "" || $fenceAlarm == "0")
+              echo "否";
+          else
+              echo "是";
+         
+      ?>
+      </a></td>
 
       <td align="center"><a href="#">
       <?php 
@@ -736,7 +802,7 @@ var total=<?php echo count($data[$v]);?>
       ?>
       </a></td>
       <td align="center">
-<a href="#" onclick="jq_server_reset_user_password(<?php echo $serverId;?>,<?php echo $userId; ?>);">重置密码</a> | <a href="javascript:;" onclick="window.wxc.xcConfirm('确定删除用户?',window.wxc.xcConfirm.typeEnum.warning,{onOk:function(){jq_server_registration_remove(<?php echo $userId; ?>);}})">删除</a> | <a href="?page=videos&sid=1&action=show_videos&uid=<?php echo $userId; ?>">视频</a> | <a href="?page=photos&sid=1&action=show_photos&uid=<?php echo $userId; ?>" >图片</a> | <a href="?page=friends&sid=1&action=show_friends&uid=<?php echo $userId; ?>" >好友</a>
+<?php if($time != 2147483647) { ?><a href="?page=user&sid=1&action=renew&uid=<?php echo $userId; ?>" >续卡</a> | <?php } ?> <a href="?page=user&sid=1&action=edit&uid=<?php echo $userId; ?>" >编辑</a> | <a href="javascript:;" onclick="window.wxc.xcConfirm('确定删除用户?',window.wxc.xcConfirm.typeEnum.warning,{onOk:function(){jq_server_registration_remove(<?php echo $userId; ?>);}})">删除</a> | <a href="?page=videos&sid=1&action=show_videos&uid=<?php echo $userId; ?>">视频</a> | <a href="?page=photos&sid=1&action=show_photos&uid=<?php echo $userId; ?>" >图片</a> | <a href="?page=friends&sid=1&action=show_friends&uid=<?php echo $userId; ?>" >联系人</a>
 	 </td>
      </tr>
 <?php
@@ -844,7 +910,18 @@ var total=<?php echo count($data[$v]);?>
                 echo json_encode($locationArray); 
                 //var_dump($locations);
         }
-
+        public static function server_set_channel_fence()
+        {
+                $serverId = 1;
+                $entid = intval($_GET['entId']);
+                $channelid = intval($_POST['cid']);
+                $startTime = intval($_POST['startTime']);
+                $endTime = intval($_POST['endTime']);
+                $fence = $_POST['fence'];
+                $server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
+                $server->setChannelFence($entid, $channelid, $startTime, $endTime, $fence);
+                //var_dump($locations);
+        }
         public static function server_get_videos()
         {
                 $serverId = 1;
@@ -1397,7 +1474,7 @@ var total=<?php echo count($data[$v]);?>
 		<tr>
        <td align='left'><?php echo $k; ?></td>
         <td><?php echo $row->name; ?></td>
-        <td><?php echo $n;?><a href='?page=user&sid=1&action=show_members&cid=<?php echo $row->id; ?>'> &nbsp;查看</a></td>
+        <td><?php echo $n;?><a href='?page=user&sid=1&action=show_members&cid=<?php echo $row->id; ?>'> &nbsp;查看</a> | <a href='?page=channelmap&sid=1&action=show_members&cid=<?php echo $row->id; ?>&startTime=<?php echo $row->fencestart;?>&endTime=<?php echo $row->fenceend;?>&fence=<?php echo $row->fencepoints; ?>'> &nbsp;查看地图</a></td>
 		<td align="center"><a href="./?page=channel&action=edit&sid=1&cid=<?php echo $row->id; ?>">编辑</a> | <a href="javascript:;" onclick="window.wxc.xcConfirm('确定删除吗?',window.wxc.xcConfirm.typeEnum.warning,{onOk:function(){jq_server_channel_remove(<?php echo $row->id; ?>);}})">删除</a></td>
      </tr>
 	 <?php

@@ -54,7 +54,7 @@
  <div id="urHere">手机对讲系统管理中心<b>></b><strong>群组位置管理</strong> </div>
     <div id="leftWrapper">
         <h3>群组<?php echo $_GET['cid']?>--轨迹查询</h3>
-        <div class="channel-root-container">
+        <div class="channelmap-root-container">
 	<div>
                       <label style='font-size:15px;padding: 5px 5px 5px 2px;'>选取成员</label>
                       <select name="userId" id="userId" style="padding-left:10%;width:50%;">
@@ -85,38 +85,43 @@
 
                      </select>
                       </div>
-                     <div class="">
+                     <div class="timeDiv">
                      <label style='font-size:15px;padding: 5px 5px 5px 2px;'>开始时间</label><input type="text" id="startTime" class="inpMain" name="startTime" />
                      </div>
-                     <div class="">
+                     <div class="timeDiv">
      <label style='font-size:15px;padding: 5px 5px 5px 2px;'>结束时间</label><input type="text" id="endTime" class="inpMain" name="endTime"/>
                      </div>
-		     <button class="btn btn-primary" type="button" onclick="showLine()">查询</button>
+		     <button class="btn btn-primary" style="float: left;margin-top: 10px;margin-left: 10px;" type="button" onclick="showLine()">查询</button>
         </div>
         <div class="chat">
                   <h1>电子围栏设置</h1>
-                   <div id="chatWrapper">    
-		   <div class="">
+                  <div class="channelmap-root-container">
+		   <div class="timeDiv">
                      <label style='font-size:15px;padding: 5px 5px 5px 2px;'>开始时间</label><input type="text" id="fenceStartTime" class="inpMain" name="startTime" />
                    </div>
-                   <div class="">
+                   <div class="timeDiv">
 		     <label style='font-size:15px;padding: 5px 5px 5px 2px;'>结束时间</label><input type="text" id="fenceEndTime" class="inpMain" name="endTime"/>
+                   <input type="text" id="fenceStr" name="fenceStr" value="<?php echo $_GET['fence']?>" size="40" class="inpMain" style='display:none;'/>
                    </div>
 
-		   <input type="button" class="btn btn-primary" value="设置围栏" onclick="setFence(<?php echo $_GET['cid']?>)"/>    
-		   <input type="button" class="btn btn-primary" value="覆盖物个数" onclick="alert(overlays.length)"/>    
-		   <input type="button" class="btn btn-primary" value="清除当前设置" onclick="clearAll()"/>    
-		   <input type="button" class="btn btn-primary" value="显示围栏" onclick="showPolygon(<?php echo $_GET['fence']?>)" /><br/>    
+		   <input type="button" class="btn btn-primary fenceButton" value="设置围栏" onclick="setFence(<?php echo $_GET['cid']?>)"/>    
+		   <input type="button" class="btn btn-primary fenceButton" value="清除当前设置" onclick="deleteFence(<?php echo $_GET['cid']?>)"/>    
+		   <input type="button" class="btn btn-primary fenceButton" value="显示围栏" onclick="showPolygon()" />    
             
 		   <!-- <input type="button"  value="画点" onclick="draw(BMAP_DRAWING_MARKER)" />-->    
 		   </div> 
                   
+                       <h3>电子围栏信息</h3>
+                           <div class="channelmap-root-container">
                    <?php if( 0 != intval($_GET['startTime'])){ ?>
-		   <div id="shape">开始时间为<?php echo date("Y-m-d H:i:s", $_GET['startTime'])?> 结束时间为<?php echo date("Y-m-d H:i:s", $_GET['endTime'])?> 围栏信息：<?php echo $_GET['fence']?></div> 
+		   <div id="shape"><p style="word-break:break-all;">开始时间:<?php echo date("Y-m-d H:i:s", $_GET['startTime'])?></p> 
+               <p>结束时间:<?php echo date("Y-m-d H:i:s", $_GET['endTime'])?></p> 
+               <p style="word-break:break-all;">围栏信息：<?php echo $_GET['fence']?></p>
+               </div> 
                    <?php }else{?>
                    <div id="shape">本群组还没有设置电子围栏 </div>
                    <?php }?>
-                   
+                  </div> 
         </div>
     </div>
     <div id="allmap" ></div>
@@ -182,17 +187,27 @@
             }    
         }    
     }
-    function  showPolygon(fence){
+    function  showPolygon(){
+        var fence = $("#fenceStr").val();
         if (fence == "")
 	    window.wxc.xcConfirm("该群组还没有设置电子围栏.", window.wxc.xcConfirm.typeEnum.success);
         var fenceArray = fence.split(",");
         var points = [];
+        var maxJ=0.0,minJ=10000.0,maxW=0.0,minW=10000.0;
         for(var i=0;i<fenceArray.length-1;i+=2)
         {
             if(parseInt(fenceArray[i]) == 0) break;
-            var point = new BMap.Point(parseDouble(fenceArray[i]), parseDouble(fenceArray[i+1]));
+            maxJ = Math.max(maxJ, fenceArray[i]);
+            minJ = Math.min(minJ, fenceArray[i]);
+            maxW = Math.max(maxW, fenceArray[i+1]);
+            minW = Math.min(minW, fenceArray[i+1]);
+
+            var point = new BMap.Point(parseFloat(fenceArray[i]), parseFloat(fenceArray[i+1]));
             points.push(point);
         }    
+        var zoom = getCenterPoint(maxJ,minJ,maxW,minW);
+        map.centerAndZoom(new BMap.Point(zoom[0], zoom[1]), zoom[2]);
+
         var polygon = new BMap.Polygon(points, styleOptions);  //创建多边形    
         map.addOverlay(polygon);   //增加多边形    
         // overlays.push(polygon); //是否把该图像加入到编辑和删除行列    
@@ -205,7 +220,10 @@
                 {'cid':channelid, 'startTime': 0, 'endTime': 0, 'fence':"" },
                 function(data){
                     if(data.length == 0)
+                    {
                          window.wxc.xcConfirm("删除电子围栏成功.", window.wxc.xcConfirm.typeEnum.success);
+                         $("#fenceStr").val("");
+                    }
                     else
                          window.wxc.xcConfirm("删除电子围栏失败.", window.wxc.xcConfirm.typeEnum.warning);
                 }
@@ -232,18 +250,58 @@
         }
         var startTime = $("#fenceStartTime").val();
         var endTime = $("#fenceEndTime").val();
+        if(startTime == ""|| endTime == "")
+        {
+             window.wxc.xcConfirm("请先设置起始时间.", window.wxc.xcConfirm.typeEnum.warning);
+             return;
+        }     
+        var startTimestamp = Date.parse(new Date(startTime));
+        startTimestamp = startTimestamp/1000;
+
+        var endTimestamp = Date.parse(new Date(endTime));
+        endTimestamp = endTimestamp/1000;
+
         $.post(
                 "./?ajax=server_set_channel_fence&sid=1&entId=<?php echo SessionManager::getInstance()->getLoginId();?>",
-                {'cid':channelid, 'startTime':startTime, 'endTime': endTime, 'fence':fenceStr },
+                {'cid':channelid, 'startTime':startTimestamp, 'endTime':endTimestamp, 'fence':fenceStr },
                 function(data){
                     if(data.length == 0)
+                    {
                          window.wxc.xcConfirm("设置电子围栏成功.", window.wxc.xcConfirm.typeEnum.success);
+                         $("#fenceStr").val(fenceStr);
+                    }
                     else
                          window.wxc.xcConfirm("设置电子围栏失败.", window.wxc.xcConfirm.typeEnum.warning);
                 }
               )
     }
     
+    function showLine()
+    {
+        var uid = $("#userId").val();
+
+        var startTime = $("#startTime").val();
+        var endTime = $("#endTime").val();
+
+        var startTimestamp = Date.parse(new Date(startTime));
+        startTimestamp = startTimestamp/1000;
+
+        var endTimestamp = Date.parse(new Date(endTime));
+        endTimestamp = endTimestamp/1000;
+        if (startTime == "") startTimestamp = 0;
+        if (endTime == "") endTimestamp = Date.parse(new Date())/1000;
+        $.post(
+                "./?ajax=server_get_location&sid=1&entId=<?php echo SessionManager::getInstance()->getLoginId();?>",
+		{'uid':uid, 'startTime':startTimestamp, 'endTime':endTimestamp},
+		function(data){
+		    var points = JSON.parse(data);
+                    if(points.length == 0)
+                         window.wxc.xcConfirm("该用户还没有上传位置信息.", window.wxc.xcConfirm.typeEnum.success);
+                    else
+                         displayLocation(points);
+		}
+	      )
+    }
     function show_locations(uid)
     {
         
@@ -345,6 +403,17 @@
                      showMillisec: false,
                      timeFormat: 'hh:mm:ss'
                  });
+                 $('#fenceStartTime').datetimepicker({
+                     showSecond: true,
+                     showMillisec: false,
+                     timeFormat: 'hh:mm:ss'
+                 });
+                  $('#fenceEndTime').datetimepicker({
+                     showSecond: true,
+                     showMillisec: false,
+                     timeFormat: 'hh:mm:ss'
+                 });
+
             
 });
 

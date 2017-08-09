@@ -461,7 +461,7 @@ class ServerInterface_ice
 		return $this->getServer($srvid)->getTexture(intval($uid));
 	}
 
-	function addUser($srvid,$entId, $account, $password,$name, $comment,$email,$phone,$type) //type 0 ：永久用户 1：年卡用户
+	function addUser($srvid,$entId, $account, $password,$name, $comment,$email,$phone,$fenceAlarm, $type) //type 0 ：永久用户 1：年卡用户
 	{
 		try {
 			$tmpServer = ServerInterface::getInstance()->getServer(intval($srvid));
@@ -476,7 +476,7 @@ class ServerInterface_ice
                         else if($type == 1)
                                 $expireTime = $expireTime + $secondOfAYear;
                         
-			$reg = new MurmurRegistration($srvid, null, $account, $password, $name, $comment, $email,$phone,strval($expireTime), "");
+			$reg = new MurmurRegistration($srvid, null, $account, $password, $name, $comment, $email,$phone,strval($expireTime), "",$fenceAlarm);
 			$tmpUid = $tmpServer->registerUser(intval($entId), $reg->toArray());
 			
 
@@ -485,10 +485,56 @@ class ServerInterface_ice
 		} catch(Ice_UnknownUserException $exc) {	// This should not happen
 		}
 	}
-	
+	function updateUser($srvId,$entId,$userId, $account, $password,$name, $comment,$email,$phone, $fenceAlarm) //type 0 ：永久用户 1：年卡用户
+	{
+		try {
+			$server = ServerInterface::getInstance()->getServer(intval($srvId));
+                       
+			$reg = $this->getServerRegistration($srvId,$entId, $userId); 
+                        if($account != null)
+                            $reg->setAccount($account);
+                        if($password != null)
+                            $reg->setPassword($password);
+                        if($name != null)
+                            $reg->setName($name);
+                        if($comment != null)
+                            $reg->setComment($comment);
+                        if($email != null)
+                            $reg->setEmail($email);
+                        if($phone != null)
+                            $reg->setPhone($phone);
+                        if($fenceAlarm != null)
+                            $reg->setFenceAlarm($fenceAlarm);
+			$server->updateRegistration(intval($entId),$userId, $reg->toArray());
+			
 
-	
-	
+		} catch(Exception $exc) {
+                        echo $exc->getMessage();  
+		}
+	}
+	function renewUser($srvId,$entId,$userId, $type) //type 0 ：成为永久用户 1：续约年卡用户
+	{
+		try {
+			$server = ServerInterface::getInstance()->getServer(intval($srvId));
+                       
+			$reg = $this->getServerRegistration($srvId,$entId, $userId); 
+                        if($type == 1)
+                        {   
+                            $secondOfAYear = 365*24*60*60;
+                            $currentExpire = $reg->getExpireTime();  
+                            $reg->setExpireTime(strval($currentExpire + $secondOfAYear));
+                        }
+                        else if($type == 0)
+                        {
+                            $reg->setExpireTime(strval(2147483647));
+                        }
+			$server->updateRegistration(intval($entId),intval($userId), $reg->toArray());
+			
+
+		} catch(Exception $exc) {
+                        echo $exc->getMessage();  
+		}
+	}
 	function removeRegistration($srvid,$entId, $uid)
 	{
 		ServerInterface::getInstance()->getServer(intval($srvid))->unregisterUser(intval($entId),intval($uid));

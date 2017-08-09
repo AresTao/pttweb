@@ -1451,3 +1451,25 @@ select {
     width: 90%;
     height: 264px;
 }
+.timeDiv {
+    padding-top: 10px;
+}
+.channelmap-root-container {
+    text-size: 16px;
+    margin-left: 2px;
+    background-color: white;
+    border: 1px solid #60BBFF;
+    float: left;
+    width: calc(100% - 6px);
+    height: 180px;
+    /*height: calc(100% - 38px);*/
+    border-radius: 3px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+.fenceButton {
+    margin-left:10px;
+    margin-top:10px;
+    width:100px;
+    float:left;
+}

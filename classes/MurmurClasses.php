@@ -184,6 +184,14 @@ class MurmurServer
         {
                 return $this->iceObj->deleteChannelMembers($entid, $cid, $members);
         }
+        public function getChannelMemberLevel($entid,$cid, $uid)
+        {
+                return $this->iceObj->getMemberLevel($entid, $cid, $uid);
+        }
+        public function setChannelMemberLevel($entid,$cid, $uid, $level)
+        {
+                return $this->iceObj->setMemberLevel($entid, $cid, $uid, $level);
+        }
 
         public function getLocation($entid, $userid, $startTime, $endTime)
         {
@@ -225,7 +233,10 @@ class MurmurServer
         {
                 return $this->iceObj->setPushInfo($entid, $cId, $info);
         }
-
+	public function setChannelFence($entid, $cId, $startTime, $endTime, $fence)
+        {
+                return $this->iceObj->setChannelFence($entid, $cId, $startTime, $endTime, $fence);
+        }
 	public function removeChannel($entId, $cId)
 	{
 		return $this->iceObj->removeChannel($entId, $cId);
@@ -292,9 +303,9 @@ class MurmurServer
 	 * @param MurmurRegistration $registration
 	 * @return void
 	 */
-	public function updateRegistration($registrationId, MurmurRegistration $registration)
+	public function updateRegistration($entId, $userId, $registration)
 	{
-		return $this->iceObj->updateRegistration();
+		return $this->iceObj->updateRegistration($entId, $userId, $registration);
 	}
 	/**
 	 * @param int $registrationId
@@ -382,6 +393,7 @@ class MurmurRegistration
         const USERPHONE=5;
         const USERCURRENTCHANID=6;
         const USEREXPIRETIME=7;
+        const USERFENCEALARM=8;
 
 	private $serverId;
 	private $userId;
@@ -395,19 +407,21 @@ class MurmurRegistration
 	private $password;
 	private $lastactive;
 	private $currentchanid;
+	private $fenceAlarm;
 
-	public function __construct($serverId, $userId, $account, $passwd, $name, $comment, $email,$phone,$expireTime, $currentchanid=null)
+	public function __construct($serverId, $userId, $account, $passwd, $name, $comment, $email,$phone,$expireTime, $currentchanid=null, $fenceAlarm)
 	{
 		$this->serverId=$serverId;
 		$this->userId=$userId;
-                $this->account=$account;
+        $this->account=$account;
 		$this->name=$name;
 		$this->email=$email;
 		$this->comment=$comment;
-                $this->phone=$phone;
+        $this->phone=$phone;
 		$this->password=$passwd;
 		$this->currentchanid=$currentchanid;
 		$this->expireTime=$expireTime;
+		$this->fenceAlarm=$fenceAlarm;
 	}
 
 	/**
@@ -425,31 +439,35 @@ class MurmurRegistration
 		$phone    = isset($object[self::USERPHONE]) ?$object[self::USERPHONE] :null;
 		$currentchanid = isset($object[self::USERCURRENTCHANID])?$object[self::USERCURRENTCHANID]:null;
 		$expireTime    = isset($object[self::USEREXPIRETIME])    ?$object[self::USEREXPIRETIME]    :null;
-		return new self($serverId, $userId, $account, $pwd, $name, $comment, $email,$phone,$expireTime, $currentchanid);
+		$fenceAlarm    = isset($object[self::USERFENCEALARM])    ?$object[self::USERFENCEALARM]    :null;
+		return new self($serverId, $userId, $account, $pwd, $name, $comment, $email,$phone,$expireTime, $currentchanid, $fenceAlarm);
 	}
 	/**
 	 * @return array with name, email, comment, hash, password and indices defined as constants
 	 */
 	public function toArray()
-	{
-		$array = array();
-		if (null!==$this->account)
-			$array[self::USERACCOUNT] = $this->account;
-                if (null!==$this->password)
-			$array[self::USERPASSWD] = $this->password;
-                if (null!==$this->name)
-			$array[self::USERNAME] = $this->name;
-                if (null!==$this->comment)
-			$array[self::USERCOMMENT] = $this->comment;
-		if (null!==$this->email)
-			$array[self::USEREMAIL] = $this->email;
-		if (null!==$this->phone)
-			$array[self::USERPHONE] = $this->phone;
-		if (null!==$this->currentchanid)
-			$array[self::USERCURRENTCHANID] = $this->currentchanid;
-                if (null!==$this->expireTime)
-			$array[self::USEREXPIRETIME] = $this->expireTime;
-		return $array;
+    {
+        $array = array();
+        if (null!==$this->account)
+            $array[self::USERACCOUNT] = $this->account;
+        if (null!==$this->password)
+            $array[self::USERPASSWD] = $this->password;
+        if (null!==$this->name)
+            $array[self::USERNAME] = $this->name;
+        if (null!==$this->comment)
+            $array[self::USERCOMMENT] = $this->comment;
+        if (null!==$this->email)
+            $array[self::USEREMAIL] = $this->email;
+        if (null!==$this->phone)
+            $array[self::USERPHONE] = $this->phone;
+        if (null!==$this->currentchanid)
+            $array[self::USERCURRENTCHANID] = $this->currentchanid;
+        if (null!==$this->expireTime)
+            $array[self::USEREXPIRETIME] = $this->expireTime;
+        if (null!==$this->fenceAlarm)
+            $array[self::USERFENCEALARM] = $this->fenceAlarm;
+
+        return $array;
 
 		/* the following would be much easier, but will send the null values which are then saved as empty strings
 		return array(
@@ -494,24 +512,28 @@ class MurmurRegistration
 	{
 		return $this->password;
 	}
-        public function getPhone()
-        {
-                return $this->phone;
-        }
-        public function getExpireTime()
-        {
-                return $this->expireTime;
-        }
-        public function getCurrentChanId()
-        {
-                return $this->currentchanid;
-        }
+    public function getPhone()
+    {
+        return $this->phone;
+    }
+    public function getExpireTime()
+    {
+        return $this->expireTime;
+    }
+    public function getCurrentChanId()
+    {
+        return $this->currentchanid;
+    }
+    public function getFenceAlarm()
+    {
+        return $this->fenceAlarm;
+    }
 	// setters
 	public function setName($name)
 	{
 		$this->name = $name;
 	}
-        public function setAccount($account)
+    public function setAccount($account)
 	{
 		$this->account = $account;
 	}
@@ -531,6 +553,14 @@ class MurmurRegistration
 	{
 		$this->password=$password;
 	}
+    public function setExpireTime($expireTime)
+    {
+        $this->expireTime = $expireTime;
+    }
+    public function setFenceAlarm($fenceAlarm)
+    {
+        $this->fenceAlarm = $fenceAlarm;
+    }
 }
 
 
