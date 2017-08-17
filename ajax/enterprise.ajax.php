@@ -783,10 +783,10 @@ var total=<?php echo count($data[$v]);?>
       <td align="center"><a href="#">
       <?php 
           $fenceAlarm =  $user->getFenceAlarm(); 
-          if($fenceAlarm == "" || $fenceAlarm == "0")
-              echo "否";
-          else
+          if($fenceAlarm == "1")
               echo "是";
+          else
+              echo "否";
          
       ?>
       </a></td>
@@ -909,6 +909,31 @@ var total=<?php echo count($data[$v]);?>
                 }
                 echo json_encode($locationArray); 
                 //var_dump($locations);
+        }
+        public static function server_get_channel_locations()
+        {
+                $serverId = 1;
+                $entid = intval($_GET['entId']);
+                $channelid = intval($_GET['cid']);
+                $server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
+                $locations = $server->getChannelLocations($entid, $channelid);
+                //$locations = "1001001,115.526007,40.940747,0;1001007,117.972848,40.940747,0;1001008,117.972848,39.480938,0;";
+                //var_dump($locations);
+                $points = split(";",$locations);
+                $pointArray = array();
+                foreach($points as $point)
+                {
+                    $pointObj = array();
+                    if($point == "") break;
+                    $fields = split(",", $point);
+                    if(count($fields) != 4)
+                        break;
+                    $pointObj["uid"] = $fields[0];
+                    $pointObj["lng"] = $fields[1];
+                    $pointObj["lat"] = $fields[2];
+                    array_push($pointArray, $pointObj);
+                }
+                echo json_encode($pointArray);
         }
         public static function server_set_channel_fence()
         {

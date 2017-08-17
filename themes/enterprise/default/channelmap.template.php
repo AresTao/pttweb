@@ -63,7 +63,7 @@
         $entId = intval($id);
         $server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
         $usersStr = $server->getRegisteredUserIds($entId, "");
-	$users = explode(",", $usersStr);
+        $users = explode(",", $usersStr);
         if(count($users) > 1)
 	    array_pop($users); 
 ?>
@@ -191,18 +191,21 @@
         var fence = $("#fenceStr").val();
         if (fence == "")
 	    window.wxc.xcConfirm("该群组还没有设置电子围栏.", window.wxc.xcConfirm.typeEnum.success);
-        var fenceArray = fence.split(",");
+        var fenceArray = fence.split(";");
         var points = [];
         var maxJ=0.0,minJ=10000.0,maxW=0.0,minW=10000.0;
-        for(var i=0;i<fenceArray.length-1;i+=2)
+        for(var i=0;i<fenceArray.length-1;i++)
         {
-            if(parseInt(fenceArray[i]) == 0) break;
-            maxJ = Math.max(maxJ, fenceArray[i]);
-            minJ = Math.min(minJ, fenceArray[i]);
-            maxW = Math.max(maxW, fenceArray[i+1]);
-            minW = Math.min(minW, fenceArray[i+1]);
+            var fenceTwo = fenceArray[i].split(",");
+            
+            if(fenceTwo.length != 2) break;
+            if(parseInt(fenceTwo[0]) == 0) break;
+            maxJ = Math.max(maxJ, fenceTwo[0]);
+            minJ = Math.min(minJ, fenceTwo[0]);
+            maxW = Math.max(maxW, fenceTwo[1]);
+            minW = Math.min(minW, fenceTwo[1]);
 
-            var point = new BMap.Point(parseFloat(fenceArray[i]), parseFloat(fenceArray[i+1]));
+            var point = new BMap.Point(parseFloat(fenceTwo[0]), parseFloat(fenceTwo[1]));
             points.push(point);
         }    
         var zoom = getCenterPoint(maxJ,minJ,maxW,minW);
@@ -243,9 +246,11 @@
         }
         else{
             var overlay = overlays[0].getPath();
-            for(var j = 0; j < overlay.length; j++){
+            var pointNum = overlay.length;
+            if(pointNum > 16) pointNum = 16;
+            for(var j = 0; j < pointNum; j++){
                 var grid =overlay[j];
-                fenceStr = fenceStr + grid.lng+","+grid.lat + ",";
+                fenceStr = fenceStr + grid.lng+","+grid.lat + ";";
             } 
         }
         var startTime = $("#fenceStartTime").val();
@@ -318,7 +323,53 @@
 	      )
     }
 
+    function getChannelLocations()
+    {
+        $.post(
+                "./?ajax=server_get_channel_locations&sid=1&entId=<?php echo SessionManager::getInstance()->getLoginId();?>&cid=<?php echo $_GET['cid']?>","",
+		function(data){
+            
+		    var points = JSON.parse(data);
+            displayChannelLocations(points);
+		}
+	      )
 
+    }
+    var opts = {
+        width : 50,     // 信息窗口宽度
+        height: 20,      // 信息窗口高度
+        title : "用户ID" // 信息窗口标题
+    };
+    function displayChannelLocations(pointArray)
+    {
+        if (document.createElement('canvas').getContext) {  // 判断当前浏览器是否支持绘制海量点
+            var maxJ=0.0,minJ=10000.0,maxW=0.0,minW=10000.0;
+            for (var i = 0; i < pointArray.length; i++) {
+                    maxJ = Math.max(maxJ, pointArray[i].lng);
+                    minJ = Math.min(minJ, pointArray[i].lng);
+                    maxW = Math.max(maxW, pointArray[i].lat);
+                    minW = Math.min(minW, pointArray[i].lat);
+                    var marker = new BMap.Marker(new BMap.Point(pointArray[i].lng,pointArray[i].lat));
+                    map.addOverlay(marker);     
+                    addClickHandler(pointArray[i].uid,marker);
+            }
+            var zoom = getCenterPoint(maxJ,minJ,maxW,minW);
+            map.centerAndZoom(new BMap.Point(zoom[0], zoom[1]), zoom[2]);
+        } else {
+            alert('请在chrome、safari、IE8+以上浏览器查看本示例');
+        }
+    }
+    function addClickHandler(content,marker){
+        marker.addEventListener("click",function(e){
+            openInfo(content,e)}
+            );
+    }
+    function openInfo(content,e){
+        var p = e.target;
+        var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
+        var infoWindow = new BMap.InfoWindow(content,opts);  // 创建信息窗口对象 
+        map.openInfoWindow(infoWindow,point); //开启信息窗口
+    }
     function displayLocation(pointArray)
     {
         if (document.createElement('canvas').getContext) {  // 判断当前浏览器是否支持绘制海量点
@@ -413,7 +464,8 @@
                      showMillisec: false,
                      timeFormat: 'hh:mm:ss'
                  });
-
+                 getChannelLocations();
+                 setInterval(getChannelLocations, 10000 );
             
 });
 

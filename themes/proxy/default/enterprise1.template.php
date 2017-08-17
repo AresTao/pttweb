@@ -536,7 +536,7 @@ function jq_enterprise_file_output(){
 	form.attr("style","display:none");
 	form.attr("target","");
 	form.attr("method","post");
-	form.attr("action","./?ajax=server_enterprise_file_output&sid=1");
+	form.attr("action","./?ajax=server_enterprise_file_output&sid=1&parentId=<?php echo SessionManager::getInstance()->getLoginId();?>");
 	var input1=$("<input>");
 	input1.attr("type","hidden");
 	input1.attr("name","type");

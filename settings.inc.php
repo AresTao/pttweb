@@ -41,8 +41,8 @@ $mysqlConfig = array(
         'DB_TYPE' => 'mysql',
         'DB_HOST' => '120.77.254.227',
         'DB_NAME' => 'pttweb',
-        'DB_USER' => 'pttweb',
-        'DB_PWD' => 'pttweb',
+        'DB_USER' => 'root',
+        'DB_PWD' => 'wuzhantao',
         'DB_PORT' => '3306',
         'DB_DSN' => '',
         'DB_PARAMS' => '',
@@ -53,7 +53,7 @@ $mysqlConfig = array(
 // This should specify a file that exists and matches your murmur server version as close as possible.
 // May be values like Murmur_1.2.3.php or Murmur_1.2.4.php (check your MumPI/classes folder).
 // If you have a different version of Mumble-Server / Murmur, you may want to compile it yourself; see FAQ on how to: https://github.com/Kissaki/MumPI/wiki/FAQ
-$iceGeneratedMurmurPHPFileName = 'zcxMurmur.php';
+$iceGeneratedMurmurPHPFileName = 'zcxMurmur0803.php';
 
 // db type for Interface functionality
 // (does not have anything to do with mumble/murmur)

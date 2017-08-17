@@ -453,6 +453,15 @@ $(function(){
         <input type="text" name="phone" size="40" class="inpMain" id="" />
        </td>
       </tr>
+      <tr> 
+      <td width="100" align="right">告警提醒</td>
+      <td>            
+             <select name="fenceAlarm" id="fenceAlarm">
+                  <option value="0">否</option>
+                  <option value="1">是</option>
+             </select>
+      </td>
+      </tr>
 
 
       <tr>
@@ -524,6 +533,21 @@ $(function(){
         <input type="text" name="phone" size="40" class="inpMain" id=""  value='<?php echo $user->getPhone();?>'/>
        </td>
       </tr>
+      <tr> 
+      <td align="right">告警提醒</td>
+      <td>            
+             <select name="fenceAlarm" id="fenceAlarm">
+             <?php if($user->getFenceAlarm() == "1"){ ?>
+                  <option value="0" >否</option>
+                  <option value="1" selected="selected">是</option>
+             <?php }else{?>
+                 <option value="0" selected="selected">否</option>
+                  <option value="1">是</option>
+             <?php }?>
+             </select>
+      </td>
+      </tr>
+
 
 
 
@@ -714,9 +738,10 @@ $(function(){
 		function jq_user_add()
 			{
 				type =$("#type").val();
+                fenceAlarm = $("#fenceAlarm").val();
 				param =$("input").serialize();
 			
-				$.post("./?ajax=server_user_add&sid=1&type="+type+"&entId=<?php echo SessionManager::getInstance()->getLoginId();?>",param,
+				$.post("./?ajax=server_user_add&sid=1&fenceAlarm="+fenceAlarm+"&type="+type+"&entId=<?php echo SessionManager::getInstance()->getLoginId();?>",param,
 						function (data) {
 							
 							if(data.length == 0){
@@ -733,15 +758,16 @@ $(function(){
 			}
 			function jq_user_update()
 			{
-			        uid =$("#uid").val();
+                uid =$("#uid").val();
+                fenceAlarm = $("#fenceAlarm").val();
 				param =$("input").serialize();
 			
-				$.post("./?ajax=server_user_update&sid=1&uid="+uid+"&entId=<?php echo SessionManager::getInstance()->getLoginId();?>",param,
+				$.post("./?ajax=server_user_update&sid=1&fenceAlarm="+fenceAlarm+"&uid="+uid+"&entId=<?php echo SessionManager::getInstance()->getLoginId();?>",param,
 						function (data) {
 							
 							if(data.length == 0){
 								
-                                                                window.wxc.xcConfirm("修改成功.", window.wxc.xcConfirm.typeEnum.success); 
+                            window.wxc.xcConfirm("修改成功.", window.wxc.xcConfirm.typeEnum.success); 
 								location.href="./?page=user&sid=1";
 								
 							}else{

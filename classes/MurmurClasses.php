@@ -197,7 +197,10 @@ class MurmurServer
         {
                 return $this->iceObj->getLocation($entid, $userid, $startTime, $endTime);
         }
-
+        public function getChannelLocations($entid, $channelid)
+        {
+                return $this->iceObj->getChannelLocations($entid, $channelid);
+        }
         public function getVideos($entid, $userid, $startTime, $endTime)
         {
                 return $this->iceObj->getVideoSummary($entid, $userid, $startTime, $endTime);
