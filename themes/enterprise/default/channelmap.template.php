@@ -51,7 +51,7 @@
 </div></div>
  <div id="dcMain">
 
- <div id="urHere">手机对讲系统管理中心<b>></b><strong>群组位置管理</strong> </div>
+ <div id="urHere">手机对讲系统管理中心<b>></b><strong>群组位置管理</strong><div id="fresh" style="float:right;"><button class="btn btn-primary" style="float:right;margin-right:5px;margin-top:5px;" onclick="setAutoFresh()">开启自动刷新</button></div> </div>
     <div id="leftWrapper">
         <h3>群组<?php echo $_GET['cid']?>--轨迹查询</h3>
         <div class="channelmap-root-container">
@@ -176,6 +176,20 @@
             }    
         });
 
+    var autoFreshId;
+
+    function setAutoFresh()
+    {
+
+        autoFreshId = setInterval(getChannelLocations, 10000 );
+        $("#fresh").html("<button class='btn btn-primary' style='float:right;margin-right:5px;margin-top:5px;' onclick='stopAutoFresh()'>取消自动刷新</button>");
+    }
+
+    function stopAutoFresh()
+    {
+        clearInterval(autoFreshId);
+        $("#fresh").html("<button class='btn btn-primary' style='float:right;margin-right:5px;margin-top:5px;' onclick='setAutoFresh()'>开启自动刷新</button>");
+    }
     function getPoint(){    
         $("#resultShape").html('');    
         for(var i = 0; i < overlays.length; i++){    
@@ -323,13 +337,16 @@
 	      )
     }
 
+    var getChannelLocationNum = 0;
     function getChannelLocations()
     {
+        getChannelLocationNum++;
         $.post(
                 "./?ajax=server_get_channel_locations&sid=1&entId=<?php echo SessionManager::getInstance()->getLoginId();?>&cid=<?php echo $_GET['cid']?>","",
 		function(data){
             
 		    var points = JSON.parse(data);
+
             displayChannelLocations(points);
 		}
 	      )
@@ -343,6 +360,7 @@
     function displayChannelLocations(pointArray)
     {
         if (document.createElement('canvas').getContext) {  // 判断当前浏览器是否支持绘制海量点
+            map.clearOverlays();
             var maxJ=0.0,minJ=10000.0,maxW=0.0,minW=10000.0;
             for (var i = 0; i < pointArray.length; i++) {
                     maxJ = Math.max(maxJ, pointArray[i].lng);
@@ -353,6 +371,8 @@
                     map.addOverlay(marker);     
                     addClickHandler(pointArray[i].uid,marker);
             }
+            if(pointArray.length == 0) return;
+            if(getChannelLocationNum > 1) return;
             var zoom = getCenterPoint(maxJ,minJ,maxW,minW);
             map.centerAndZoom(new BMap.Point(zoom[0], zoom[1]), zoom[2]);
         } else {
@@ -465,7 +485,7 @@
                      timeFormat: 'hh:mm:ss'
                  });
                  getChannelLocations();
-                 setInterval(getChannelLocations, 10000 );
+                 //setInterval(getChannelLocations, 10000 );
             
 });
 
