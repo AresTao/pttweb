@@ -22,13 +22,18 @@
 			// parse and handle login form data
 			try {
 				
-                                require_once(MUMPHPI_MAINDIR.'/classes/Captcha.php');
-                                $cap = $_POST['cap'];
-                                if ($cap == "")
-                                       throw new Exception("请输入验证码！");
-                                if (!Captcha::cap_isCorrect($cap))
-                                       throw new Exception("验证码错误！");
-				SessionManager::getInstance()->loginAsEnterprise($_POST['username'],$_POST['password']);
+                require_once(MUMPHPI_MAINDIR.'/classes/Captcha.php');
+                $cap = $_POST['cap'];
+                if ($cap == "")
+                    throw new Exception("请输入验证码！");
+                if (!Captcha::cap_isCorrect($cap))
+                    throw new Exception("验证码错误！");
+
+                $loginType = $_POST['loginType'];
+                if ($loginType == 0)
+				    SessionManager::getInstance()->loginAsEnterprise($_POST['username'],$_POST['password']);
+                else if($loginType == 1)
+                    SessionManager::getInstance()->loginAsEnterpriseById($_POST['username'],$_POST['password']);
 				$isLoggedIn = true;
                                 //if (SessionManager::getInstance()->getLevel() == 1)
 				//     echo '<script type="text/javascript">window.location.replace("?page=enterprise&sid=1")</script>';
@@ -64,6 +69,7 @@
 		if (jQuery('#mpi_login_username').attr('value').length == 0) {window.wxc.xcConfirm('请输入用户名', window.wxc.xcConfirm.typeEnum.error); return false;}
 		if (jQuery('#mpi_login_password').attr('value').length == 0) {window.wxc.xcConfirm('请输入密码', window.wxc.xcConfirm.typeEnum.error); return false;}">
    <ul>  
+    <li class="inpLi"><b>登录方式</b><select style="width:200px;" name="loginType"><option value ="0">企业账号</option><option value ="1">企业ID</option></select></li>
     <li class="inpLi"><b>用户名</b><input name="username" type="text" class="inpLogin" id="mpi_login_username" ></li>
     <li class="inpLi"><b>密码</b><input name="password" type="password" class="inpLogin" id="mpi_login_password" ></li>
     <li class="inpLi"><b>输入下式计算结果</b><input name="cap" type="text" class="inpLogin" id="cap" value="" ></li>

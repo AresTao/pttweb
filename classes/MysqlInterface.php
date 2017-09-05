@@ -292,13 +292,21 @@ class MysqlInterface{
 		$res = MysqlManager::getInstance()->getRow($sql);
 		return $res;
 	}
-	public static function checkEnterpriseLogin($username , $passwd){
-                $sql = "select * from enterprise where account='".$username."' and passwd ='".md5($passwd)."'";
-                 
-                $res = MysqlManager::getInstance()->getAll($sql);
-                if (count($res)>0) return true;
-                return false;
-        }
+    public static function checkEnterpriseLogin($username , $passwd){
+        $sql = "select * from enterprise where account='".$username."' and passwd ='".md5($passwd)."'";
+
+        $res = MysqlManager::getInstance()->getAll($sql);
+        if (count($res)>0) return true;
+        return false;
+    }
+    public static function checkEnterpriseLoginById($id , $passwd){
+        $sql = "select * from enterprise where id=".$id." and passwd ='".md5($passwd)."'";
+
+        $res = MysqlManager::getInstance()->getAll($sql);
+        if (count($res)>0) return true;
+        return false;
+    }
+
 	public static function getEnterprises(){
 		$sql = "select * from enterprise";
 		$res = MysqlManager::getInstance()->getAll($sql);
