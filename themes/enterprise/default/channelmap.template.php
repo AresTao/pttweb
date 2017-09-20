@@ -7,6 +7,7 @@
     </style>
 <script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=F0i6SrLmHquLVNLCqpExxPrj8mWVdFwx"></script>
 <script type="text/javascript" src="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.js"></script>
+<script src="http://api.map.baidu.com/library/GeoUtils/1.2/src/GeoUtils_min.js" type="text/javascript"></script>
 <link href="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/DrawingManager_min.css" rel="stylesheet" type="text/css">
 <script type="text/javascript" src="http://api.map.baidu.com/library/SearchInfoWindow/1.4/src/SearchInfoWindow_min.js"></script>
 <link rel="stylesheet" href="http://api.map.baidu.com/library/SearchInfoWindow/1.4/src/SearchInfoWindow_min.css" />
@@ -101,7 +102,21 @@
                    </div>
                    <div class="timeDiv">
 		     <label style='font-size:15px;padding: 5px 5px 5px 2px;'>结束时间</label><input type="text" id="fenceEndTime" class="inpMain" name="endTime"/>
-                   <input type="text" id="fenceStr" name="fenceStr" value="<?php echo $_GET['fence']?>" size="40" class="inpMain" style='display:none;'/>
+<?php 
+    $cid = intval($_GET['cid']);
+
+    $data =MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId))->getChannels(intval($id));
+    $channel = null;
+    foreach($data as $key => $row)
+    {
+        if($cid == $row->id)
+        {
+            $channel = $row;
+        }
+    }  
+
+?>
+                   <input type="text" id="fenceStr" name="fenceStr" value="<?php echo $channel->fencepoints;?>" size="40" class="inpMain" style='display:none;'/>
                    </div>
 
 		   <input type="button" class="btn btn-primary fenceButton" value="设置围栏" onclick="setFence(<?php echo $_GET['cid']?>)"/>    
@@ -113,10 +128,10 @@
                   
                        <h3>电子围栏信息</h3>
                            <div class="channelmap-root-container">
-                   <?php if( 0 != intval($_GET['startTime'])){ ?>
-		   <div id="shape"><p style="word-break:break-all;">开始时间:<?php echo date("Y-m-d H:i:s", $_GET['startTime'])?></p> 
-               <p>结束时间:<?php echo date("Y-m-d H:i:s", $_GET['endTime'])?></p> 
-               <p style="word-break:break-all;">围栏信息：<?php echo $_GET['fence']?></p>
+                   <?php if( 0 != $channel->fencestart){ ?>
+		   <div id="shape"><p style="word-break:break-all;">开始时间:<?php echo date("Y-m-d H:i:s", $channel->fencestart)?></p> 
+               <p>结束时间:<?php echo date("Y-m-d H:i:s", $channel->fenceend)?></p> 
+               <p style="word-break:break-all;">围栏信息：<?php echo $channel->fencepoints?></p>
                </div> 
                    <?php }else{?>
                    <div id="shape">本群组还没有设置电子围栏 </div>
@@ -125,6 +140,9 @@
         </div>
     </div>
     <div id="allmap" ></div>
+    <audio id="alarmAudio">
+    <source src="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/alarm.mp3" type="audio/mp3">
+    </audio>
  <!--<iframe name="main" height="600" width="1400" src="https://voice.johni0702.de/?address=voice.johni0702.de&port=443/demo"></iframe>-->
 <!--<script type="text/javascript" src="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/js/jquery-1.11.1.min.js"></script>-->
 <script type="text/javascript">
@@ -204,7 +222,10 @@
     function  showPolygon(){
         var fence = $("#fenceStr").val();
         if (fence == "")
-	    window.wxc.xcConfirm("该群组还没有设置电子围栏.", window.wxc.xcConfirm.typeEnum.success);
+        {
+	        window.wxc.xcConfirm("该群组还没有设置电子围栏.", window.wxc.xcConfirm.typeEnum.success);
+            return;
+        }
         var fenceArray = fence.split(";");
         var points = [];
         var maxJ=0.0,minJ=10000.0,maxW=0.0,minW=10000.0;
@@ -226,6 +247,7 @@
         map.centerAndZoom(new BMap.Point(zoom[0], zoom[1]), zoom[2]);
 
         var polygon = new BMap.Polygon(points, styleOptions);  //创建多边形    
+        map.clearOverlays();
         map.addOverlay(polygon);   //增加多边形    
         // overlays.push(polygon); //是否把该图像加入到编辑和删除行列    
     }
@@ -238,8 +260,10 @@
                 function(data){
                     if(data.length == 0)
                     {
+                         map.clearOverlays();
                          window.wxc.xcConfirm("删除电子围栏成功.", window.wxc.xcConfirm.typeEnum.success);
                          $("#fenceStr").val("");
+                         $("#shape").html("电子围栏已删除.");
                     }
                     else
                          window.wxc.xcConfirm("删除电子围栏失败.", window.wxc.xcConfirm.typeEnum.warning);
@@ -288,6 +312,8 @@
                     {
                          window.wxc.xcConfirm("设置电子围栏成功.", window.wxc.xcConfirm.typeEnum.success);
                          $("#fenceStr").val(fenceStr);
+                         $("#shape").html("");
+                         $("#shape").append("<p style='word-break:break-all;'>开始时间："+startTime+"</p><p>结束时间："+endTime+"</p><p style='word-break:break-all;'>围栏信息："+fenceStr+"</p>");
                     }
                     else
                          window.wxc.xcConfirm("设置电子围栏失败.", window.wxc.xcConfirm.typeEnum.warning);
@@ -359,6 +385,7 @@
     };
     function displayChannelLocations(pointArray)
     {
+        console.log(pointArray);
         if (document.createElement('canvas').getContext) {  // 判断当前浏览器是否支持绘制海量点
             map.clearOverlays();
             var maxJ=0.0,minJ=10000.0,maxW=0.0,minW=10000.0;
@@ -375,6 +402,38 @@
             if(getChannelLocationNum > 1) return;
             var zoom = getCenterPoint(maxJ,minJ,maxW,minW);
             map.centerAndZoom(new BMap.Point(zoom[0], zoom[1]), zoom[2]);
+            var fence = $("#fenceStr").val();
+            if (fence == "") return;
+            var fenceArray = fence.split(";");
+            var points = [];
+            for(var i=0;i<fenceArray.length-1;i++)
+            {
+                var fenceTwo = fenceArray[i].split(",");
+
+                if(fenceTwo.length != 2) break;
+                if(parseInt(fenceTwo[0]) == 0) break;
+                var point = new BMap.Point(parseFloat(fenceTwo[0]), parseFloat(fenceTwo[1]));
+                points.push(point);
+            }
+            var outFenceUser = [];
+            var polygon = new BMap.Polygon(points, styleOptions);
+            map.addOverlay(polygon);
+            for (var i = 0; i < pointArray.length; i++) {
+                var p = new BMap.Point(pointArray[i].lng,pointArray[i].lat);
+                if(!BMapLib.GeoUtils.isPointInPolygon(p, polygon))
+                {
+                    outFenceUser.push(pointArray[i].uid);
+                }
+            }
+            if(outFenceUser.length > 0)
+            {
+                var audio = document.getElementById("alarmAudio");
+                audio.play();
+                console.log(outFenceUser);
+                var userinfo = outFenceUser.join(",");
+                window.wxc.xcConfirm("("+userinfo+")"+"不在电子围栏内", window.wxc.xcConfirm.typeEnum.warning);
+            }
+
         } else {
             alert('请在chrome、safari、IE8+以上浏览器查看本示例');
         }

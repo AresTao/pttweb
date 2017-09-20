@@ -590,7 +590,7 @@ class Ajax_Enterprise extends Ajax
 		<tr>
        <td align='left'><?php echo $k; ?></td>
         <td><?php echo $row->name; ?></td>
-        <td><?php echo $n;?><a href='?page=user&sid=1&action=show_members&cid=<?php echo $row->id; ?>'> &nbsp;查看</a> | <a href='?page=channelmap&sid=1&action=show_members&cid=<?php echo $row->id; ?>&startTime=<?php echo $row->fencestart;?>&endTime=<?php echo $row->fenceend;?>&fence=<?php echo $row->fencepoints; ?>'> &nbsp;查看地图</a></td>
+        <td><?php echo $n;?><a href='?page=user&sid=1&action=show_members&cid=<?php echo $row->id; ?>'> &nbsp;查看</a> | <a href='?page=channelmap&sid=1&action=show_members&cid=<?php echo $row->id; ?>'> &nbsp;查看地图</a></td>
 		<td align="center"><a href="./?page=channel&action=edit&sid=1&cid=<?php echo $row->id; ?>">编辑</a> | <a href="javascript:;" onclick="window.wxc.xcConfirm('确定删除吗?',window.wxc.xcConfirm.typeEnum.warning,{onOk:function(){jq_server_channel_remove(<?php echo $row->id; ?>);}})">删除</a></td>
      </tr>
 	 <?php
