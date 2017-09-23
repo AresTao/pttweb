@@ -320,11 +320,12 @@ class Ajax_Enterprise extends Ajax
                 $pointObj = array();
                 if($point == "") break;
                 $fields = split(",", $point);
-                if(count($fields) != 4)
+                if(count($fields) != 5)
                     break;
-                $pointObj["uid"] = $fields[0];
-                $pointObj["lng"] = $fields[1];
-                $pointObj["lat"] = $fields[2];
+                $pointObj["uid"]  = $fields[0];
+                $pointObj["nick"] = $fields[1];
+                $pointObj["lng"]  = $fields[2];
+                $pointObj["lat"]  = $fields[3];
                 array_push($pointArray, $pointObj);
             }
             echo json_encode($pointArray);

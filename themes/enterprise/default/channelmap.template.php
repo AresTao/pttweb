@@ -381,7 +381,7 @@
     var opts = {
         width : 50,     // 信息窗口宽度
         height: 20,      // 信息窗口高度
-        title : "用户ID" // 信息窗口标题
+        title : "用户信息" // 信息窗口标题
     };
     function displayChannelLocations(pointArray)
     {
@@ -396,7 +396,7 @@
                     minW = Math.min(minW, pointArray[i].lat);
                     var marker = new BMap.Marker(new BMap.Point(pointArray[i].lng,pointArray[i].lat));
                     map.addOverlay(marker);     
-                    addClickHandler(pointArray[i].uid,marker);
+                    addClickHandler(pointArray[i].nick+"("+pointArray[i].uid+")", marker);
             }
             if(pointArray.length == 0) return;
             if(getChannelLocationNum > 1) return;
