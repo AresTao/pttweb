@@ -1814,8 +1814,9 @@ return false;
 
 
       <td align="center">
-             <a href="./?page=operator&sid=1&action=dispatcher&id=<?php echo $member['id'] ?>" >新增卡</a> | <a href="./?page=operator&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> | <a href="javascript:;
-" onclick="window.wxc.xcConfirm('确定删除用户?',window.wxc.xcConfirm.typeEnum.warning,{onOk:function(){jq_operator_remove(<?php echo $member['id'] ?>);}})">删除</a>
+             <a href="./?page=operator&sid=1&action=dispatcher&id=<?php echo $member['id'] ?>" >新增卡</a> | <a href="./?page=operator&sid=1&action=edit&id=<?php echo $member['id'] ?>" >编辑</a> 
+             <!-- | <a href="javascript:;
+" onclick="window.wxc.xcConfirm('确定删除用户?',window.wxc.xcConfirm.typeEnum.warning,{onOk:function(){jq_operator_remove(<?php echo $member['id'] ?>);}})">删除</a>-->
              </td>
      </tr>
 
