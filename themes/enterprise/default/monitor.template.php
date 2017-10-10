@@ -158,7 +158,7 @@
         if (document.createElement('canvas').getContext) {  // 判断当前浏览器是否支持绘制海量点
             var points = [];  // 添加海量点数据
             var maxJ=0.0,minJ=10000.0,maxW=0.0,minW=10000.0;
-	    for (var i = 0; i < pointArray.length-1; i++) {
+	    for (var i = 1; i < pointArray.length; i++) {
                     maxJ = Math.max(maxJ, pointArray[i].longitude);
                     minJ = Math.min(minJ, pointArray[i].longitude);
                     maxW = Math.max(maxW, pointArray[i].latitude);
@@ -178,7 +178,7 @@
                 alert('单击点的坐标为：' + e.point.lng + ',' + e.point.lat);  // 监听点击事件
             });
             map.addOverlay(pointCollection);  // 添加Overlay
-            var marker = new BMap.Marker(new BMap.Point(pointArray[pointArray.length-1].longitude,pointArray[pointArray.length-1].latitude));
+            var marker = new BMap.Marker(new BMap.Point(pointArray[0].longitude,pointArray[0].latitude));
             map.addOverlay(marker);
             var dateItem = new Date();
             dateItem.setTime(pointArray[pointArray.length-1].time* 1000);

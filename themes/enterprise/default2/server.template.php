@@ -12,7 +12,7 @@
            type: 'post',
            data: { sid: "1" },
 		   dataType: "json",
-           url: "./?ajax=show_tree&najax=1&entId=<?php echo SessionManager::getInstance()->getLoginId();?>",
+           url: "./?ajax=show_tree_en&najax=1&entId=<?php echo SessionManager::getInstance()->getLoginId();?>",
            success: function (data) { 
 				num =data;
 				
@@ -40,7 +40,7 @@
                 function InitTable(pageIndex) {                                  
                     $.ajax({   
                         type: "POST",  
-                        url: './?ajax=show_tree&entId=<?php echo SessionManager::getInstance()->getLoginId();?>',      //提交到一般处理程序请求数据   
+                        url: './?ajax=show_tree_en&entId=<?php echo SessionManager::getInstance()->getLoginId();?>',      //提交到一般处理程序请求数据   
                         data: "pageIndex=" + (pageIndex+1) + "&pageSize=" + pageSize+"&sid=1",          //提交两个参数：pageIndex(页面索引)，pageSize(显示条数)                   
                         success: function(data) {
                                  

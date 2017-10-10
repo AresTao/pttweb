@@ -295,7 +295,7 @@ if(num==0){
 		
 			function jq_server_showTree(sid)
 			{
-				$.post("./?ajax=show_tree",
+				$.post("./?ajax=show_tree_en",
 						{ 'sid': sid },
 						function(data){
 							$('#jq_information').show().html(data);

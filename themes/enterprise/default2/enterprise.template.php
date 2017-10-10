@@ -11,7 +11,7 @@
            type: 'post',
            data: { sid: "1" },
 		   dataType: "json",
-           url: "./?ajax=server_getEnterprises&page=enterprise&najax=1",
+           url: "./?ajax=server_getEnterprises_en&page=enterprise&najax=1",
            success: function (data) { 
 				num =data;
 				

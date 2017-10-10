@@ -11,7 +11,7 @@
            type: 'post',
            data: { sid: "1" },
 		   dataType: "json",
-           url: "./?ajax=server_getOperators&page=operator&najax=1&parentId=<?php echo SessionManager::getInstance()->getLoginId();?>",
+           url: "./?ajax=server_getOperators_en&page=operator&najax=1&parentId=<?php echo SessionManager::getInstance()->getLoginId();?>",
            success: function (data) { 
 				num =data;
 				
@@ -54,7 +54,7 @@
                 function InitTable(pageIndex) {                                  
                     $.ajax({   
                         type: "POST",  
-                        url: './?ajax=server_getOperators&page=operator&parentId=<?php echo SessionManager::getInstance()->getLoginId();?>',      //提交到一般处理程序请求数据   
+                        url: './?ajax=server_getOperators_en&page=operator&parentId=<?php echo SessionManager::getInstance()->getLoginId();?>',      //提交到一般处理程序请求数据   
                         data: "pageIndex=" + (pageIndex+1) + "&pageSize=" + pageSize+"&sid=1",          //提交两个参数：pageIndex(页面索引)，pageSize(显示条数)                   
                         success: function(data) {
                              //移除Id为Result的表格里的行，从第二行开始（这里根据页面布局不同页变）   
@@ -499,7 +499,7 @@ function jq_operator_search(){
 	var kw =$("input[name=keyword]").val();
 	var type =$("#catlist").val();
 	$.post(
-			"./?ajax=server_operator_search&sid=1&parentId=<?php echo SessionManager::getInstance()->getLoginId();?>",
+			"./?ajax=server_operator_search_en&sid=1&parentId=<?php echo SessionManager::getInstance()->getLoginId();?>",
 			{'type':type,'value':kw},
 			function(data){
 

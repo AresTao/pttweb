@@ -23,18 +23,18 @@
 ?>
 
    <ul>
-        <li class="noRight"><a href="#"> 企业编号：<?php echo $enterprise['id'];?></a></li>
-        <li class="noRight"><a href="#"> 企业名称：<?php echo $enterprise['name'];?> </a> </li>
+        <li class="noRight"><a href="#"> Enterprise ID：<?php echo $enterprise['id'];?></a></li>
+        <li class="noRight"><a href="#"> Enterprise Name：<?php echo $enterprise['name'];?> </a> </li>
    </ul>
    <ul class="navRight">
-    <li class="noLeft"><a href="#">可用永久卡：<?php echo $enterprise['availablePCards'];?></a></li>
-    <li class="noLeft"><a href="#">可用年卡：<?php echo $enterprise['availableCards'];?></a></li>
-    <li class="M noLeft"><a href="JavaScript:void(0);">您好，<?php echo SessionManager::getInstance()->getLoginName();?></a>
+    <li class="noLeft"><a href="#">Permanent Cards：<?php echo $enterprise['availablePCards'];?></a></li>
+    <li class="noLeft"><a href="#">Normal Year Cards：<?php echo $enterprise['availableCards'];?></a></li>
+    <li class="M noLeft"><a href="JavaScript:void(0);">Hi，<?php echo SessionManager::getInstance()->getLoginName();?></a>
      <div class="drop mUser">
-      <a href="?page=admins&sid=1">编辑我的个人资料</a>
+      <a href="?page=admins&sid=1">Edit Info</a>
      </div>
     </li>
-    <li class="noRight"><a href="?page=logout">退出</a></li>
+    <li class="noRight"><a href="?page=logout">Logout</a></li>
    </ul>
   </div>
  </div>
@@ -42,22 +42,22 @@
 <!-- dcHead 结束 --> <div id="dcLeft"><div id="menu">
 
   <ul>
-  <li><a href="?page=user&sid=1"><i class="user"></i><em>用户管理</em></a></li>
-  <li><a href="?page=server&sid=1"><i class="mobile"></i><em>频道管理</em></a></li>
-  <li><a href="?page=monitor&sid=1"><i class="article"></i><em>监控管理</em></a></li>
-  <li><a href="?page=record&sid=1"><i class="articleCat"></i><em>记录管理</em></a></li>
+  <li><a href="?page=user&sid=1"><i class="user"></i><em>User Manage</em></a></li>
+  <li><a href="?page=server&sid=1"><i class="mobile"></i><em>Channel Manage</em></a></li>
+  <li><a href="?page=monitor&sid=1"><i class="article"></i><em>Monitor</em></a></li>
+  <li><a href="?page=record&sid=1"><i class="articleCat"></i><em>Record</em></a></li>
 
  </ul>
 
 </div></div>
  <div id="dcMain">
 
- <div id="urHere">手机对讲系统管理中心<b>></b><strong>群组位置管理</strong><div id="fresh" style="float:right;"><button class="btn btn-primary" style="float:right;margin-right:5px;margin-top:5px;" onclick="setAutoFresh()">开启自动刷新</button></div> </div>
+ <div id="urHere">Admin<b>></b><strong>Channel Location Manage</strong><div id="fresh" style="float:right;"><button class="btn btn-primary" style="float:right;margin-right:5px;margin-top:5px;" onclick="setAutoFresh()">Auto Refresh</button></div> </div>
     <div id="leftWrapper">
-        <h3>群组<?php echo $_GET['cid']?>--轨迹查询</h3>
+        <h3>Channel<?php echo $_GET['cid']?>--Trajectory</h3>
         <div class="channelmap-root-container">
 	<div>
-                      <label style='font-size:15px;padding: 5px 5px 5px 2px;'>选取成员</label>
+                      <label style='font-size:15px;padding: 5px 5px 5px 2px;'>Choose Member</label>
                       <select name="userId" id="userId" style="padding-left:10%;width:50%;">
 <?php
         $serverId = intval($_GET['sid']);
@@ -87,21 +87,21 @@
                      </select>
                       </div>
                      <div class="timeDiv">
-                     <label style='font-size:15px;padding: 5px 5px 5px 2px;'>开始时间</label><input type="text" id="startTime" class="inpMain" name="startTime" />
+                     <label style='font-size:15px;padding: 5px 5px 5px 2px;'>Start Time</label><input type="text" id="startTime" class="inpMain" name="startTime" />
                      </div>
                      <div class="timeDiv">
-     <label style='font-size:15px;padding: 5px 5px 5px 2px;'>结束时间</label><input type="text" id="endTime" class="inpMain" name="endTime"/>
+     <label style='font-size:15px;padding: 5px 5px 5px 2px;'>End Time</label><input type="text" id="endTime" class="inpMain" name="endTime"/>
                      </div>
-		     <button class="btn btn-primary" style="float: left;margin-top: 10px;margin-left: 10px;" type="button" onclick="showLine()">查询</button>
+		     <button class="btn btn-primary" style="float: left;margin-top: 10px;margin-left: 10px;" type="button" onclick="showLine()">Search</button>
         </div>
         <div class="chat">
                   <h1>电子围栏设置</h1>
                   <div class="channelmap-root-container">
 		   <div class="timeDiv">
-                     <label style='font-size:15px;padding: 5px 5px 5px 2px;'>开始时间</label><input type="text" id="fenceStartTime" class="inpMain" name="startTime" />
+                     <label style='font-size:15px;padding: 5px 5px 5px 2px;'>Start Time</label><input type="text" id="fenceStartTime" class="inpMain" name="startTime" />
                    </div>
                    <div class="timeDiv">
-		     <label style='font-size:15px;padding: 5px 5px 5px 2px;'>结束时间</label><input type="text" id="fenceEndTime" class="inpMain" name="endTime"/>
+		     <label style='font-size:15px;padding: 5px 5px 5px 2px;'>End Time</label><input type="text" id="fenceEndTime" class="inpMain" name="endTime"/>
 <?php 
     $cid = intval($_GET['cid']);
 

@@ -154,10 +154,11 @@
     }
     function displayLocation(pointArray)
     {
+        //console.log(pointArray);return;
         if (document.createElement('canvas').getContext) {  // 判断当前浏览器是否支持绘制海量点
             var points = [];  // 添加海量点数据
             var maxJ=0.0,minJ=10000.0,maxW=0.0,minW=10000.0;
-	    for (var i = 0; i < pointArray.length; i++) {
+	    for (var i = 1; i < pointArray.length; i++) {
                     maxJ = Math.max(maxJ, pointArray[i].longitude);
                     minJ = Math.min(minJ, pointArray[i].longitude);
                     maxW = Math.max(maxW, pointArray[i].latitude);
@@ -177,9 +178,32 @@
                 alert('单击点的坐标为：' + e.point.lng + ',' + e.point.lat);  // 监听点击事件
             });
             map.addOverlay(pointCollection);  // 添加Overlay
+            var marker = new BMap.Marker(new BMap.Point(pointArray[0].longitude,pointArray[0].latitude));
+            map.addOverlay(marker);
+            var dateItem = new Date();
+            dateItem.setTime(pointArray[pointArray.length-1].time* 1000);
+            var dateStr = dateItem.toLocaleDateString();
+            addClickHandler("时间："+dateStr, marker);
          } else {
             alert('请在chrome、safari、IE8+以上浏览器查看本示例');
          }
+    }
+    var opts = {
+        width : 50,     // 信息窗口宽度
+        height: 40,      // 信息窗口高度
+        title : "位置信息" // 信息窗口标题
+    };
+    function addClickHandler(content,marker){
+        marker.addEventListener("click",function(e){
+                openInfo(content,e)}
+                );
+    }
+    function openInfo(content,e){
+        var p = e.target;
+        var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
+        var infoWindow = new BMap.InfoWindow(content+"，经度："+p.getPosition().lng+"，纬度："+p.getPosition().lat,opts);  
+        // 创建信息窗口对象 
+        map.openInfoWindow(infoWindow,point); //开启信息窗口
     }
     function sendmessage()
     {

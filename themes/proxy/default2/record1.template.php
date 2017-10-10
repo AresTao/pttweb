@@ -15,7 +15,7 @@
 		     type: 'post',
 		     data: { sid: "1" },
 		     dataType: "json",
-		     url: "./?ajax=server_getRecordsByOperator1&page=record1&najax=1&operatorId=<?php echo SessionManager::getInstance()->getLoginId();?>&type=1&recordType="+recordType,
+		     url: "./?ajax=server_getRecordsByOperator1_en&page=record1&najax=1&operatorId=<?php echo SessionManager::getInstance()->getLoginId();?>&type=1&recordType="+recordType,
 		     success: function (data) { 
 		     num =data;
 
@@ -49,7 +49,7 @@
          function InitTable(pageIndex, recordType) {                                  
                     $.ajax({   
                         type: "POST",  
-                        url: './?ajax=server_getRecordsByOperator1&page=record1&operatorId=<?php echo SessionManager::getInstance()->getLoginId();?>&type=1&recordType='+recordType,      //提交到一般处理程序请求数据   
+                        url: './?ajax=server_getRecordsByOperator1_en&page=record1&operatorId=<?php echo SessionManager::getInstance()->getLoginId();?>&type=1&recordType='+recordType,      //提交到一般处理程序请求数据   
                         data: "pageIndex=" + (pageIndex+1) + "&pageSize=" + pageSize+"&sid=1",          //提交两个参数：pageIndex(页面索引)，pageSize(显示条数)                   
                         success: function(data) {
                              //移除Id为Result的表格里的行，从第二行开始（这里根据页面布局不同页变）   
@@ -365,7 +365,7 @@ if($_POST['action']=='lists'){
                                 var endTime = $("#endTime").val();
 				var recordType =$("#recordlist").val();
 				$.post(
-				"./?ajax=server_record_searchByOperator1&sid=1&operatorId=<?php echo SessionManager::getInstance()->getLoginId();?>&type=1",
+				"./?ajax=server_record_searchByOperator1_en&sid=1&operatorId=<?php echo SessionManager::getInstance()->getLoginId();?>&type=1",
 				{'type':type,'value':kw, 'recordType':recordType,'startTime':startTime, 'endTime':endTime},
 				function(data){
 					
