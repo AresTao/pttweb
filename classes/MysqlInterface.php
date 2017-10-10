@@ -544,7 +544,7 @@ class MysqlInterface{
         $sql = '';
         if ($type == 1)
         {
-            $sql = "select distinct r.id,r.fromId, o.name , r.cardNum, r.pCardNum, r.createTime, r.cost from record r, operator o, enterprise e where r.fromType = 2 and r.toType = 3 and r.toId= ".$enterpriseId." and r.fromId=".$value;
+            $sql = "select distinct r.id,r.fromId, o.name , r.cardNum, r.pCardNum, r.createTime, r.cost from record r, operator o, enterprise e where r.fromId=o.id and r.fromType = 2 and r.toType = 3 and r.toId= ".$enterpriseId." and r.fromId=".$value;
 
         }else if ($type == 2)
         {
