@@ -25,9 +25,9 @@
                 require_once(MUMPHPI_MAINDIR.'/classes/Captcha.php');
                 $cap = $_POST['cap'];
                 if ($cap == "")
-                    throw new Exception("请输入验证码！");
+                    throw new Exception("Please input the Captcha！");
                 if (!Captcha::cap_isCorrect($cap))
-                    throw new Exception("验证码错误！");
+                    throw new Exception("Captcha Error");
 
                 $loginType = $_POST['loginType'];
                 if ($loginType == 0)
@@ -64,15 +64,15 @@
 ?>
 
 <div id="login">
-  <div class="dologo"><div style = "position:absolute;right:0px;bottom:0px;">企业管理</div></div>
+  <div class="dologo"><div style = "position:absolute;right:0px;bottom:0px;">Enterprise Manage</div></div>
     <form action="?page=login&action=dologin" method="post" onsubmit="
-		if (jQuery('#mpi_login_username').attr('value').length == 0) {window.wxc.xcConfirm('请输入用户名', window.wxc.xcConfirm.typeEnum.error); return false;}
-		if (jQuery('#mpi_login_password').attr('value').length == 0) {window.wxc.xcConfirm('请输入密码', window.wxc.xcConfirm.typeEnum.error); return false;}">
+		if (jQuery('#mpi_login_username').attr('value').length == 0) {window.wxc.xcConfirm('Please input Account', window.wxc.xcConfirm.typeEnum.error); return false;}
+		if (jQuery('#mpi_login_password').attr('value').length == 0) {window.wxc.xcConfirm('Please input password', window.wxc.xcConfirm.typeEnum.error); return false;}">
    <ul>  
-    <li class="inpLi"><b>登录方式</b><select style="width:200px;" name="loginType"><option value ="0">企业账号</option><option value ="1">企业ID</option></select></li>
-    <li class="inpLi"><b>用户名</b><input name="username" type="text" class="inpLogin" id="mpi_login_username" ></li>
-    <li class="inpLi"><b>密码</b><input name="password" type="password" class="inpLogin" id="mpi_login_password" ></li>
-    <li class="inpLi"><b>输入下式计算结果</b><input name="cap" type="text" class="inpLogin" id="cap" value="" ></li>
+    <li class="inpLi"><b>Login Type</b><select style="width:200px;" name="loginType"><option value ="0">Enterprise Account</option><option value ="1">Enterprise ID</option></select></li>
+    <li class="inpLi"><b>Account</b><input name="username" type="text" class="inpLogin" id="mpi_login_username" ></li>
+    <li class="inpLi"><b>Password</b><input name="password" type="password" class="inpLogin" id="mpi_login_password" ></li>
+    <li class="inpLi"><b>Input Result</b><input name="cap" type="text" class="inpLogin" id="cap" value="" ></li>
     <li class="inpLi"><?php
                               require_once(MUMPHPI_MAINDIR.'/classes/Captcha.php');
                               Captcha::cap_show();

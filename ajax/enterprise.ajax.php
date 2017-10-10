@@ -123,6 +123,115 @@ class Ajax_Enterprise extends Ajax
         return false;
 
     }
+    public static function server_getRegistrations_en()
+	{
+		$serverId = intval($_POST['sid']);
+		$entId = intval($_GET['entId']);
+        if ( SessionManager::getInstance()->getLoginId() != $entId)
+		    return ;
+
+		if(!isset($_GET['najax'])){
+		try {
+            $pageIndex =intval($_POST['pageIndex'])-1;
+            $pageSize =intval($_POST['pageSize']);
+            $curpage = $pageIndex*$pageSize;
+            $server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
+            $usersStr = $server->getRegisteredUserIds($entId, "");
+
+            $users = explode(",", $usersStr);
+            if(count($users) > 1)
+                array_pop($users);
+		
+?>
+    <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
+     <tr>
+
+      <th width="20" align="center">User ID</th>
+      <th width="50">Account</th>
+      <th width="50">Nick</th>
+      <th width="50" align="center">CurrentChannel</th>
+      <th width="50" align="center">Alarm</th>
+
+      <th width="50">Expire Time</th>
+      <th width="180" align="center">Operation</th>
+     </tr>
+       
+<?php
+            foreach ($users AS $userId ) {
+                $user = ServerInterface::getInstance()->getServerRegistration($serverId,$entId, $userId);
+                if($user->getUserId()!==0){
+?>
+   <tr>
+      <td align="center"><?php echo $userId; ?></td>
+      <td align="center"><a href="#"><?php echo $user->getAccount(); ?></a></td>
+      <td align="center"><a href="#"><?php echo $user->getName(); ?></a></td>
+      <td align="center"><a href="#"><?php
+	  $cha=$user->getCurrentChanId();
+	  if(intval($cha)<0){
+		  
+		  echo "Offline";
+	  }elseif(intval($cha)==0){
+		  echo "";
+		  
+      }else{
+          $cid= intval($cha);
+          $server=MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
+
+          $chs =$server->getChannelState($entId, $cid);
+          echo $chs->getName();
+
+	  }
+	  
+	  ?></a></td>
+      <td align="center"><a href="#">
+      <?php 
+          $fenceAlarm =  $user->getFenceAlarm(); 
+          if($fenceAlarm == "1")
+              echo "Yes";
+          else
+              echo "No";
+         
+      ?>
+      </a></td>
+
+      <td align="center"><a href="#">
+      <?php 
+          $time =  $user->getExpireTime(); 
+          if($time == 2147483647)
+              echo "Permanent";
+          else
+              echo date("Y-m-d H:i:s",$time);
+         
+      ?>
+      </a></td>
+      <td align="center">
+<?php if($time != 2147483647) { ?><a href="?page=user&sid=1&action=renew&uid=<?php echo $userId; ?>" >Renew</a> | <?php } ?> <a href="?page=user&sid=1&action=edit&uid=<?php echo $userId; ?>" >Edit</a> | <a href="javascript:;" onclick="window.wxc.xcConfirm('Are you sure to remove?',window.wxc.xcConfirm.typeEnum.warning,{onOk:function(){jq_server_registration_remove(<?php echo $userId; ?>);}})">Remove</a> | <a href="?page=videos&sid=1&action=show_videos&uid=<?php echo $userId; ?>">Video</a> | <a href="?page=photos&sid=1&action=show_photos&uid=<?php echo $userId; ?>" >Photo</a> | <a href="?page=friends&sid=1&action=show_friends&uid=<?php echo $userId; ?>" >Friend</a>
+	 </td>
+     </tr>
+<?php
+}
+
+}
+
+?>
+
+        </table>
+		<div class="clear"></div>
+<div class="pager"></div>	
+<?php
+		    } catch(Murmur_ServerBootedException $exc) {
+			    echo '<div class="error">Server is not running</div>';
+		    }
+        }else{
+            $server = MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($serverId));
+            $usersStr = $server->getRegisteredUserIds($entId);	
+            $users = explode(",", $usersStr);
+            if(count($users) > 1)
+                array_pop($users);
+            $i =count($users);
+            echo json_encode($i);
+        }
+	}
 	public static function server_getRegistrations()
 	{
 		$serverId = intval($_POST['sid']);
@@ -320,8 +429,8 @@ class Ajax_Enterprise extends Ajax
                 $pointObj = array();
                 if($point == "") break;
                 $fields = split(",", $point);
-                if(count($fields) != 5)
-                    break;
+                //if(count($fields) != 5)
+                //    break;
                 $pointObj["uid"]  = $fields[0];
                 $pointObj["nick"] = $fields[1];
                 $pointObj["lng"]  = $fields[2];
@@ -546,7 +655,76 @@ class Ajax_Enterprise extends Ajax
 		echo json_encode($data);
 		return false;
 	}
+    public static function show_tree_en()
+	{
+		$sid = intval($_POST['sid']);
+		$entId = intval($_GET['entId']);
 
+        if ( SessionManager::getInstance()->getLoginId() != $entId)
+                return ;
+
+
+		if(!isset($_GET['najax'])){
+            $pageIndex =intval($_POST['pageIndex'])-1;
+            $pageSize =intval($_POST['pageSize']);
+            $curpage = $pageIndex*$pageSize;
+            $data =MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($sid))->getChannels($entId);
+            unset($data[0]);//不能使用array_shift()这样会重置数组索引
+            $data =array_slice($data,$curpage,$pageSize,true);
+
+	 ?>
+	 
+
+	 <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
+     
+	 <tr>
+     <th width="120" align="left">Channel ID</th>
+     <th align="left">Channel Name</th>
+     <th align="left">Members</th>    
+     <th width="80" align="center">Operation</th>
+     </tr>
+
+	 <?php
+		 foreach($data as $k =>$row){
+             // echo "<pre>";
+             // echo $k;
+             $num =explode(",",$row->members);
+             //var_dump($num);
+             if(count($num) >= 1) array_pop($num);
+             $n =count($num)>0?count($num):0;
+             //echo $n;
+             //if($k==0) continue;
+
+		 ?>
+		<tr>
+       <td align='left'><?php echo $k; ?></td>
+        <td><?php echo $row->name; ?></td>
+        <td><?php echo $n;?><a href='?page=user&sid=1&action=show_members&cid=<?php echo $row->id; ?>'> &nbsp;Detail</a> | <a href='?page=channelmap&sid=1&action=show_members&cid=<?php echo $row->id; ?>'> &nbsp;Map</a></td>
+		<td align="center"><a href="./?page=channel&action=edit&sid=1&cid=<?php echo $row->id; ?>">Edit</a> | <a href="javascript:;" onclick="window.wxc.xcConfirm('Are you sure to remove?',window.wxc.xcConfirm.typeEnum.warning,{onOk:function(){jq_server_channel_remove(<?php echo $row->id; ?>);}})">Remove</a></td>
+     </tr>
+	 <?php
+      // ++$i;
+		 }
+		?>
+		
+		
+		</table>
+
+<?php
+		}else{
+			
+            $data =MurmurServer::fromIceObject(ServerInterface::getInstance()->getServer($sid))->getChannels($entId);
+            $num =count($data);
+            if( $num>0){
+                unset($data[0]);
+                $n =count($data);
+                if($n>0)$i=$n;
+            }else{
+                $i=0;
+            }
+            echo json_encode($i);
+        }
+    }
 	public static function show_tree()
 	{
 		$sid = intval($_POST['sid']);
@@ -673,6 +851,112 @@ class Ajax_Enterprise extends Ajax
         if ($res > 0)
             echo "succeed!";
     }
+	public static function server_getEnterprises_en()
+	{
+        if(!isset($_GET['najax'])){
+            try {
+                $pageIndex =intval($_POST['pageIndex'])-1;
+                $pageSize =intval($_POST['pageSize']);
+                $curpage = $pageIndex*$pageSize;
+                $users = MysqlInterface::getEnterprises();
+
+                $users =array_slice($users,$curpage,$pageSize,true);
+		
+?>
+    <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
+     <tr>
+
+      <th width="20" align="center">User ID</th>
+      <th width="20" align="center">Name</th>
+      <th width="60" align="center">Email</th>
+      <th width="60" align="center">Telephone</th>
+      <th width="60" align="center">Comment</th>
+      <th width="80" align="center">Operation</th>
+     </tr>       
+<?php
+    foreach ($users AS $member) {
+						
+?>
+<tr>
+
+      <td align="center"><?php echo $member['id'];?></td>
+      <td align="center"><?php echo $member['name'];?></td>
+      <td align="center"><?php echo $member['email'];?></td>
+      <td align="center"><?php echo $member['phone'];?></td>
+      <td align="center"><?php echo $member['comment'];?></td>
+
+
+      <td align="center">
+             <a href="./?page=enterprise&sid=1&action=edit&id=<?php echo $member['id'] ?>" >Edit</a> | <a href="javascript:;" onclick="if(window.wxc.xcConfirm('Are you sure to remove?',window.wxc.xcConfirm.typeEnum.warning)){jq_enterprise_remove(<?php echo $member['id'] ?>);}">Remove</a>
+             </td>
+     </tr>
+
+<?php
+}
+
+
+?>
+
+        </table>
+		<div class="clear"></div>
+<div class="pager"></div>	
+<?php
+            } catch(Exception $exc) {
+                echo '<div class="error">Server is not running</div>';
+            }
+        }else{
+            $users = MysqlInterface::getEnterprises();	
+            $i =count($users);
+            echo json_encode($i);
+        } 		
+    }
+    public static function server_enterprise_search_en()
+    {
+        $value =addslashes($_POST['value']);
+        $type =intval($_POST['type']);
+        $users = MysqlInterface::searchEnterprises($type, $value);
+        $total = count($users);
+?>
+     <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
+     <tr>
+
+      <th width="20" align="center">User ID</th>
+      <th width="20" align="center">Account</th>
+      <th width="60" align="center">Email</th>
+      <th width="60" align="center">Telephone</th>
+      <th width="60" align="center">Comment</th>
+      <th width="80" align="center">Operation</th>
+     </tr>       
+<?php
+    foreach ($users AS $member) {
+						
+?>
+<tr>
+
+      <td align="center"><?php echo $member['id'];?></td>
+      <td align="center"><?php echo $member['name'];?></td>
+      <td align="center"><?php echo $member['email'];?></td>
+      <td align="center"><?php echo $member['phone'];?></td>
+      <td align="center"><?php echo $member['comment'];?></td>
+
+
+      <td align="center">
+             <a href="./?page=enterprise&sid=1&action=edit&id=<?php echo $member['id'] ?>" >Edit</a> | <a href="javascript:;" onclick="if(window.wxc.xcConfirm('Are you sure to remove?',window.wxc.xcConfirm.typeEnum.warning)){jq_enterprise_remove(<?php echo $member['id'] ?>);}">Remove</a>
+             </td>
+     </tr>
+
+<?php
+}
+
+
+?>
+
+        </table>
+		<div class="clear"></div>
+<div class="page" style="text-align: right;padding-top: 20px;"><?php echo "Total ".$total." items，totally 1 page，current page 1"?></div>	
+
+<?php               
+        }
 	public static function server_getEnterprises()
 	{
         if(!isset($_GET['najax'])){
@@ -882,7 +1166,111 @@ class Ajax_Enterprise extends Ajax
             header('Cache-Control: max-age=0');
             exit;
         }
-       
+        public static function server_getRecordsByEnterprise_en()
+        {
+            if(!isset($_GET['najax'])){
+                try {
+                    $pageIndex =intval($_POST['pageIndex'])-1;
+                    $pageSize =intval($_POST['pageSize']);
+                    $enterpriseId =intval($_GET['enterpriseId']);
+                    $curpage = $pageIndex*$pageSize;
+                    $records = MysqlInterface::getRecordsByEnterprise($enterpriseId);
+                    $records =array_slice($records,$curpage,$pageSize,true);
+?>
+<table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
+     <tr>
+
+      <th width="20" align="center">Record ID</th>
+      <th width="40" align="center">Agency ID</th>
+      <th width="30" align="center">Name</th>
+      <th width="30" align="center">Normal Cards</th>
+      <th width="30" align="center">Permanent Cards</th>
+      <th width="30" align="center">Money</th>
+      <th width="60" align="center">Operate Time</th>
+     </tr>
+<?php
+            foreach ($records AS $record) {
+
+?>
+<tr>
+
+      <td align="center"><?php echo $record['id'];?></td>
+      <td align="center"><?php echo $record['fromId'];?></td>
+      <td align="center"><?php echo $record['name'];?></td>
+      <td align="center"><?php echo $record['cardNum'];?></td>
+      <td align="center"><?php echo $record['pCardNum'];?></td>
+      <td align="center"><?php echo $record['cost'];?></td>
+      <td align="center"><?php echo $record['createTime'];?></td>
+
+
+     </tr>
+
+<?php
+                              }
+?>
+         </table>
+		<div class="clear"></div>
+<div class="pager"></div>	
+<?php
+                } catch(Exception $exc) {
+			        echo '<div class="error">Server is not running</div>';
+		        }
+            }else{
+                $enterpriseId =intval($_GET['enterpriseId']);
+                $records = MysqlInterface::getRecordsByEnterprise($enterpriseId);
+                $i =count($records);
+                echo json_encode($i);
+            } 		
+        }
+        public static function server_record_searchByEnterprise_en()
+        {
+            $value =addslashes($_POST['value']);
+            $type =intval($_POST['type']);
+            $enterpriseId = intval($_GET['enterpriseId']);
+            $startTime = $_POST['startTime'];
+            $endTime = $_POST['endTime'];
+            $records = MysqlInterface::searchRecordsEnterpriseFromOperator($enterpriseId, $type, $value, $startTime, $endTime);
+            $total = count($records);
+?>
+<table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
+     <tr>
+
+      <th width="20" align="center">Record ID</th>
+      <th width="40" align="center">Agency ID</th>
+      <th width="30" align="center">Name</th>
+      <th width="30" align="center">Normal Cards</th>
+      <th width="30" align="center">Permanent Cards</th>
+      <th width="30" align="center">Money</th>
+      <th width="60" align="center">Operate Time</th>
+     </tr>
+<?php
+            foreach ($records AS $record) {
+
+?>
+<tr>
+
+      <td align="center"><?php echo $record['id'];?></td>
+      <td align="center"><?php echo $record['fromId'];?></td>
+      <td align="center"><?php echo $record['name'];?></td>
+      <td align="center"><?php echo $record['cardNum'];?></td>
+      <td align="center"><?php echo $record['pCardNum'];?></td>
+      <td align="center"><?php echo $record['cost'];?></td>
+      <td align="center"><?php echo $record['createTime'];?></td>
+
+
+     </tr>
+
+<?php
+            }
+?>
+
+            </table>
+		<div class="clear"></div>
+<div class="page" style="text-align: right;padding-top: 20px;"><?php echo "Total ".$total." items，totally 1 page，current page 1"?></div>	
+
+<?php               
+        
+        }
       	public static function server_getRecordsByEnterprise()
         {
             if(!isset($_GET['najax'])){
@@ -989,49 +1377,5 @@ class Ajax_Enterprise extends Ajax
         
         }
 
-        public static function server_bill_file_output()
-        {
-            $value =addslashes($_POST['value']);
-            $type =intval($_POST['type']);
-            $bills = MysqlInterface::searchBills($type, $value);                 
-            $total = count($bills);
-
-            $fp = fopen('php://output', 'a');
-
-            $head = array('账号', '密码', '邮箱', '电话', '备注');
-            foreach ($head as $i => $v) {
-                // CSV的Excel支持GBK编码，一定要转换，否则乱码
-                $head[$i] = iconv('utf-8', 'gbk', $v);
-            }
-
-            // 将数据通过fputcsv写到文件句柄
-            fputcsv($fp, $head);
-            // 计数器
-            $cnt = 0;
-            // 每隔$limit行，刷新一下输出buffer，不要太大，也不要太小
-            $limit = 100000;
-
-            foreach($bills as $row)
-            {
-                $cnt ++;
-                if ($limit == $cnt) { //刷新一下输出buffer，防止由于数据过多造成问题
-                    ob_flush();
-                    flush();
-                    $cnt = 0;
-                }
-
-                foreach ($row as $i => $v) {
-                    $row[$i] = iconv('utf-8', 'gbk', $v);
-                }
-                fputcsv($fp, $row);
-            }
-            
-            $filename = "账单名单";
-            header('Content-Type: application/vnd.ms-excel');
-            header('Content-Disposition: attachment;filename='.$filename.'.csv');
-            header('Cache-Control: max-age=0');
-            exit;
-
-        }
 }
 

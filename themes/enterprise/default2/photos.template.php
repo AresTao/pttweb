@@ -23,18 +23,18 @@ if($_POST['action']=='lists'){
 ?>
 
    <ul>
-    <li class="noRight"><a href="#"> 企业编号：<?php echo $enterprise['id'];?></a></li>
-        <li class="noRight"><a href="#"> 企业名称：<?php echo $enterprise['name'];?> </a> </li>
+    <li class="noRight"><a href="#"> Enterprise ID：<?php echo $enterprise['id'];?></a></li>
+        <li class="noRight"><a href="#"> Enterprise Name：<?php echo $enterprise['name'];?> </a> </li>
    </ul>
    <ul class="navRight">
-        <li class="noLeft"><a href="#">可用永久卡：<?php echo $enterprise['availablePCards'];?></a></li>
-    <li class="noLeft"><a href="#">可用年卡：<?php echo $enterprise['availableCards'];?></a></li>
-    <li class="M noLeft"><a href="JavaScript:void(0);">您好，<?php echo SessionManager::getInstance()->getLoginName();?></a>
+        <li class="noLeft"><a href="#">Permanent Cards：<?php echo $enterprise['availablePCards'];?></a></li>
+    <li class="noLeft"><a href="#">Normal Year Cards：<?php echo $enterprise['availableCards'];?></a></li>
+    <li class="M noLeft"><a href="JavaScript:void(0);">Hi，<?php echo SessionManager::getInstance()->getLoginName();?></a>
      <div class="drop mUser">
-      <a href="?page=admins&sid=1">编辑我的个人资料</a>
+      <a href="?page=admins&sid=1">Edit Info</a>
      </div>
     </li>
-    <li class="noRight"><a href="?page=logout">退出</a></li>
+    <li class="noRight"><a href="?page=logout">Logout</a></li>
    </ul>
   </div>
  </div>
@@ -42,10 +42,10 @@ if($_POST['action']=='lists'){
 <!-- dcHead 结束 --> <div id="dcLeft"><div id="menu">
 
   <ul>
-  <li><a href="?page=user&sid=1"><i class="user"></i><em>用户管理</em></a></li>
-  <li><a href="?page=server&sid=1"><i class="mobile"></i><em>频道管理</em></a></li>
-  <li><a href="?page=monitor&sid=1"><i class="article"></i><em>监控管理</em></a></li>
-  <li><a href="?page=record&sid=1"><i class="articleCat"></i><em>交易记录</em></a></li>
+  <li><a href="?page=user&sid=1"><i class="user"></i><em>User Manage</em></a></li>
+  <li><a href="?page=server&sid=1"><i class="mobile"></i><em>Channel Manage</em></a></li>
+  <li><a href="?page=monitor&sid=1"><i class="article"></i><em>Monitor</em></a></li>
+  <li><a href="?page=record&sid=1"><i class="articleCat"></i><em>Record</em></a></li>
 
  </ul>
 
@@ -54,8 +54,8 @@ if($_POST['action']=='lists'){
  <?php
    if(isset($_GET['action'])&&$_GET['action']=='show_photos'){
    ?>
-<div id="urHere">手机对讲系统管理中心<b>></b><strong>上传图片列表</strong> </div>   <div class="mainBox" style="height:auto!important;height:550px;min-height:550px;">
-        <h3> <div style="width:10px;"></div><a href="?page=user&sid=1" class="actionBtn">返回列表</a> 图片列表</h3>
+<div id="urHere">Admin<b>></b><strong>Photo List</strong> </div>   <div class="mainBox" style="height:auto!important;height:550px;min-height:550px;">
+        <h3> <div style="width:10px;"></div><a href="?page=user&sid=1" class="actionBtn">Back To List</a> Photo List</h3>
 
 <?php
 $id = SessionManager::getInstance()->getLoginId();
@@ -73,11 +73,11 @@ $photos =$server->getPhotos(intval($id), $uid, 0, time());
     <table width="50%" border="0" cellpadding="8" cellspacing="0" class="tableBasic" style="float:left;">
      <tr>
 
-      <th width="20" align="center">标题</th>
-      <th width="150">时间</th>
+      <th width="20" align="center">Title</th>
+      <th width="150">Time</th>
       
 
-      <th width="80" align="center">操作</th>
+      <th width="80" align="center">Operation</th>
      </tr>
 	 
 <?php
@@ -96,7 +96,7 @@ foreach($photos as $photo){
 	  
 
       <td align="center">
-             <a href="javascript:;" onclick="jq_photo_check('<?php echo $url;?>');">查看</a>
+             <a href="javascript:;" onclick="jq_photo_check('<?php echo $url;?>');">Detail</a>
       </td>
       </tr>
 

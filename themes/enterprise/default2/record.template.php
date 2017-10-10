@@ -27,8 +27,8 @@
                  //分页，PageCount是总条目数，这是必选参数，其它参数都是可选
 		 $(".pager").pagination(num, {
                     callback: PageCallback,  //PageCallback() 为翻页调用次函数。
-                    prev_text: "« 上一页",
-                    next_text: "下一页 »",
+                    prev_text: "« previous",
+                    next_text: "next »",
                     items_per_page:pageSize,
                     num_edge_entries: 2,       //两侧首尾分页条目数
                     num_display_entries: 6,    //连续分页主体部分分页条目数
@@ -39,7 +39,7 @@
                     InitTable(index); 
 		    if(num<20){
 						
-			$(".pager").html("总计"+num+"个记录，共 1 页，当前第 1 页 </div> ");
+			$(".pager").html("Total "+num+" items，totally 1 page，current page 1 </div> ");
 		    }					
                 }       
 
@@ -97,18 +97,18 @@ if($_POST['action']=='lists'){
 ?>
 
    <ul>
-    <li class="noRight"><a href="#"> 企业编号：<?php echo $enterprise['id'];?></a></li>
-        <li class="noRight"><a href="#"> 企业名称：<?php echo $enterprise['name'];?> </a> </li>
+    <li class="noRight"><a href="#"> Enterprise ID：<?php echo $enterprise['id'];?></a></li>
+        <li class="noRight"><a href="#"> Enterprise Name：<?php echo $enterprise['name'];?> </a> </li>
    </ul>
    <ul class="navRight">
-        <li class="noLeft"><a href="#">可用永久卡：<?php echo $enterprise['availablePCards'];?></a></li>
-    <li class="noLeft"><a href="#">可用年卡：<?php echo $enterprise['availableCards'];?></a></li>
-    <li class="M noLeft"><a href="JavaScript:void(0);">您好，<?php echo SessionManager::getInstance()->getLoginName();?></a>
+        <li class="noLeft"><a href="#">Permanent Cards：<?php echo $enterprise['availablePCards'];?></a></li>
+    <li class="noLeft"><a href="#">Normal Year Cards：<?php echo $enterprise['availableCards'];?></a></li>
+    <li class="M noLeft"><a href="JavaScript:void(0);">Hi，<?php echo SessionManager::getInstance()->getLoginName();?></a>
      <div class="drop mUser">
-      <a href="?page=admins&sid=1">编辑我的个人资料</a>
+      <a href="?page=admins&sid=1">Edit Info</a>
      </div>
     </li>
-    <li class="noRight"><a href="?page=logout">退出</a></li>
+    <li class="noRight"><a href="?page=logout">Logout</a></li>
    </ul>
   </div>
  </div>
@@ -117,10 +117,10 @@ if($_POST['action']=='lists'){
 
   <ul>
 
-  <li><a href="?page=user&sid=1"><i class="user"></i><em>用户管理</em></a></li>
-  <li><a href="?page=server&sid=1"><i class="mobile"></i><em>频道管理</em></a></li>
-  <li><a href="?page=monitor&sid=1"><i class="article"></i><em>监控管理</em></a></li>
-  <li><a href="?page=record&sid=1"><i class="articleCat"></i><em>交易记录</em></a></li>
+  <li><a href="?page=user&sid=1"><i class="user"></i><em>User Manage</em></a></li>
+  <li><a href="?page=server&sid=1"><i class="mobile"></i><em>Channel Manage</em></a></li>
+  <li><a href="?page=monitor&sid=1"><i class="article"></i><em>Monitor</em></a></li>
+  <li><a href="?page=record&sid=1"><i class="articleCat"></i><em>Record</em></a></li>
  </ul>
 
 </div></div>
@@ -132,9 +132,9 @@ if($_POST['action']=='lists'){
 <script>
 
 </script>
-<div id="urHere">手机对讲系统管理中心<b>></b><strong>记录列表</strong> </div>
+<div id="urHere">Admin<b>></b><strong>Record List</strong> </div>
    <div class="mainBox" style="height:auto!important;height:550px;min-height:550px;">
-        <h3> <div style="width:10px;"></div> 记录列表</h3>
+        <h3> <div style="width:10px;"></div>Record List</h3>
 <form action="?page=record&action='lists'" method="post" enctype="multipart/form-data">	
        
 	<input type="file" name="image" class="hidden" value=""  style="display:none"/>
@@ -142,20 +142,20 @@ if($_POST['action']=='lists'){
   <div class="filter">
     <form action="" method="post">
     <div class="item-left">
-     <label style='font-size:15px;padding: 5px 5px 5px 2px;'>搜索类型</label> 
+     <label style='font-size:15px;padding: 5px 5px 5px 2px;'>Search Type</label> 
      <select name="cat_id" id="catlist">
-		  <option value="1">代理商编号</option>
-		  <option value="2">代理商姓名</option>
+		  <option value="1">Agency ID</option>
+		  <option value="2">Agency Name</option>
      </select>
      
      <input name="keyword" type="text" class="inpMain" value="" size="20" />
      </div>
      <div class="item-right">
-     <label style='font-size:15px;padding: 5px 5px 5px 2px;'>开始时间</label><input type="text" id="startTime" class="inpMain" name="startTime" />
-     <label style='font-size:15px;padding: 5px 5px 5px 2px;'>结束时间</label><input type="text" id="endTime" class="inpMain" name="endTime"/>
+     <label style='font-size:15px;padding: 5px 5px 5px 2px;'>Start Time</label><input type="text" id="startTime" class="inpMain" name="startTime" />
+     <label style='font-size:15px;padding: 5px 5px 5px 2px;'>End Time</label><input type="text" id="endTime" class="inpMain" name="endTime"/>
      </div>
      <div class="btn-item">
-     <input name="submit" class="btnGray" type="submit" value="搜索" onclick="jq_record_search();return false;" />
+     <input name="submit" class="btnGray" type="submit" value="Search" onclick="jq_record_search();return false;" />
      <!--<input name="submit" class="btnGray" type="submit" value="导出为CSV文件" onclick="jq_record_file_output();return false;" />-->
     </div>
     </form>

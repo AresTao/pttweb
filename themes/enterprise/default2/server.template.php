@@ -24,8 +24,8 @@
                 //分页，PageCount是总条目数，这是必选参数，其它参数都是可选
                 $(".pager").pagination(num,{
                     callback: PageCallback,  //PageCallback() 为翻页调用次函数。
-                    prev_text: "« 上一页",
-                    next_text: "下一页 »",
+                    prev_text: "« previous",
+                    next_text: "next »",
                     items_per_page:pageSize,
                     num_edge_entries: 2,       //两侧首尾分页条目数
                     num_display_entries: 6,    //连续分页主体部分分页条目数
@@ -68,19 +68,19 @@
 
 ?>
    <ul>
-   <li class="noRight"><a href="#"> 企业编号：<?php echo $enterprise['id'];?></a></li>
-        <li class="noRight"><a href="#"> 企业名称：<?php echo $enterprise['name'];?> </a> </li>
+   <li class="noRight"><a href="#"> Enterprise ID：<?php echo $enterprise['id'];?></a></li>
+        <li class="noRight"><a href="#"> Enterprise Name：<?php echo $enterprise['name'];?> </a> </li>
    </ul>
    <ul class="navRight">
 
-    <li class="noLeft"><a href="#">可用永久卡：<?php echo $enterprise['availablePCards'];?></a></li>
-    <li class="noLeft"><a href="#">可用年卡：<?php echo $enterprise['availableCards'];?></a></li>
-    <li class="M noLeft"><a href="JavaScript:void(0);">您好，<?php echo SessionManager::getInstance()->getLoginName();?></a>
+    <li class="noLeft"><a href="#">Permanent Cards：<?php echo $enterprise['availablePCards'];?></a></li>
+    <li class="noLeft"><a href="#">Normal Year Cards：<?php echo $enterprise['availableCards'];?></a></li>
+    <li class="M noLeft"><a href="JavaScript:void(0);">Hi，<?php echo SessionManager::getInstance()->getLoginName();?></a>
      <div class="drop mUser">
-            <a href="?page=admins&sid=1">编辑我的个人资料</a>
+            <a href="?page=admins&sid=1">Edit Info</a>
      </div>
     </li>
-    <li class="noRight"><a href="./?page=logout">退出</a></li>
+    <li class="noRight"><a href="./?page=logout">Logout</a></li>
    </ul>
   </div>
  </div>
@@ -88,21 +88,21 @@
 <!-- dcHead 结束 --> <div id="dcLeft"><div id="menu">
 
   <ul>
-  <li><a href="?page=user&sid=1"><i class="user"></i><em>用户管理</em></a></li>
-  <li><a href="?page=server&sid=1"><i class="mobile"></i><em>频道管理</em></a></li>
-  <li><a href="?page=monitor&sid=1"><i class="article"></i><em>监控管理</em></a></li>
-  <li><a href="?page=record&sid=1"><i class="articleCat"></i><em>交易记录</em></a></li>
+  <li><a href="?page=user&sid=1"><i class="user"></i><em>User Manage</em></a></li>
+  <li><a href="?page=server&sid=1"><i class="mobile"></i><em>Channel Manage</em></a></li>
+  <li><a href="?page=monitor&sid=1"><i class="article"></i><em>Monitor</em></a></li>
+  <li><a href="?page=record&sid=1"><i class="articleCat"></i><em>Record</em></a></li>
 
  </ul>
 
 </div></div>
  <div id="dcMain">
    <!-- 当前位置 -->
-<div id="urHere">管理中心<b>></b><strong>频道管理</strong> </div>  
+<div id="urHere">Admin<b>></b><strong>Channel Manage</strong> </div>  
 
  <div class="mainBox" style="height:auto!important;height:550px;min-height:550px;" >
         
-    	<h3><a href="?page=channel&action=add&sid=1" class="actionBtn add">添加频道</a>频道管理</h3>
+    	<h3><a href="?page=channel&action=add&sid=1" class="actionBtn add">Add Channel</a>Channel Manage</h3>
 		   <div id="list">
 		 </div>
 		  	  <div class="clear"></div>
