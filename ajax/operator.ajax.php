@@ -70,7 +70,7 @@ class Ajax_Operator extends Ajax
                 //if (!PermissionManager::getInstance()->serverCanEditAdmins())
                 //        return ;
                 try {
-                        
+                        $res1 = MysqlInterface::changeEnterprisesParentId($id);
                         $res = MysqlInterface::deleteOperatorById($id);
 
                 } catch(Exception $exc) {

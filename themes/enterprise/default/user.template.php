@@ -405,8 +405,8 @@ $(function(){
       <td width="100" align="right">用户类型</td>
       <td>            
              <select name="type" id="type">
-                  <option value="0">永久用户</option>
                   <option value="1">年卡用户 </option>
+                  <option value="0">永久用户</option>
              </select>
       </td>
       </tr>

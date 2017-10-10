@@ -11,16 +11,20 @@
 			}
 			/*]]>*/
 		</script>
-		<div id="log_area">
-		<?php MessageManager::echoAll(); ?>
-		</div>
-		<div id="footer">
-			<?php
-				echo '<div class="">Server Version: ' . ServerInterface::getInstance()->getVersion() . '</div>';
-				echo '<div class="">Script execution time: '.sprintf('%6.3f', PHPStats::scriptExecTimeGet()).'ms | memory peak: '.(memory_get_peak_usage()/1000).' kByte</div>';
-			?>
-			<div class="updatecheck_result"></div>
-		</div>
+
+		
+		 <div class="clear"></div>
+<div id="dcFooter">
+ <div id="footer">
+  <div class="line"></div>
+  <ul>
+   <?php echo '<div class="">Server Version: ' . ServerInterface::getInstance()->getVersion() . '</div>';?>
+  <?php echo '<div class="">Script execution time: '.sprintf('%6.3f', PHPStats::scriptExecTimeGet()).'ms | memory peak: '.(memory_get_peak_usage()/1000).' kByte</div>';?>
+  </ul>
+ </div>
+</div><!-- dcFooter 结束 -->
+<div class="clear"></div> </div>
+
 <?php
 		//if (!isset($_SESSION['mumpiVersionCheckLast'])) {
 		//	$_SESSION['mumpiVersionCheckLast'] = 0;
@@ -39,7 +43,7 @@
 						}
 					/*]]>*/
 				</script>
-				<script type="text/javascript" src="http://mumpi.sourceforge.net/version.php?version=<?php echo $mumpiVersion; ?>"></script>
+				
 <?php
 			}
 		//}

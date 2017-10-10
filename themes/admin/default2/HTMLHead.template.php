@@ -1,9 +1,15 @@
-<link rel="stylesheet" type="text/css" href="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/reset-min.css" />
-<link rel="stylesheet" type="text/css" href="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/style.css" />
-<link rel="stylesheet" type="text/css" href="<?php echo SettingsManager::getInstance()->getMainUrl(); ?>/js/jquery-ui-css/ui-lightness/jquery-ui.css" />
-<!--[if IE]><link rel="stylesheet" type="text/css" href="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/style_iefix.css" /><![endif]-->
+<link href="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/css/public.css" rel="stylesheet" type="text/css">
+<link href="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/css/hint.css" rel="stylesheet" type="text/css">
+<link href="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/css/jquery-ui.css" rel="stylesheet" type="text/css">
+<link href="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/css/xcConfirm.css" rel="stylesheet" type="text/css">
+<link href="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/pagination.css" rel="stylesheet" type="text/css">
 <script type="text/javascript" src="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/jquery.js"></script>
-<script type="text/javascript" src="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/jquery.editable.js"></script>
-<script type="text/javascript" src="<?php echo SettingsManager::getInstance()->getMainUrl(); ?>/js/jquery-ui.js"></script>
-<script type="text/javascript" src="<?php echo SettingsManager::getInstance()->getMainUrl(); ?>/js/mumpi.js"></script>
-<script type="text/javascript">/*<![CDATA[*/var imgAjaxLoading='<img src="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/img/ajax-loader.gif" alt="loading…"/>';/*]]>*/</script>
+<script type="text/javascript" src="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/ajaxfileupload.js"></script>
+<script type="text/javascript" src="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/js/global.js"></script>
+<script type="text/javascript" src="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/js/jquery.validate.js"></script>
+<script type="text/javascript" src="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/js/jquery-ui.js"></script>
+<script type="text/javascript" src="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/js/jquery-ui-slide.min.js"></script>
+<script type="text/javascript" src="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/js/jquery-ui-timepicker-addon.js"></script>
+<script type="text/javascript" src="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/js/xcConfirm.js"></script>
+<script type="text/javascript" src="<?php echo SettingsManager::getInstance()->getThemeUrl(); ?>/jquery.pagination.js"></script>
+
