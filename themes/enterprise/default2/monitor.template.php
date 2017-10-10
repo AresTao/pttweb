@@ -18,18 +18,18 @@
 ?>
 
    <ul>
-        <li class="noRight"><a href="#"> 企业编号：<?php echo $enterprise['id'];?></a></li>
-        <li class="noRight"><a href="#"> 企业名称：<?php echo $enterprise['name'];?> </a> </li>
+        <li class="noRight"><a href="#"> Enterprise ID：<?php echo $enterprise['id'];?></a></li>
+        <li class="noRight"><a href="#"> Enterprise Name：<?php echo $enterprise['name'];?> </a> </li>
    </ul>
    <ul class="navRight">
-    <li class="noLeft"><a href="#">可用永久卡：<?php echo $enterprise['availablePCards'];?></a></li>
-    <li class="noLeft"><a href="#">可用年卡：<?php echo $enterprise['availableCards'];?></a></li>
-    <li class="M noLeft"><a href="JavaScript:void(0);">您好，<?php echo SessionManager::getInstance()->getLoginName();?></a>
+    <li class="noLeft"><a href="#">Permanent Cards：<?php echo $enterprise['availablePCards'];?></a></li>
+    <li class="noLeft"><a href="#">Normal Year Cards：<?php echo $enterprise['availableCards'];?></a></li>
+    <li class="M noLeft"><a href="JavaScript:void(0);">Hi，<?php echo SessionManager::getInstance()->getLoginName();?></a>
      <div class="drop mUser">
-      <a href="?page=admins&sid=1">编辑我的个人资料</a>
+      <a href="?page=admins&sid=1">Edit Info</a>
      </div>
     </li>
-    <li class="noRight"><a href="?page=logout">退出</a></li>
+    <li class="noRight"><a href="?page=logout">Logout</a></li>
    </ul>
   </div>
  </div>
@@ -37,19 +37,19 @@
 <!-- dcHead 结束 --> <div id="dcLeft"><div id="menu">
 
   <ul>
-  <li><a href="?page=user&sid=1"><i class="user"></i><em>用户管理</em></a></li>
-  <li><a href="?page=server&sid=1"><i class="mobile"></i><em>频道管理</em></a></li>
-  <li><a href="?page=monitor&sid=1"><i class="article"></i><em>监控管理</em></a></li>
-  <li><a href="?page=record&sid=1"><i class="articleCat"></i><em>记录管理</em></a></li>
+  <li><a href="?page=user&sid=1"><i class="user"></i><em>User Manage</em></a></li>
+  <li><a href="?page=server&sid=1"><i class="mobile"></i><em>Channel Manage</em></a></li>
+  <li><a href="?page=monitor&sid=1"><i class="article"></i><em>Monitor</em></a></li>
+  <li><a href="?page=record&sid=1"><i class="articleCat"></i><em>Record</em></a></li>
 
  </ul>
 
 </div></div>
  <div id="dcMain">
 
- <div id="urHere">手机对讲系统管理中心<b>></b><strong>监控管理</strong> </div>
+ <div id="urHere">Admin<b>></b><strong>Monitor</strong> </div>
     <div id="leftWrapper">
-        <h3>用户位置查询</h3>
+        <h3>User Location</h3>
         <div class="channel-root-container">
              <div id="list">
 <?php
@@ -81,11 +81,11 @@
              </div>
         </div>
         <div class="chat">
-                  <h1>推送文字到频道</h1>
+                  <h1>Send Message To Channel</h1>
                     
                   <div class="chatWrapper">
                       <div>
-                      <label style='font-size:15px;padding: 5px 5px 5px 2px;'>选取频道</label>
+                      <label style='font-size:15px;padding: 5px 5px 5px 2px;'>Choose Channel</label>
                       <select name="channelId" id="channelId" style="padding-left:10%;width:50%;">
 <?php
      $id = SessionManager::getInstance()->getLoginId();
@@ -146,7 +146,7 @@
 		function(data){
 		    var points = JSON.parse(data);
                     if(points.length == 0)
-                         window.wxc.xcConfirm("该用户还没有上传位置信息.", window.wxc.xcConfirm.typeEnum.success);
+                         window.wxc.xcConfirm("This user has not upload location.", window.wxc.xcConfirm.typeEnum.success);
                     else
                          displayLocation(points);
 		}
@@ -175,7 +175,7 @@
             }
             var pointCollection = new BMap.PointCollection(points, options);  // 初始化PointCollection
             pointCollection.addEventListener('click', function (e) {
-                alert('单击点的坐标为：' + e.point.lng + ',' + e.point.lat);  // 监听点击事件
+                alert('Longitude,Latitude：' + e.point.lng + ',' + e.point.lat);  // 监听点击事件
             });
             map.addOverlay(pointCollection);  // 添加Overlay
             var marker = new BMap.Marker(new BMap.Point(pointArray[0].longitude,pointArray[0].latitude));
@@ -183,7 +183,7 @@
             var dateItem = new Date();
             dateItem.setTime(pointArray[pointArray.length-1].time* 1000);
             var dateStr = dateItem.toLocaleDateString();
-            addClickHandler("时间："+dateStr, marker);
+            addClickHandler("Time："+dateStr, marker);
          } else {
             alert('请在chrome、safari、IE8+以上浏览器查看本示例');
          }
@@ -191,7 +191,7 @@
     var opts = {
         width : 50,     // 信息窗口宽度
         height: 40,      // 信息窗口高度
-        title : "位置信息" // 信息窗口标题
+        title : "Location Info" // 信息窗口标题
     };
     function addClickHandler(content,marker){
         marker.addEventListener("click",function(e){
@@ -201,7 +201,7 @@
     function openInfo(content,e){
         var p = e.target;
         var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
-        var infoWindow = new BMap.InfoWindow(content+"，经度："+p.getPosition().lng+"，纬度："+p.getPosition().lat,opts);  
+        var infoWindow = new BMap.InfoWindow(content+"，longitute："+p.getPosition().lng+"，latitude："+p.getPosition().lat,opts);  
         // 创建信息窗口对象 
         map.openInfoWindow(infoWindow,point); //开启信息窗口
     }

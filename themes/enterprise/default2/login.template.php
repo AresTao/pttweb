@@ -64,7 +64,7 @@
 ?>
 
 <div id="login">
-  <div class="dologo"><div style = "position:absolute;right:0px;bottom:0px;">Enterprise Manage</div></div>
+  <div class="dologo"><div style = "position:absolute;right:0px;bottom:0px;"><span style="font-size:18px;">Enterprise Manage</span></div></div>
     <form action="?page=login&action=dologin" method="post" onsubmit="
 		if (jQuery('#mpi_login_username').attr('value').length == 0) {window.wxc.xcConfirm('Please input Account', window.wxc.xcConfirm.typeEnum.error); return false;}
 		if (jQuery('#mpi_login_password').attr('value').length == 0) {window.wxc.xcConfirm('Please input password', window.wxc.xcConfirm.typeEnum.error); return false;}">
@@ -77,7 +77,7 @@
                               require_once(MUMPHPI_MAINDIR.'/classes/Captcha.php');
                               Captcha::cap_show();
                       ?></li>
-        <li class="sub"><input type="submit" name="submit" class="btn" value="登录"></li> 
+        <li class="sub"><input type="submit" name="submit" class="btn" value="Sign In"></li> 
 
    </ul>
   </form>

@@ -91,7 +91,7 @@
        <td></td>
        <td>
 
-        <input type="submit" name="submit" class="btn" value="提交" />
+        <input type="submit" name="submit" class="btn" value="Submit" />
        </td>
       </tr>
      </table>

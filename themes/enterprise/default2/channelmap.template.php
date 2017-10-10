@@ -95,7 +95,7 @@
 		     <button class="btn btn-primary" style="float: left;margin-top: 10px;margin-left: 10px;" type="button" onclick="showLine()">Search</button>
         </div>
         <div class="chat">
-                  <h1>电子围栏设置</h1>
+                  <h1> Electronic Fence</h1>
                   <div class="channelmap-root-container">
 		   <div class="timeDiv">
                      <label style='font-size:15px;padding: 5px 5px 5px 2px;'>Start Time</label><input type="text" id="fenceStartTime" class="inpMain" name="startTime" />
@@ -119,22 +119,22 @@
                    <input type="text" id="fenceStr" name="fenceStr" value="<?php echo $channel->fencepoints;?>" size="40" class="inpMain" style='display:none;'/>
                    </div>
 
-		   <input type="button" class="btn btn-primary fenceButton" value="设置围栏" onclick="setFence(<?php echo $_GET['cid']?>)"/>    
-		   <input type="button" class="btn btn-primary fenceButton" value="清除当前设置" onclick="deleteFence(<?php echo $_GET['cid']?>)"/>    
-		   <input type="button" class="btn btn-primary fenceButton" value="显示围栏" onclick="showPolygon()" />    
+		   <input type="button" class="btn btn-primary fenceButton" value="Set Fence" onclick="setFence(<?php echo $_GET['cid']?>)"/>    
+		   <input type="button" class="btn btn-primary fenceButton" value="Clean Current Set" onclick="deleteFence(<?php echo $_GET['cid']?>)"/>    
+		   <input type="button" class="btn btn-primary fenceButton" value="Display Fence" onclick="showPolygon()" />    
             
 		   <!-- <input type="button"  value="画点" onclick="draw(BMAP_DRAWING_MARKER)" />-->    
 		   </div> 
                   
-                       <h3>电子围栏信息</h3>
+                       <h3> Electronic Fence Info</h3>
                            <div class="channelmap-root-container">
                    <?php if( 0 != $channel->fencestart){ ?>
-		   <div id="shape"><p style="word-break:break-all;">开始时间:<?php echo date("Y-m-d H:i:s", $channel->fencestart)?></p> 
-               <p>结束时间:<?php echo date("Y-m-d H:i:s", $channel->fenceend)?></p> 
-               <p style="word-break:break-all;">围栏信息：<?php echo $channel->fencepoints?></p>
+		   <div id="shape"><p style="word-break:break-all;">Start Time:<?php echo date("Y-m-d H:i:s", $channel->fencestart)?></p> 
+               <p>End Time:<?php echo date("Y-m-d H:i:s", $channel->fenceend)?></p> 
+               <p style="word-break:break-all;">Fence Info：<?php echo $channel->fencepoints?></p>
                </div> 
                    <?php }else{?>
-                   <div id="shape">本群组还没有设置电子围栏 </div>
+                   <div id="shape">This Channel has not set fence </div>
                    <?php }?>
                   </div> 
         </div>
@@ -200,22 +200,22 @@
     {
 
         autoFreshId = setInterval(getChannelLocations, 10000 );
-        $("#fresh").html("<button class='btn btn-primary' style='float:right;margin-right:5px;margin-top:5px;' onclick='stopAutoFresh()'>取消自动刷新</button>");
+        $("#fresh").html("<button class='btn btn-primary' style='float:right;margin-right:5px;margin-top:5px;' onclick='stopAutoFresh()'>Cancel Auto Refresh</button>");
     }
 
     function stopAutoFresh()
     {
         clearInterval(autoFreshId);
-        $("#fresh").html("<button class='btn btn-primary' style='float:right;margin-right:5px;margin-top:5px;' onclick='setAutoFresh()'>开启自动刷新</button>");
+        $("#fresh").html("<button class='btn btn-primary' style='float:right;margin-right:5px;margin-top:5px;' onclick='setAutoFresh()'>Auto Refresh</button>");
     }
     function getPoint(){    
         $("#resultShape").html('');    
         for(var i = 0; i < overlays.length; i++){    
             var overlay=overlays[i].getPath();    
-            $("#resultShape").val()=$("#resultShape").val()+overlay.length+'边形:<br/>';    
+            $("#resultShape").val()=$("#resultShape").val()+overlay.length+'poly:<br/>';    
             for(var j = 0; j < overlay.length; j++){    
                 var grid =overlay[j];    
-                $("#resultShape").val()=$("#resultShape").val()+(j+1)+"个点:("+grid.lng+","+grid.lat+");<br/>";    
+                $("#resultShape").val()=$("#resultShape").val()+(j+1)+" points :("+grid.lng+","+grid.lat+");<br/>";    
             }    
         }    
     }
@@ -223,7 +223,7 @@
         var fence = $("#fenceStr").val();
         if (fence == "")
         {
-	        window.wxc.xcConfirm("该群组还没有设置电子围栏.", window.wxc.xcConfirm.typeEnum.success);
+	        window.wxc.xcConfirm("This channel has not set fence.", window.wxc.xcConfirm.typeEnum.success);
             return;
         }
         var fenceArray = fence.split(";");
@@ -261,12 +261,12 @@
                     if(data.length == 0)
                     {
                          map.clearOverlays();
-                         window.wxc.xcConfirm("删除电子围栏成功.", window.wxc.xcConfirm.typeEnum.success);
+                         window.wxc.xcConfirm("Delete fence success.", window.wxc.xcConfirm.typeEnum.success);
                          $("#fenceStr").val("");
-                         $("#shape").html("电子围栏已删除.");
+                         $("#shape").html("The fence has been remove.");
                     }
                     else
-                         window.wxc.xcConfirm("删除电子围栏失败.", window.wxc.xcConfirm.typeEnum.warning);
+                         window.wxc.xcConfirm("Delete fence failed.", window.wxc.xcConfirm.typeEnum.warning);
                 }
               )
 
@@ -275,11 +275,11 @@
     {
         var fenceStr="";
         if (overlays.length == 0){
-             window.wxc.xcConfirm("当前地图还没有设置图形.", window.wxc.xcConfirm.typeEnum.warning);
+             window.wxc.xcConfirm("Current map has not set graph.", window.wxc.xcConfirm.typeEnum.warning);
              return;
         }
         else if(overlays.length > 1){
-             window.wxc.xcConfirm("当前地图有多个图形，请清除后设置并保留一个.", window.wxc.xcConfirm.typeEnum.warning);
+             window.wxc.xcConfirm("Current map has set multigraph.Leave one please.", window.wxc.xcConfirm.typeEnum.warning);
              return;
         }
         else{
@@ -295,7 +295,7 @@
         var endTime = $("#fenceEndTime").val();
         if(startTime == ""|| endTime == "")
         {
-             window.wxc.xcConfirm("请先设置起始时间.", window.wxc.xcConfirm.typeEnum.warning);
+             window.wxc.xcConfirm("Please set start time.", window.wxc.xcConfirm.typeEnum.warning);
              return;
         }     
         var startTimestamp = Date.parse(new Date(startTime));
@@ -310,13 +310,13 @@
                 function(data){
                     if(data.length == 0)
                     {
-                         window.wxc.xcConfirm("设置电子围栏成功.", window.wxc.xcConfirm.typeEnum.success);
+                         window.wxc.xcConfirm("Set fence success.", window.wxc.xcConfirm.typeEnum.success);
                          $("#fenceStr").val(fenceStr);
                          $("#shape").html("");
-                         $("#shape").append("<p style='word-break:break-all;'>开始时间："+startTime+"</p><p>结束时间："+endTime+"</p><p style='word-break:break-all;'>围栏信息："+fenceStr+"</p>");
+                         $("#shape").append("<p style='word-break:break-all;'>Start Time："+startTime+"</p><p>End Time："+endTime+"</p><p style='word-break:break-all;'>Fence Info："+fenceStr+"</p>");
                     }
                     else
-                         window.wxc.xcConfirm("设置电子围栏失败.", window.wxc.xcConfirm.typeEnum.warning);
+                         window.wxc.xcConfirm("Set fence failed.", window.wxc.xcConfirm.typeEnum.warning);
                 }
               )
     }
@@ -341,7 +341,7 @@
 		function(data){
 		    var points = JSON.parse(data);
                     if(points.length == 0)
-                         window.wxc.xcConfirm("该用户还没有上传位置信息.", window.wxc.xcConfirm.typeEnum.success);
+                         window.wxc.xcConfirm("This user has not upload location.", window.wxc.xcConfirm.typeEnum.success);
                     else
                          displayLocation(points);
 		}
@@ -356,7 +356,7 @@
 		function(data){
 		    var points = JSON.parse(data);
                     if(points.length == 0)
-                         window.wxc.xcConfirm("该用户还没有上传位置信息.", window.wxc.xcConfirm.typeEnum.success);
+                         window.wxc.xcConfirm("This user has not upload location.", window.wxc.xcConfirm.typeEnum.success);
                     else
                          displayLocation(points);
 		}
@@ -381,7 +381,7 @@
     var opts = {
         width : 50,     // 信息窗口宽度
         height: 20,      // 信息窗口高度
-        title : "用户信息" // 信息窗口标题
+        title : "User Info" // 信息窗口标题
     };
     function displayChannelLocations(pointArray)
     {
@@ -431,7 +431,7 @@
                 audio.play();
                 console.log(outFenceUser);
                 var userinfo = outFenceUser.join(",");
-                window.wxc.xcConfirm("("+userinfo+")"+"不在电子围栏内", window.wxc.xcConfirm.typeEnum.warning);
+                window.wxc.xcConfirm("("+userinfo+")"+"are not in fence.", window.wxc.xcConfirm.typeEnum.warning);
             }
 
         } else {
@@ -471,7 +471,7 @@
             }
             var pointCollection = new BMap.PointCollection(points, options);  // 初始化PointCollection
             pointCollection.addEventListener('click', function (e) {
-                alert('单击点的坐标为：' + e.point.lng + ',' + e.point.lat);  // 监听点击事件
+                alert('longitute,latitude：' + e.point.lng + ',' + e.point.lat);  // 监听点击事件
             });
             map.addOverlay(pointCollection);  // 添加Overlay
          } else {
