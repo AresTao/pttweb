@@ -200,7 +200,13 @@ class Ajax_Enterprise extends Ajax
           if($time == 2147483647)
               echo "Permanent";
           else
-              echo date("Y-m-d H:i:s",$time);
+          {
+              $now = time(NULL);
+              if($now - $time < 15*24*60*60)
+                  echo "<span style='color:red;'>".date("Y-m-d H:i:s",$time)."</span>";
+              else
+                  echo date("Y-m-d H:i:s",$time);
+          }
          
       ?>
       </a></td>
@@ -309,7 +315,13 @@ class Ajax_Enterprise extends Ajax
           if($time == 2147483647)
               echo "永久用户";
           else
-              echo date("Y-m-d H:i:s",$time);
+          {
+              $now = time(NULL);
+              if($now - $time < 15*24*60*60)
+                echo "<span style='color:red;'>".date("Y-m-d H:i:s",$time)."</span>";
+              else
+                echo date("Y-m-d H:i:s",$time);
+          }
          
       ?>
       </a></td>

@@ -252,19 +252,19 @@ $(function(){
       <tr>
        <td width="100" align="right">邮箱</td>
        <td>
-        <input type="text" name="email" size="40" class="inpMain" id="email"  value=""/>
+        <input type="text" name="email" size="40" class="inpMain" id="email"  value=""/><span>(可选)</span>
        </td>
       </tr>
       <tr>
        <td width="100" align="right">电话</td>
        <td>
-        <input type="text" name="phone" size="40" class="inpMain" id="phone"  value=""/>
+        <input type="text" name="phone" size="40" class="inpMain" id="phone"  value=""/><span>(可选)</span>
        </td>
       </tr>
       <tr>
        <td width="100" align="right">备注</td>
        <td>
-        <input type="text" name="comment" size="40" class="inpMain" id="comment"  value=""/>
+        <input type="text" name="comment" size="40" class="inpMain" id="comment"  value=""/><span>(可选)</span>
        </td>
       </tr>
 <!---
@@ -642,10 +642,6 @@ $("#addForm").validate({
            },
            required: true
        },
-       email: {
-           required: true,
-           email: true
-       },
        passwd: {
            required: true,
            minlength: 5
@@ -654,19 +650,12 @@ $("#addForm").validate({
            required: true,
            minlength: 5,
            equalTo: "#passwd"
-       },
-       phone: {
-           number: true
        }
   },
   messages: {
        account:{
             remote:jQuery.format("账号已经被注册"),
             required: "请输入账号"
-       },
-       email: {
-            required: "请输入Email地址",
-            email: "请输入正确的email地址"
        },
        passwd: {
             required: "请输入密码",
@@ -676,10 +665,6 @@ $("#addForm").validate({
            required: "请输入确认密码",
            minlength: "确认密码不能小于5个字符",
            equalTo: "两次输入密码不一致"
-       },
-       phone: {
-           number: "请输入正确的电话号码",
-           
        }
   }
 });
@@ -694,14 +679,6 @@ $("#updateForm").validate({
        confirmpasswd: {
            minlength: 5,
            equalTo: "#passwd"
-       },
-
-       email: {
-           required: true,
-           email: true
-       },
-       phone: {
-           number: true
        }
   },
   messages: {
@@ -711,15 +688,6 @@ $("#updateForm").validate({
        confirmpasswd: {
            minlength: "确认密码不能小于5个字符",
            equalTo: "两次输入密码不一致"
-       },
-
-       email: {
-            required: "请输入Email地址",
-            email: "请输入正确的email地址"
-       },
-       phone: {
-           number: "请输入正确的电话号码",
-           
        }
   }
 });

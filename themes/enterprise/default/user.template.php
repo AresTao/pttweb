@@ -438,19 +438,19 @@ $(function(){
       <tr>
        <td align="right">备注</td>
        <td>
-        <input type="text" name="comment" size="40" class="inpMain" id="" />
+        <input type="text" name="comment" size="40" class="inpMain" id="" /><span>(可选)</span>
        </td>
       </tr>
       <tr>
        <td align="right">邮箱</td>
        <td>
-        <input type="text" name="email" size="40" class="inpMain" id="" />
+        <input type="text" name="email" size="40" class="inpMain" id="" /><span>(可选)</span>
        </td>
       </tr>
       <tr>
        <td align="right">电话</td>
        <td>
-        <input type="text" name="phone" size="40" class="inpMain" id="" />
+        <input type="text" name="phone" size="40" class="inpMain" id="" /><span>(可选)</span>
        </td>
       </tr>
       <tr> 

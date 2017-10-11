@@ -251,19 +251,19 @@ $(function(){
       <tr>
        <td width="100" align="right">Email</td>
        <td>
-        <input type="text" name="email" size="40" class="inpMain" id="email"  value=""/>
+        <input type="text" name="email" size="40" class="inpMain" id="email"  value=""/><span>(Optional)</span>
        </td>
       </tr>
       <tr>
        <td width="100" align="right">Telephone</td>
        <td>
-        <input type="text" name="phone" size="40" class="inpMain" id="phone"  value=""/>
+        <input type="text" name="phone" size="40" class="inpMain" id="phone"  value=""/><span>(Optional)</span>
        </td>
       </tr>
       <tr>
        <td width="100" align="right">Comment</td>
        <td>
-        <input type="text" name="comment" size="40" class="inpMain" id="comment"  value=""/>
+        <input type="text" name="comment" size="40" class="inpMain" id="comment"  value=""/><span>(Optional)</span>
        </td>
       </tr>
 <!---
@@ -656,10 +656,6 @@ $("#addForm").validate({
            },
            required: true
        },
-       email: {
-           required: true,
-           email: true
-       },
        passwd: {
            required: true,
            minlength: 5
@@ -668,19 +664,12 @@ $("#addForm").validate({
            required: true,
            minlength: 5,
            equalTo: "#passwd"
-       },
-       phone: {
-           number: true
        }
   },
   messages: {
        account:{
             remote:jQuery.format("Account has been registered"),
             required: "Please input account"
-       },
-       email: {
-            required: "Please input email",
-            email: "Please input correct email"
        },
        passwd: {
             required: "Please input password",
@@ -690,10 +679,6 @@ $("#addForm").validate({
            required: "Please input confirm password",
            minlength: "Confirm password should be longer than {0}",
            equalTo: "Confirm password is not equal to password"
-       },
-       phone: {
-           number: "Please input correct phone number",
-           
        }
   }
 });
@@ -708,14 +693,6 @@ $("#updateForm").validate({
        confirmpasswd: {
            minlength: 5,
            equalTo: "#passwd"
-       },
-
-       email: {
-           required: true,
-           email: true
-       },
-       phone: {
-           number: true
        }
   },
   messages: {
@@ -725,15 +702,6 @@ $("#updateForm").validate({
        confirmpasswd: {
            minlength: "Confirm password should be longer than {0}",
            equalTo: "Confirm password is not equal to password"
-       },
-
-       email: {
-            required: "Please input email",
-            email: "Please input correct email"
-       },
-       phone: {
-           number: "Please input correct phone number",
-           
        }
   }
 });

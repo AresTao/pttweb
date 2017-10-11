@@ -438,19 +438,19 @@ $(function(){
       <tr>
        <td align="right">Comment</td>
        <td>
-        <input type="text" name="comment" size="40" class="inpMain" id="" />
+        <input type="text" name="comment" size="40" class="inpMain" id="" /><span>(Optional)</span>
        </td>
       </tr>
       <tr>
        <td align="right">Email</td>
        <td>
-        <input type="text" name="email" size="40" class="inpMain" id="" />
+        <input type="text" name="email" size="40" class="inpMain" id="" /><span>(Optional)</span>
        </td>
       </tr>
       <tr>
        <td align="right">Telephone</td>
        <td>
-        <input type="text" name="phone" size="40" class="inpMain" id="" />
+        <input type="text" name="phone" size="40" class="inpMain" id="" /><span>(Optional)</span>
        </td>
       </tr>
       <tr> 
