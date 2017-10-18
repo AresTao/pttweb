@@ -201,8 +201,9 @@ class Ajax_Enterprise extends Ajax
               echo "Permanent";
           else
           {
+              $timeN = intval($time);
               $now = time(NULL);
-              if($now - $time < 15*24*60*60)
+              if($timeN - $now< 15*24*60*60)
                   echo "<span style='color:red;'>".date("Y-m-d H:i:s",$time)."</span>";
               else
                   echo date("Y-m-d H:i:s",$time);
@@ -316,8 +317,9 @@ class Ajax_Enterprise extends Ajax
               echo "永久用户";
           else
           {
+              $timeN = intval($time);
               $now = time(NULL);
-              if($now - $time < 15*24*60*60)
+              if($timeN - $now< 15*24*60*60)
                 echo "<span style='color:red;'>".date("Y-m-d H:i:s",$time)."</span>";
               else
                 echo date("Y-m-d H:i:s",$time);

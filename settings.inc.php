@@ -20,7 +20,7 @@ $showAdminLink   = true;
 // currently available: en, de ; en is recommended
 $defaultLanguage = 'en';
 // only "default" right now
-$theme           = 'default';
+$theme           = 'default2';
 
 // Interface to use. Currently available: ice
 $dbInterface_type       = 'ice';

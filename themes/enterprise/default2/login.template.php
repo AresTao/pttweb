@@ -72,7 +72,7 @@
     <li class="inpLi"><b>Login Type</b><select style="width:200px;" name="loginType"><option value ="0">Enterprise Account</option><option value ="1">Enterprise ID</option></select></li>
     <li class="inpLi"><b>Account</b><input name="username" type="text" class="inpLogin" id="mpi_login_username" ></li>
     <li class="inpLi"><b>Password</b><input name="password" type="password" class="inpLogin" id="mpi_login_password" ></li>
-    <li class="inpLi"><b>Input Result</b><input name="cap" type="text" class="inpLogin" id="cap" value="" ></li>
+    <li class="inpLi"><b>Input The Result</b><input name="cap" type="text" class="inpLogin" id="cap" value="" ></li>
     <li class="inpLi"><?php
                               require_once(MUMPHPI_MAINDIR.'/classes/Captcha.php');
                               Captcha::cap_show();

@@ -24,9 +24,9 @@
 				require_once(MUMPHPI_MAINDIR.'/classes/Captcha.php');
 		                $cap = $_POST['cap'];
                                 if ($cap == "")
-                                       throw new Exception("请输入验证码！");
+                                       throw new Exception("Please input captcha");
                                 if (!Captcha::cap_isCorrect($cap))	
-                                       throw new Exception("验证码错误！");
+                                       throw new Exception("Captcha error");
 				SessionManager::getInstance()->loginAsOperator($_POST['username'], $_POST['password']); 
 				$isLoggedIn = true;
                                 if (SessionManager::getInstance()->getLevel() == 2)
@@ -58,7 +58,7 @@
 ?>
 
 <div id="login">
-  <div class="dologo"><div style = "position:absolute;right:0px;bottom:0px;">Agency Manage</div></div>
+  <div class="dologo"><div style = "position:absolute;right:0px;bottom:0px;"><span style="font-size:18px;">Agency Manage</span></div></div>
     <form action="?page=login&action=dologin" method="post" onsubmit="
 		if (jQuery('#mpi_login_username').attr('value').length == 0) {window.wxc.xcConfirm('Please input account', window.wxc.xcConfirm.typeEnum.error); return false;}
 		if (jQuery('#mpi_login_password').attr('value').length == 0) {window.wxc.xcConfirm('Please input password', window.wxc.xcConfirm.typeEnum.error); return false;}">
