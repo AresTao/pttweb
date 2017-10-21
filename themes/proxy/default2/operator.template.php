@@ -392,7 +392,7 @@ $(function(){
 <div id="urHere">Admin<b>></b><strong>Agency Manage</strong> </div>
   <div id="manager" class="mainBox" style="height:auto!important;height:550px;min-height:550px;">
     <h3><a href="?page=operator&sid=1" class="actionBtn">Back To List</a>Dispatch</h3>
-   <form action="" method="post">
+   <form action="" method="post" id="dispatchForm" name="dispatchForm">
      <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
       <tr>
        <td width="100" align="right">Agency ID</td>
@@ -446,7 +446,7 @@ $(function(){
       <tr>
        <td></td>
        <td>
-       <input type="button" name="submit" class="btn" value="submit" onclick="jq_dispatcher_add()" />
+       <input type="button" name="submit" class="btn" value="submit" />
        </td>
       </tr>
      </table>
@@ -666,6 +666,53 @@ $("#updateForm").validate({
        
   }
 });
+$("#dispatchForm").validate({
+   submitHandler:function() {
+      jq_dispatcher_add();
+   },
+
+   rules: {
+       cardNum: {
+            required: true,
+            number: true,
+            max:100000,
+            min:0
+       },
+       pCardNum: {
+            required: true,
+            number: true,
+            max:100000,
+            min:0
+       },
+       cost: {
+            required: true,
+            number: true,
+            min:0
+       }
+  },
+  messages: {
+       cardNum: {
+          required: "please input card num",
+          number:"please input number",
+          max:"max 100000",
+          min:"min 0"
+            
+       },
+       pCardNum: {
+          required: "please input card num",
+          number:"please input number",
+          max:"max 100000",
+          min:"min 0"
+            
+       },
+       cost: {
+          required: "please input cost",
+          number: "please input number",
+          min: "min 0"
+       }
+   }
+});
+
 
 });
 

@@ -392,7 +392,7 @@ $(function(){
 <div id="urHere">管理中心<b>></b><strong>代理商管理</strong> </div>
   <div id="manager" class="mainBox" style="height:auto!important;height:550px;min-height:550px;">
     <h3><a href="?page=operator&sid=1" class="actionBtn">返回列表</a>分配</h3>
-   <form action="" method="post">
+   <form action="" method="post" id="dispatchForm" name="dispatchForm">
      <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
       <tr>
        <td width="100" align="right">代理商编号</td>
@@ -446,7 +446,7 @@ $(function(){
       <tr>
        <td></td>
        <td>
-       <input type="button" name="submit" class="btn" value="提交" onclick="jq_dispatcher_add()" />
+       <input type="submit" name="submit" class="btn" value="提交" />
        </td>
       </tr>
      </table>
@@ -666,6 +666,53 @@ $("#updateForm").validate({
        
   }
 });
+$("#dispatchForm").validate({
+   submitHandler:function() {
+      jq_dispatcher_add();
+   },
+
+   rules: {
+       cardNum: {
+            required: true,
+            number: true,
+            max:100000,
+            min:0
+       },
+       pCardNum: {
+            required: true,
+            number: true,
+            max:100000,
+            min:0
+       },
+       cost: {
+            required: true,
+            number: true,
+            min:0
+       }
+  },
+  messages: {
+       cardNum: {
+          required: "请输入年卡数",
+          number:"请输入数字",
+          max:"请不要超过100000",
+          min:"请不要输入负数"
+            
+       },
+       pCardNum: {
+          required: "请输入年卡数",
+          number:"请输入数字",
+          max:"请不要超过100000",
+          min:"请不要输入负数"
+            
+       },
+       cost: {
+          required: "请输入金额",
+          number: "请输入数字",
+          min: "请不要输入负数"
+       }
+   }
+});
+
 
 });
 
